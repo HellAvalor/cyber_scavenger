@@ -15,7 +15,7 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 
-public class Game extends ApplicationAdapter implements Screen {
+public class Game1 extends ApplicationAdapter implements Screen {
     Texture img;
 
     int mapSize = 640;
