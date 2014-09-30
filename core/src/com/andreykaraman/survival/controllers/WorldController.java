@@ -1,5 +1,6 @@
 package com.andreykaraman.survival.controllers;
 
+import com.andreykaraman.survival.CSurv;
 import com.andreykaraman.survival.model.World;
 import com.andreykaraman.survival.view.WorldRenderer;
 import com.badlogic.gdx.Gdx;
@@ -18,7 +19,7 @@ public class WorldController implements Screen, InputProcessor {
     private World world;
     private WorldRenderer renderer;
     private WorldController	controller;
-    public BomberMan game;
+    public CSurv game;
     private int width, height;
     WalkingControl control;
     WalkingControlArrows controlArrows;
@@ -27,7 +28,7 @@ public class WorldController implements Screen, InputProcessor {
     //private  Preferences prefs;
     //private int offsetX, offsetY;
     //private float xToY;
-    public GameScreen(BomberMan game){
+    public GameScreen(CSurv game){
         this.game = game;
     }
 

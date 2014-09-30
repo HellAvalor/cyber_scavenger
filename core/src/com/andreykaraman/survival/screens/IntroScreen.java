@@ -1,10 +1,12 @@
 package com.andreykaraman.survival.screens;
 
+import com.andreykaraman.survival.CSurv;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,7 +20,7 @@ import java.util.Map;
  * Created by KaramanA on 26.09.2014.
  */
 public class IntroScreen implements Screen, InputProcessor {
-    BomberMan game;
+    CSurv game;
     private int width, height;
     private Texture bgTexture;
     private SpriteBatch spriteBatch;
@@ -143,7 +145,7 @@ public class IntroScreen implements Screen, InputProcessor {
       //     sound = Gdx.audio.newSound(Gdx.files.internal("audio/intro.ogg"));
 
     }
-    public IntroScreen(BomberMan game){
+    public IntroScreen(CSurv game){
         this.game = game;
     }
     @Override
@@ -187,7 +189,7 @@ public class IntroScreen implements Screen, InputProcessor {
 
         timeLeft+=delta;
         Gdx.gl.glClearColor(0,0, 0, 1);
-        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         spriteBatch.begin();
         showBG();
@@ -197,7 +199,7 @@ public class IntroScreen implements Screen, InputProcessor {
             if(timeLeft>=0.6 && soundOn) playMusic();
         }
         catch(Exception e){
-            Log.e("sound err", "err");}
+            Gdx.app.error("sound err", "err");}
     }
 
     @Override
@@ -222,8 +224,6 @@ public class IntroScreen implements Screen, InputProcessor {
     @Override
     public void dispose() {
         Gdx.input.setInputProcessor(null);
-
-
         try{
             sound.stop();
             sound.dispose();
@@ -277,7 +277,7 @@ public class IntroScreen implements Screen, InputProcessor {
         }
         if((height-y)/ppuY >=0.5F && (height-y)/ppuY <2F ){
             dispose();
-            game.setScreen(game.settings);
+          //  game.setScreen(game.settings);
         }
 
         return true;

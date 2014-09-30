@@ -1,5 +1,7 @@
 package com.andreykaraman.survival.model;
 
+import com.badlogic.gdx.Preferences;
+
 /**
  * Created by KaramanA on 25.09.2014.
  */
@@ -294,7 +296,7 @@ public class World {
 
     }
 
-    public World(/*int w, int h,int stage*/Preferences  prefs) {
+    public World(/*int w, int h,int stage*/Preferences prefs) {
 //        inreasedPowerUp = "";
 //        //width = w;
 //        //height=h;

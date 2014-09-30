@@ -1,9 +1,9 @@
 package com.andreykaraman.survival;
 
+import com.andreykaraman.survival.android.AndroidLauncher;
 import com.andreykaraman.survival.screens.GameScreen;
 import com.andreykaraman.survival.screens.IntroScreen;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
 /**
@@ -13,33 +13,33 @@ public class CSurv extends Game {
 
     private Preferences prefs;// = Gdx.app.getPreferences("my-preferences");
     public IntroScreen intro;
-    public SettingsScreen settings;
-    public CustomArrowsScreen customArrowsScreen;
+//    public SettingsScreen settings;
+//    public CustomArrowsScreen customArrowsScreen;
     public GameScreen game;
 //    public StageScreen stage;
 //    public WinScreen  win;
 //    public GameOverScreen gameOver;
-    MainActivity app;
+      AndroidLauncher app;
 
-    public CSurv (MainActivity app){
+    public CSurv (AndroidLauncher app){
         this.app = app;
     }
 
-    public void goHome(){
-        app.goHome();
-    }
+//    public void goHome(){
+//        app.goHome();
+//    }
 
     public void create() {
-        stageNumber = getStagePref();
-        prefs = Gdx.app.getPreferences("bomber-pref");
-        setts = Gdx.app.getPreferences("setts");
-        if(getStage() == "") {
-            //Log.e("gg","+");
-            setDefault();
-            setDefSettings();
-        }
-        checkSettings();
-        checkLeft();
+//        stageNumber = getStagePref();
+//        prefs = Gdx.app.getPreferences("bomber-pref");
+//        setts = Gdx.app.getPreferences("setts");
+//        if(getStage() == "") {
+//            //Log.e("gg","+");
+//            setDefault();
+//            setDefSettings();
+//        }
+//        checkSettings();
+//        checkLeft();
 //        gameOver = new  GameOverScreen(this);
 //        stage = new StageScreen(this);
         intro = new IntroScreen(this);
@@ -47,7 +47,7 @@ public class CSurv extends Game {
 //        settings = new  SettingsScreen(this);
 //        customArrowsScreen = new CustomArrowsScreen(this);
 
-        prefs.flush();
+//        prefs.flush();
         setScreen(intro);
 
     }
@@ -55,8 +55,8 @@ public class CSurv extends Game {
     public void checkLeft(){
 
         //Log.e("left", Integer.toString(prefs.getInteger("left")));
-        if(prefs.getInteger("left")<0)
-            setDefault();
+//        if(prefs.getInteger("left")<0)
+//            setDefault();
     }
 
     private void checkSettings(){
@@ -181,8 +181,8 @@ public class CSurv extends Game {
     }
 
     public void setPoints(int points){
-        prefs.putInteger("points",  points);
-        prefs.flush();
+//        prefs.putInteger("points",  points);
+//        prefs.flush();
     }
     public void gameOver(){
 		 /*setDefault();
@@ -191,14 +191,14 @@ public class CSurv extends Game {
 //        setScreen(gameOver);
     }
 
-//    public Preferences  getPrefs(){
-//        return prefs;
-//    }
+    public Preferences  getPrefs(){
+        return prefs;
+    }
 
 
     public void stageScreen(){
 
-        setScreen(stage);
+        setScreen(game);
         game.preLoad();
     }
     public String getStage()

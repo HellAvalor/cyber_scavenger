@@ -1,15 +1,21 @@
 package com.andreykaraman.survival.screens;
 
+import com.andreykaraman.survival.CSurv;
 import com.andreykaraman.survival.controllers.WalkingControl;
 import com.andreykaraman.survival.controllers.WalkingControlArrows;
 import com.andreykaraman.survival.controllers.WorldController;
+import com.andreykaraman.survival.model.Player;
 import com.andreykaraman.survival.model.World;
 import com.andreykaraman.survival.view.WorldRenderer;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.Timer;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.TimerTask;
 
 /**
  * Created by KaramanA on 26.09.2014.
@@ -21,14 +27,18 @@ public class GameScreen implements Screen, InputProcessor {
     private World world;
     private WorldRenderer renderer;
     private WorldController controller;
-    public BomberMan game;
+    public CSurv game;
     private int width, height;
     WalkingControl control;
     WalkingControlArrows controlArrows;
 
+    TimerTask task;
+    Timer timer;
+    boolean won;
+
     Map<String, Integer> pointers;
 
-    public GameScreen(BomberMan game){
+    public GameScreen(CSurv game){
         this.game = game;
     }
 
@@ -45,8 +55,8 @@ public class GameScreen implements Screen, InputProcessor {
         float CAMERA_HEIGHT = WorldRenderer.CAMERA_HEIGHT;
         CAMERA_WIDTH =  CAMERA_HEIGHT* Gdx.graphics.getWidth()/Gdx.graphics.getHeight();
 
-        WorldController.soundOn = game.getPrefs().getInteger("sound-on") == 1 ? true : false;
-        WorldController.joy = game.getPrefs().getInteger("controller-type") == 1 ? true : false;
+//        WorldController.soundOn = game.getPrefs().getInteger("sound-on") == 1 ? true : false;
+//        WorldController.joy = game.getPrefs().getInteger("controller-type") == 1 ? true : false;
         world = new World(game.getPrefs()/*(int)CAMERA_WIDTH+2, (int)CAMERA_HEIGHT*/);
         //renderer = new WorldRenderer(world, CAMERA_WIDTH,CAMERA_HEIGHT,false);
         //preLoad();
@@ -78,9 +88,7 @@ public class GameScreen implements Screen, InputProcessor {
     private void clearPointers(){
         pointers.put("joy", -1);
     }
-    TimerTask task;
-    Timer timer;
-    boolean won;
+
     private void createTimer(){
         if( timer == null){
             task = new TimerTask(){
@@ -106,9 +114,9 @@ public class GameScreen implements Screen, InputProcessor {
     boolean dead;
 
     private void renderSave(float delta){
-        if(!dead && world.getBomberman().getState() == Bomberman.State.DYING)
+        if(!dead && world.getBomberman().getState() == Player.State.DYING)
             dead();
-        if(world.getBomberman().getState() == Bomberman.State.DEAD)
+        if(world.getBomberman().getState() == Player.State.DEAD)
         {
 
             int left = game.getPrefs().getInteger("left");//-1;
@@ -131,7 +139,7 @@ public class GameScreen implements Screen, InputProcessor {
             return;
         }
 
-        if(world.getBomberman().getState() == Bomberman.State.WON)
+        if(world.getBomberman().getState() == Player.State.WON)
             if(!won) {createTimer(); /*return;*/}
             else
             {
@@ -153,7 +161,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         if(1F/delta>80) delta = 1F/60;
 
-        if(!WorldController.paused && world.getBomberman().getState() != Bomberman.State.WON /*&& !world.getBomberman().isDead() && !(world.getBomberman().getState() == Bomberman.State.WON)*/){
+        if(!WorldController.paused && world.getBomberman().getState() != Player.State.WON /*&& !world.getBomberman().isDead() && !(world.getBomberman().getState() == Bomberman.State.WON)*/){
             controller.update(delta);
         }
         Gdx.gl20.glClearColor(0, 118F/255, 0, 1);
@@ -403,16 +411,16 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public boolean touchDown(int x, int y, int pointer, int button) {
 
-        if (!Gdx.app.getType().equals(ApplicationType.Android))
+        if (!Gdx.app.getType().equals(Application.ApplicationType.Android))
             return false;
-        if(!controller.bomberman.isDead()  && !WorldController.paused&& !(world.getBomberman().getState() == Bomberman.State.WON))
+        if(!controller.bomberman.isDead()  && !WorldController.paused&& !(world.getBomberman().getState() == Player.State.WON))
             ChangeNavigation(x,y, pointer);
         return true;
     }
 
     @Override
     public boolean touchUp(int x, int y, int pointer, int button) {
-        if (!Gdx.app.getType().equals(ApplicationType.Android) )
+        if (!Gdx.app.getType().equals(Application.ApplicationType.Android) )
             return false;
 
         if ( x/renderer.ppuX >= WorldRenderer.CAMERA_WIDTH/2+1F && x/renderer.ppuX<=WorldRenderer.CAMERA_WIDTH/2+3F &&
@@ -459,7 +467,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
     @Override
     public boolean touchDragged(int x, int y, int pointer) {
-        if(!world.getBomberman().isDead() && !WorldController.paused && !(world.getBomberman().getState() == Bomberman.State.WON))
+        if(!world.getBomberman().isDead() && !WorldController.paused && !(world.getBomberman().getState() == Player.State.WON))
             ChangeNavigation(x,y, pointer);
         // TODO Auto-generated method stub
         return false;

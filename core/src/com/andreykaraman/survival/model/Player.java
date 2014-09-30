@@ -1,8 +1,11 @@
 package com.andreykaraman.survival.model;
 
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import sun.rmi.runtime.Log;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Andrew on 22.09.2014.
@@ -36,7 +39,7 @@ public class Player {
     Vector2 	position = new Vector2();
     Vector2 	acceleration = new Vector2();
     Vector2 	velocity = new Vector2();
-    Rectangle 	bounds = new Rectangle();
+    Rectangle bounds = new Rectangle();
     Circle boundss = new Circle(1,1,1);
     State		state = State.IDLE;
     //boolean		facingLeft = true;
@@ -149,7 +152,7 @@ public class Player {
 //        //if(curState>8) curState = 0;
 //        //curFrame =
 //        //return walkAnimation.getKeyFrame(curState, true);
-//        return curState;
+        return curState;
 
         //return curFrame;
     }
