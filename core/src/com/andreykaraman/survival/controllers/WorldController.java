@@ -1,485 +1,610 @@
 package com.andreykaraman.survival.controllers;
 
-import com.andreykaraman.survival.CSurv;
+import com.andreykaraman.survival.model.Player;
 import com.andreykaraman.survival.model.World;
 import com.andreykaraman.survival.view.WorldRenderer;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by KaramanA on 26.09.2014.
  */
-public class WorldController implements Screen, InputProcessor {
+public class WorldController {
+    private WorldRenderer 	renderer;
+    enum Keys {
+        LEFT, RIGHT, UP, DOWN
+    }
 
-    //public static enum GameStatus {RUNNING, PAUSED};
-    //private GameStatus gameStatus;
     private World world;
-    private WorldRenderer renderer;
-    private WorldController	controller;
-    public CSurv game;
-    private int width, height;
-    WalkingControl control;
-    WalkingControlArrows controlArrows;
+    public Player player;
+    public float toX;
+    public float toY;
+    public boolean hasKeyBoard = false;
+    public static boolean paused = false;
+    public static boolean soundOn;
+    public static boolean joy;
+    static Map<Keys, Boolean> keys = new HashMap<Keys, Boolean>();
+    static {
+        keys.put(Keys.LEFT, false);
+        keys.put(Keys.RIGHT, false);
+        keys.put(Keys.UP, false);
+        keys.put(Keys.DOWN, false);
+    };
 
-    Map<String, Integer> pointers;
-    //private  Preferences prefs;
-    //private int offsetX, offsetY;
-    //private float xToY;
-    public GameScreen(CSurv game){
-        this.game = game;
+    public WorldController(World world, WorldRenderer renderer) {
+
+        this.renderer = renderer;
+        this.world = world;
+        this.player = world.getPlayer();
+        paused = false;
+//        task = null;
+//        timer = null;
+
+        //this.player = world.getBomberman();
     }
 
-    public void preLoad(){
-        renderer = new WorldRenderer();
+    // ** Key presses and touches **************** //
+
+    public void leftPressed() {
+        keys.get(keys.put(Keys.LEFT, true));
+    }
+    public void boomBombPressed() {
+//        world.boomLastBomb();
+    }
+    public void bombPressed(int x, int y) {
+//        if(!player.isDead())
+//            if(world.putBomb(x, y, true))
+//                renderer.playPutingBombSound();
+//        //Log.e("bomb",	"booom");
+    }
+    public void rightPressed() {
+        keys.get(keys.put(Keys.RIGHT, true));
     }
 
-    @Override
-    public void show() {
-        game.checkLeft();
-        //gameStatus = GameStatus.RUNNING;
-        //Log.e("GameScreen","show");
-        //offsetX = 0;
-        dead = false;
-        float CAMERA_WIDTH =WorldRenderer.CAMERA_WIDTH;
-        float CAMERA_HEIGHT = WorldRenderer.CAMERA_HEIGHT;
-        CAMERA_WIDTH =  CAMERA_HEIGHT* Gdx.graphics.getWidth()/Gdx.graphics.getHeight();
-
-        WorldController.soundOn = game.getPrefs().getInteger("sound-on") == 1 ? true : false;
-        WorldController.joy = game.getPrefs().getInteger("controller-type") == 1 ? true : false;
-        world = new World(game.getPrefs()/*(int)CAMERA_WIDTH+2, (int)CAMERA_HEIGHT*/);
-        //renderer = new WorldRenderer(world, CAMERA_WIDTH,CAMERA_HEIGHT,false);
-        //preLoad();
-        renderer.init(world, CAMERA_WIDTH,CAMERA_HEIGHT,false);
-        controller = new WorldController(world, renderer);
-        if(WorldController.joy){
-            control =world.getWalkingControl();
-            WalkingControl.Coefficient = 1+0.3F*game.getPrefs().getInteger("controller-size");
-            WalkingControl.Opacity = game.getPrefs().getInteger("opacity");
-        }
-        else{
-            WalkingControlArrows.Coefficient = 1+0.3F*game.getPrefs().getInteger("controller-size");
-            WalkingControlArrows.Opacity = game.getPrefs().getInteger("opacity");
-            controlArrows =world.getWalkingControlArrows();
-        }
-
-
-
-        Gdx.input.setInputProcessor(this);
-        Gdx.input.setCatchBackKey(true);
-        task = null;
-        timer = null;
-        won = false;
-        pointers = new HashMap<String, Integer>();
-        clearPointers();
-
-        //renderer.sounds.get("stage-theme").play();
+    public void upPressed() {
+        keys.get(keys.put(Keys.UP, true));
     }
 
-    private void clearPointers(){
-        pointers.put("joy", -1);
-    }
-    TimerTask task;
-    Timer timer;
-    boolean won;
-    private void createTimer(){
-        if( timer == null){
-            task = new TimerTask(){
-                public void run()
-                {
-                    won = true;
-					/*renderer.disposeSounds();
-					renderer.clearTimer();
-					game.setPoints(world.points);
-					timer.cancel();
-					timer.purge();
-					timer = null;
-					game.nextStage();*/
-                }
-            };
-            timer=new Timer();
-
-            timer.schedule(task, 4000);
-        }
+    public void downPressed() {
+        keys.get(keys.put(Keys.DOWN, true));
     }
 
-    public void dead(){
-        dead = true;
-        int left = game.getPrefs().getInteger("left")-1;
-        game.losePowers();
-        game.getPrefs().putInteger("left", left);
-        game.getPrefs().flush();
-        game.setPoints(world.points);
-    }
-    boolean dead;
-    //float times = 0;
-    private void renderSave(float delta){
-        //Log.e("renderGS","1");
-        //times+=0.1F;
-        if(!dead && world.getBomberman().getState() == Bomberman.State.DYING)
-            dead();
-        if(world.getBomberman().getState() == Bomberman.State.DEAD)
-        {
-
-            int left = game.getPrefs().getInteger("left");//-1;
-            if(left<0)
-            {
-                //renderer.dispose();
-                //controller.dispose();
-
-                this.dispose();
-                game.gameOver();
-            }
-            else
-            {
-                if(!world.inreasedPowerUp.equals("")){
-                    game.getPrefs().putInteger(world.inreasedPowerUp, 	game.getPrefs().getInteger(world.inreasedPowerUp)+1);
-                    game.getPrefs().flush();
-                }
-                game.losePowers();
-                //renderer.stopMusic();
-                //renderer.dispose();
-                //controller.dispose();
-
-                //dead();
-
-                this.dispose();
-                //game.setScreen(game.stage);
-                game.stageScreen();
-            }
-            return;
-        }
-
-        if(world.getBomberman().getState() == Bomberman.State.WON)
-            if(!won) {createTimer(); /*return;*/}
-            else
-            {
-                //this.pause();
-                if(!world.inreasedPowerUp.equals("")){
-                    game.getPrefs().putInteger(world.inreasedPowerUp, 	game.getPrefs().getInteger(world.inreasedPowerUp)+1);
-                    game.getPrefs().flush();
-                }
-
-                timer.cancel();
-                timer.purge();
-                timer = null;
-
-                this.dispose();
-                game.setPoints(world.points);
-                game.nextStage();
-
-                return;
-            }
-
-        if(1F/delta>80) delta = 1F/60;
-        if(!WorldController.paused && world.getBomberman().getState() != Bomberman.State.WON /*&& !world.getBomberman().isDead() && !(world.getBomberman().getState() == Bomberman.State.WON)*/){
-            controller.update(delta);
-        }
-        Gdx.gl20.glClearColor(0, 118F/255, 0, 1);
-        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        renderer.render();
+    public void leftReleased() {
+        keys.get(keys.put(Keys.LEFT, false));
     }
 
-    @Override
-    public void render(float delta) {
-        renderSave(delta);
+    public void rightReleased() {
+        keys.get(keys.put(Keys.RIGHT, false));
     }
 
-    @Override
-    public void resize(int width, int height) {
-        renderer.setSize(width, height);
-        this.width = width;
-        this.height = height;
+    public void upReleased() {
+        keys.get(keys.put(Keys.UP, false));
     }
 
-    @Override
-    public void hide() {
-        Gdx.input.setInputProcessor(null);
+    public void downReleased() {
+        keys.get(keys.put(Keys.DOWN, false));
     }
 
-    @Override
-    public void pause() {
-        //Log.e("pause", "pause");
-        if(!WorldController.paused){
+//    TimerTask task;
+//    Timer timer;
+//    public void dispose(){
+//        clearTimer();
+//        //world.dispose();
+//    }
+//
+//
+//    int timeLeft;
+//    private void createMysteryTimer(){
+//        timeLeft = 0;
+//        world.invincibility = true;
+//        task = new TimerTask(){
+//            public void run()
+//            {
+//                if(!WorldController.paused)
+//                    ++timeLeft;
+//
+//                if(timeLeft >= 20){
+//                    //Log.e("cleartimer","clear");
+//                    world.invincibility = false;
+//                    clearTimer();
+//                }
+//
+//            }
+//        };
+//        timer=new Timer();
+//
+//        timer.schedule(task, 1, 1000);
+//    }
 
-            //gameStatus = GameStatus.PAUSED;
-            renderer.stopMainTheme();
-            WorldController.paused = true;
-            //renderer.drawPauseControlls();
-        }
-		/*else
-			this.resume();*/
+//    public void clearTimer(){
+//        if(timer != null){
+//            timer.cancel();
+//            timer.purge();
+//            timer = null;
+//        }
+//    }
+
+    /** The main update method **/
+    public void update(float delta) {
+
+        processInput();
+        checkBombsTimer();
+//        if(!world.bonus) destroyBricks();
+        removeDeadNpc();
+        killByBoom();
+        removeHiddenObjects();
+
+        player.update(delta);
+//        for(NpcBase npc : world.getNpcs()){
+//            npc.update(delta);
+//        }
+        removeBooms();
+        //ShowPos();
     }
 
-
-    @Override
-    public void resume() {
-        //Log.e("resume", "resume");
-        renderer.playMainTheme();
-        //gameStatus = GameStatus.RUNNING;
-        WorldController.paused = false;
+    private void removeHiddenObjects(){
+//        for(HiddenObject object : world.getHiddenObjects()){
+//            if(object.state == HiddenObject.State.TAKEN){
+//
+//                if(object.getName() == MysteryPower.Name)
+//                    createMysteryTimer();
+//                world.getHiddenObjects().removeValue(object, true);
+//                renderer.playFindDoorMusic();
+//            }
+//            if(object.state == HiddenObject.State.DESTROYED){
+//                //world.generateNpcAfterDestroyingObject(object.getPosition());
+//                if(!(object.getName() == Door.Name))
+//                    world.getHiddenObjects().removeValue(object, true);
+//            }
+//        }
+    }
+    private void removeBooms(){
+//        for(Boom boom : world.getBooms()){
+//            if(boom.getState() == Boom.State.BOOM){
+//                world.getBooms().removeValue(boom, true);
+//                for(BoomPart part : boom.getParts()){
+//                    for(HiddenObject object : world.getHiddenObjects()){
+//                        if( object.getPosition().x == part.getPosition().x &&
+//                                object.getPosition().y==part.getPosition().y){
+//                            object.state = HiddenObject.State.DESTROYED;
+//                            world.generateNpcAfterDestroyingObject(object.getPosition());
+//                        }
+//
+//                    }
+//                }
+//
+//            }
+//
+//        }
     }
 
-    @Override
-    public void dispose() {
-        //Log.e("dispose", "+");
-
-        renderer.dispose();
-        controller.dispose();
-        Gdx.input.setInputProcessor(null);
-        Gdx.input.setCatchBackKey(false);
+    private void destroyBricks(){
+//        for (BrickBase block : world.getBlocks()) {
+//            if(block.getState() == BrickBase.State.DESTROYED)
+//                //world.getBlocks().removeValue(block,true);
+//                world.removeBrick(block);
+//        }
+    }
+    private void removeDeadNpc(){
+//        for (NpcBase npc : world.getNpcs()) {
+//            if(npc.getState() == NpcBase.State.DEAD)
+//                world.getNpcs().removeValue(npc, true);
+//        }
     }
 
-    // * InputProcessor methods ***************************//
+    private void killByBoom(){
+//        for(Boom boom: world.getBooms())
+//            for(BoomPart part: boom.getParts()){
+//                for(NpcBase npc : world.getNpcs()){
+//                    float x1 = Math.round(npc.getPosition().x);
+//                    float y1 = Math.round(npc.getPosition().y);
+//                    if(x1 == part.getPosition().x && y1 == part.getPosition().y)
+//                    {
+//                        if(npc.getState() != NpcBase.State.DYING && npc.getState() != NpcBase.State.DEAD){
+//                            world.points += npc.getPoints();
+//                            npc.setState(NpcBase.State.DYING);
+//                        }
+//                    }
+//                }
+//
+//                float x1 = (int)(world.getBomberman().getPosition().x+Bomberman.SIZE/2);
+//                float y1 =  (int)(world.getBomberman().getPosition().y+Bomberman.SIZE/2);
+//                if(x1 == part.getPosition().x && y1 == part.getPosition().y && !world.invincibility && !world.bonus && !world.getBomberman().flamePass)
+//                    world.getBomberman().setState(Bomberman.State.DYING);
+//            }
+    }
+//    private void killNearNpc(Bomb bombCheck){
+//        Array<NpcBase> npcToKill = new Array<NpcBase>();
+//        float x = bombCheck.getPosition().x;
+//        float y = bombCheck.getPosition().y;
+//
+//        for(int i=1;i<=bombCheck.length;++i){
+//            for(NpcBase npc : world.getNpcs()){
+//                float x1 = Math.round(npc.getPosition().x);
+//                float y1 = Math.round(npc.getPosition().y);
+//                if((x1 == x+i && y1==y)|| (x1 == x-i && y1==y)|| (x1 == x && y1==y+i)|| (x1 == x && y1==y-i))
+//                    npcToKill.add(npc);
+//                //bomb.setState(Bomb.State.BOOM);
+//            }
+//        }
+//
+//        for (BrickBase block : world.getBlocks()) {
+//            for(NpcBase npc :npcToKill){
+//                float x1 = Math.round(npc.getPosition().x);
+//                float y1 = Math.round(npc.getPosition().y);
+//
+//                if(block.getPosition().x == x1 &&
+//                        ((block.getPosition().y> y1&& block.getPosition().y < bombCheck.getPosition().y)
+//                                ||
+//                                (block.getPosition().y< y1&& block.getPosition().y > bombCheck.getPosition().y)
+//                        )
+//                        )
+//                    npcToKill.removeValue(npc, true);
+//
+//                if(block.getPosition().y == y1 &&
+//                        ((block.getPosition().x > x1 && block.getPosition().x < bombCheck.getPosition().x)
+//                                ||
+//                                (block.getPosition().x <  x1 && block.getPosition().x > bombCheck.getPosition().x))
+//                        )
+//                    npcToKill.removeValue(npc, true);
+//            }
+//
+//        }
+//
+//        for(NpcBase npc : npcToKill)
+//            if(npc.getState() != NpcBase.State.DYING && npc.getState() != NpcBase.State.DEAD){
+//                world.points += npc.getPoints();
+//                npc.setState(NpcBase.State.DYING);
+//            }
+//    }
 
-    @Override
-    public boolean keyDown(int keycode) {
-        if(keycode == Keys.BACK || WorldController.paused) {
-            return false;
-        }
-        controller.hasKeyBoard = true;
 
-        if(keycode==Keys.SPACE || keycode == Keys.DPAD_CENTER)
-            controller.bombPressed(Math.round(controller.bomberman.getPosition().x), Math.round(controller.bomberman.getPosition().y));
-        if(keycode==Keys.SHIFT_LEFT || keycode == Keys.BUTTON_X)
-            controller.boomBombPressed();
-        if (keycode == Keys.LEFT)
-            controller.leftPressed();
-        if (keycode == Keys.RIGHT)
-            controller.rightPressed();
-        if (keycode == Keys.UP)
-            controller.upPressed();
-        if (keycode == Keys.DOWN)
-            controller.downPressed();
-
-        if (keycode == Keys.A)
-            controller.leftPressed();
-        if (keycode == Keys.D)
-            controller.rightPressed();
-        if (keycode == Keys.W)
-            controller.upPressed();
-        if (keycode == Keys.S)
-            controller.downPressed();
-        return true;
+    private void killBombermanInsideBrick(int x,int y){
+//
+//        //Log.e("killBombermanInsideBrick", "+");
+//        if(x == Math.round(world.getBomberman().getPosition().x) && y == Math.round(world.getBomberman().getPosition().y) && !world.invincibility && !world.bonus && !world.getBomberman().flamePass)
+//            world.getBomberman().setState(Bomberman.State.DYING);
     }
 
-    @Override
-    public boolean keyUp(int keycode) {
-        if(keycode == Keys.BACK || WorldController.paused) {
+//    private void destroyNearObjects(Bomb bomb){
+//
+//        Array<BoomPart> boomParts = new Array<BoomPart>();
+//        boomParts.add(new BoomPart(new Vector2(bomb.getPosition().x,bomb.getPosition().y), BoomPart.Type.MIDDLE));
+//        boolean topEnd = false;
+//        boolean botEnd = false;
+//
+//        boolean leftEnd = false;
+//        boolean rightEnd = false;
+//
+//        Array<BrickBase> bricks = new Array<BrickBase>();
+//
+//        for(int i=1;i<=bomb.length;++i){
+//            for (BrickBase block : world.getBlocks())
+//                if((block.position.x == bomb.getPosition().x+i &&
+//                        block.position.y == bomb.getPosition().y) ||
+//                        (block.position.x == bomb.getPosition().x-i &&
+//                                block.position.y == bomb.getPosition().y)||
+//                        (block.position.y == bomb.getPosition().y-i &&
+//                                block.position.x == bomb.getPosition().x)
+//                        ||
+//                        (block.position.y == bomb.getPosition().y+i &&
+//                                block.position.x == bomb.getPosition().x))
+//                    bricks.add(block);
+//
+//        }
+//
+//        for(int i=1;i<=bomb.length;++i){
+//            for (BrickBase block : bricks) {
+//                if(!botEnd){
+//                    if(block.getName()=="HardBrick" && block.getPosition().y-i*1F == bomb.getPosition().y &&
+//                            block.getPosition().x == bomb.getPosition().x){
+//
+//                        //Log.e("HardBrick", "true");
+//                        botEnd = true;
+//                    }
+//                    if(block.getName()=="Brick" && block.getPosition().y-i*1F == bomb.getPosition().y&&
+//                            block.getPosition().x == bomb.getPosition().x){
+//                        //Log.e("Brick", "true");
+//                        killBombermanInsideBrick((int)block.getPosition().x, (int)block.getPosition().y);
+//                        block.setState(BrickBase.State.DESTROYING);
+//                        //world.getBlocks().removeValue(block,true);
+//                        botEnd = true;
+//                    }
+//                }
+//
+//
+//                if(!topEnd){
+//                    if(block.getName()=="HardBrick" && block.getPosition().y+i*1F == bomb.getPosition().y&&
+//                            block.getPosition().x == bomb.getPosition().x){
+//                        topEnd = true;
+//                    }
+//                    if(block.getName()=="Brick" && block.getPosition().y+i*1F == bomb.getPosition().y&&
+//                            block.getPosition().x == bomb.getPosition().x){
+//                        killBombermanInsideBrick((int)block.getPosition().x, (int)block.getPosition().y);
+//                        block.setState(BrickBase.State.DESTROYING);
+//                        //world.getBlocks().removeValue(block,true);
+//                        topEnd = true;
+//                    }
+//
+//					/*
+//					for(HiddenObject object : world.getHiddenObjects()){
+//						if( object.getPosition().x == bomb.getPosition().x &&
+//								object.getPosition().y> bomb.getPosition().y&&
+//								object.getPosition().y<bomb.getPosition().y+i*1F)
+//							object.state = HiddenObject.State.DESTROYED;
+//
+//					}*/
+//                }
+//
+//                if(!leftEnd){
+//                    if(block.getName()=="HardBrick" && block.getPosition().y == bomb.getPosition().y&&
+//                            block.getPosition().x == bomb.getPosition().x-i*1F){
+//                        leftEnd = true;
+//                    }
+//                    if(block.getName()=="Brick" && block.getPosition().y == bomb.getPosition().y&&
+//                            block.getPosition().x == bomb.getPosition().x-i*1F){
+//                        killBombermanInsideBrick((int)block.getPosition().x, (int)block.getPosition().y);
+//                        block.setState(BrickBase.State.DESTROYING);
+//                        //world.getBlocks().removeValue(block,true);
+//                        leftEnd = true;
+//                    }
+//					/*
+//					for(HiddenObject object : world.getHiddenObjects()){
+//						if( object.getPosition().x > bomb.getPosition().x-i*1F &&
+//								 object.getPosition().x < bomb.getPosition().x &&
+//								object.getPosition().y==bomb.getPosition().y)
+//							object.state = HiddenObject.State.DESTROYED;
+//
+//					}*/
+//                }
+//                if(!rightEnd){
+//                    if(block.getName()=="HardBrick" && block.getPosition().y == bomb.getPosition().y&&
+//                            block.getPosition().x == bomb.getPosition().x+i*1F){
+//                        rightEnd= true;
+//                    }
+//                    if(block.getName()=="Brick" && block.getPosition().y == bomb.getPosition().y&&
+//                            block.getPosition().x == bomb.getPosition().x+i*1F){
+//                        killBombermanInsideBrick((int)block.getPosition().x, (int)block.getPosition().y);
+//                        block.setState(BrickBase.State.DESTROYING);
+//                        //world.getBlocks().removeValue(block,true);
+//                        rightEnd = true;
+//                    }
+//					/*
+//					for(HiddenObject object : world.getHiddenObjects()){
+//						if( object.getPosition().x < bomb.getPosition().x+i*1F &&
+//								 object.getPosition().x > bomb.getPosition().x &&
+//								object.getPosition().y==bomb.getPosition().y)
+//							object.state = HiddenObject.State.DESTROYED;
+//
+//					}*/
+//                }
+//            }
+//            if(!rightEnd)
+//                boomParts.add(new BoomPart(new Vector2(bomb.getPosition().x+i*1F,bomb.getPosition().y), BoomPart.Type.HORIZONTAL));
+//			/*else
+//				if(i>100)
+//					for(BoomPart boomPart: boomParts)
+//						if(boomPart.getPosition().x == bomb.getPosition().x+(i-1)*1F && boomPart.getPosition().y == bomb.getPosition().y)
+//							boomPart.setType(BoomPart.Type.RIGHT);*/
+//
+//
+//
+//            if(!leftEnd)
+//                boomParts.add(new BoomPart(new Vector2(bomb.getPosition().x-i*1F,bomb.getPosition().y), BoomPart.Type.HORIZONTAL));
+//			/*else
+//				if(i>100)
+//					for(BoomPart boomPart: boomParts)
+//						if(boomPart.getPosition().x == bomb.getPosition().x-(i-1)*1F && boomPart.getPosition().y == bomb.getPosition().y)
+//							boomPart.setType(BoomPart.Type.LEFT);*/
+//            if(!botEnd)
+//                boomParts.add(new BoomPart(new Vector2(bomb.getPosition().x,bomb.getPosition().y+i*1F), BoomPart.Type.VERTICAL));
+//			/*else
+//				if(i>100)
+//					for(BoomPart boomPart: boomParts)
+//						if(boomPart.getPosition().x == bomb.getPosition().x && boomPart.getPosition().y-(i-1)*1F == bomb.getPosition().y)
+//							boomPart.setType(BoomPart.Type.UP);*/
+//            if(!topEnd)
+//                boomParts.add(new BoomPart(new Vector2(bomb.getPosition().x,bomb.getPosition().y-i*1F), BoomPart.Type.VERTICAL));
+//			/*else
+//				if(i>100)
+//					for(BoomPart boomPart: boomParts)
+//						if(boomPart.getPosition().x == bomb.getPosition().x && boomPart.getPosition().y+(i-1)*1F == bomb.getPosition().y)
+//							boomPart.setType(BoomPart.Type.DOWN);*/
+//
+//        }
+//
+//        if(!leftEnd)
+//            for(BoomPart boomPart: boomParts)
+//                if(boomPart.getPosition().x == bomb.getPosition().x-bomb.length*1F && boomPart.getPosition().y == bomb.getPosition().y)
+//                    boomPart.setType(BoomPart.Type.LEFT);
+//
+//        if(!rightEnd)
+//            for(BoomPart boomPart: boomParts)
+//                if(boomPart.getPosition().x == bomb.getPosition().x+bomb.length*1F && boomPart.getPosition().y == bomb.getPosition().y)
+//                    boomPart.setType(BoomPart.Type.RIGHT);
+//        if(!botEnd)
+//            for(BoomPart boomPart: boomParts)
+//                if(boomPart.getPosition().x == bomb.getPosition().x && boomPart.getPosition().y-bomb.length*1F == bomb.getPosition().y)
+//                    boomPart.setType(BoomPart.Type.UP);
+//
+//        if(!topEnd)
+//            for(BoomPart boomPart: boomParts)
+//                if(boomPart.getPosition().x == bomb.getPosition().x && boomPart.getPosition().y+bomb.length*1F == bomb.getPosition().y)
+//                    boomPart.setType(BoomPart.Type.DOWN);
+//        world.putBoom(new Boom(boomParts));
+//    }
+//    private void killBomberman(Bomb bombCheck){
+//        boolean kill = false;
+//        float x = bombCheck.getPosition().x;
+//        float y = bombCheck.getPosition().y;
+//        float x1 = (int)world.getBomberman().getPosition().x+0.03F;
+//        float y1 =  (int)world.getBomberman().getPosition().y+0.03F;
+//
+//        for(int i=0;i<=bombCheck.length;++i)
+//            if((x1 == x+i && y1==y)|| (x1 == x-i && y1==y)|| (x1 == x && y1==y+i)|| (x1 == x && y1==y-i))
+//                kill = true;
+//
+//
+//        for (BrickBase block : world.getBlocks()) {
+//            if(block.getPosition().x == x1 &&
+//                    ((block.getPosition().y> y1&& block.getPosition().y < bombCheck.getPosition().y)||
+//                            (block.getPosition().y< y1&& block.getPosition().y > bombCheck.getPosition().y)))
+//                kill = false;
+//
+//            if(block.getPosition().y == y1 &&  ((block.getPosition().x > x1 && block.getPosition().x < bombCheck.getPosition().x)
+//                    ||
+//                    (block.getPosition().x <  x1 && block.getPosition().x > bombCheck.getPosition().x)))
+//                kill = false;
+//
+//        }
+//
+//        if(kill  && !world.bonus && !world.invincibility && !world.getBomberman().flamePass){
+//            //player.setDead(true);
+//            player.setState(Bomberman.State.DYING);
+//        }
+//    }
 
-            this.pause();
-            //Log.e("key", "back");
-            return false;
-        }
-        controller.hasKeyBoard = true;
-        if (keycode == Keys.LEFT)
-            controller.leftReleased();
-        if (keycode == Keys.RIGHT)
-            controller.rightReleased();
-        if (keycode == Keys.UP)
-            controller.upReleased();
-        if (keycode == Keys.DOWN)
-            controller.downReleased();
+    private void checkBombsTimer(){
+//        for(Bomb bomb : world.getBombs()){
+//            if(bomb.state == Bomb.State.BOOM)
+//            {
+//                killNearNpc(bomb);
+//                if(!world.bonus) killBomberman(bomb);
+//                checkAroundBombs(bomb);
+//                destroyNearObjects(bomb);
+//                renderer.playBoomSound();
+//                world.getBombs().removeValue(bomb, true);
+//            }
+//			/*if(bomb.state == Bomb.State.BOOM)
+//				world.getBombs().removeValue(bomb, true);*/
+//        }
+    }
+//    private void checkAroundBombs(Bomb bombCheck){
+//        float x = bombCheck.getPosition().x;
+//        float y = bombCheck.getPosition().y;
+//        Array<Bomb> bombsToRemove = new Array<Bomb>();
+//        for(int i=1;i<=bombCheck.length;++i){
+//            for(Bomb bomb : world.getBombs()){
+//                float x1 = bomb.getPosition().x;
+//                float y1 = bomb.getPosition().y;
+//                if((x1 == x+i && y1==y)|| (x1 == x-i && y1==y)|| (x1 == x && y1==y+i)|| (x1 == x && y1==y-i))
+//                    bombsToRemove.add(bomb);
+//                //bomb.setState(Bomb.State.BOOM);
+//            }
+//        }
+//        //Log.e("countbefore",Integer.toString(bombsToRemove.size));
+//        for (BrickBase block : world.getBlocks()) {
+//            for(Bomb bomb : bombsToRemove){
+//                if(block.getPosition().x == bomb.getPosition().x &&
+//                        ((block.getPosition().y> bomb.getPosition().y && block.getPosition().y < bombCheck.getPosition().y)
+//                                ||
+//                                (block.getPosition().y< bomb.getPosition().y && block.getPosition().y > bombCheck.getPosition().y)
+//                        )
+//                        )
+//                    bombsToRemove.removeValue(bomb, true);
+//
+//                if(block.getPosition().y == bomb.getPosition().y &&
+//                        ((block.getPosition().x > bomb.getPosition().x && block.getPosition().x < bombCheck.getPosition().x)
+//                                ||
+//                                (block.getPosition().x <  bomb.getPosition().x && block.getPosition().x > bombCheck.getPosition().x))
+//                        )
+//                    bombsToRemove.removeValue(bomb, true);
+//            }
+//
+//        }
+//        for(Bomb bomb : bombsToRemove){
+//
+//            //renderer.playBoomSound();
+//            bomb.setState(Bomb.State.BOOM);
+//        }
+//
+//    }
 
-        if (keycode == Keys.A)
-            controller.leftReleased();
-        if (keycode == Keys.D)
-            controller.rightReleased();
-        if (keycode == Keys.W)
-            controller.upReleased();
-        if (keycode == Keys.S)
-            controller.downReleased();
-        return true;
+    public void resetWay(){
+        rightReleased();
+        leftReleased();
+        downReleased();
+        upReleased();
     }
 
-    @Override
-    public boolean keyTyped(char character) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-    private void withControl(int x, int y, int pointer){
-        float calcX = x/renderer.ppuX-(world.getWalkingControl().getPosition().x+WalkingControl.SIZE*WalkingControl.Coefficient/2) ;
-        float calcY = (height-y)/renderer.ppuY-(world.getWalkingControl().getPosition().y+WalkingControl.SIZE*WalkingControl.Coefficient/2);
-        float xOff= x-(world.getWalkingControl().getPosition().x+WalkingControl.SIZE*WalkingControl.Coefficient/2)*renderer.ppuX ;
-        float yOff = (height-y)-(world.getWalkingControl().getPosition().y+WalkingControl.SIZE*WalkingControl.Coefficient/2)*renderer.ppuY;
-
-        if(((calcX*calcX + calcY* calcY)/(WalkingControl.Coefficient*WalkingControl.Coefficient)<=WalkingControl.CONTRLRADIUS*WalkingControl.CONTRLRADIUS)
-                && xOff*xOff+ yOff* yOff >= 400){
-            controller.resetWay();
-            pointers.put("joy",	pointer);
-            double angle = Math.atan(calcY/calcX)*180/Math.PI;
-
-            if(angle>0 &&calcY<0)
-                angle+=180;
-            if(angle <0)
-                if(calcX<0)
-                    angle=180+angle;
-                else
-
-                    angle+=360;
-            if(angle>30 && angle<150)
-                controller.upPressed();
-            if(angle>210 && angle<330)
-                controller.downPressed();
-
-            if(angle>120 && angle<240)
-                controller.leftPressed();
-            if(angle<60 || angle>300)
-                controller.rightPressed();
-
-            renderer.angle = (float)(angle*Math.PI/180);
-            control.getOffsetPosition().x = (float)((calcX*calcX + calcY* calcY>1F)? Math.cos(renderer.angle)*WalkingControl.Coefficient*0.75F: calcX*WalkingControl.Coefficient);
-            control.getOffsetPosition().y = (float)((calcX*calcX + calcY* calcY>1F)? Math.sin(renderer.angle)*WalkingControl.Coefficient*0.75F: calcY*WalkingControl.Coefficient);
-        }
-        else if(pointer == pointers.get("joy")){
-            controller.resetWay();
-            control.getOffsetPosition().x = 0;
-            control.getOffsetPosition().y = 0;
-        }
-    }
-
-    private void withArrowControl(int x, int y, int pointer){
-        boolean arrow = false;
-        if(x/renderer.ppuX >= controlArrows.positionLeft.x && x/renderer.ppuX <= controlArrows.positionLeft.x+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient &&
-                (height-y)/renderer.ppuY >= controlArrows.positionLeft.y && (height-y)/renderer.ppuY <= controlArrows.positionLeft.y+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient	)
-        //
-        {
-            //Log.e("left", "pressed");
-            arrow= true;
-            controller.resetWay();
-            pointers.put("joy",	pointer);
-            controller.leftPressed();
-        }
-
-        if(!arrow &&x/renderer.ppuX >= controlArrows.positionRight.x && x/renderer.ppuX <= controlArrows.positionRight.x+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient &&
-                (height-y)/renderer.ppuY >= controlArrows.positionRight.y && (height-y)/renderer.ppuY <= controlArrows.positionRight.y+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient	)
-        //
-        {
-            //Log.e("Right", "pressed");
-            arrow= true;
-            controller.resetWay();
-            pointers.put("joy",	pointer);
-            controller.rightPressed();
-        }
-        if(!arrow &&x/renderer.ppuX >= controlArrows.positionUp.x && x/renderer.ppuX <= controlArrows.positionUp.x+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient &&
-                (height-y)/renderer.ppuY >= controlArrows.positionUp.y && (height-y)/renderer.ppuY <= controlArrows.positionUp.y+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient	)
-
-        {
-            //Log.e("Up", "pressed");
-            arrow= true;
-            controller.resetWay();
-            pointers.put("joy",	pointer);
-            controller.upPressed();
-        }
-        if(!arrow &&x/renderer.ppuX >= controlArrows.positionDown.x && x/renderer.ppuX <= controlArrows.positionDown.x+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient &&
-                (height-y)/renderer.ppuY >= controlArrows.positionDown.y && (height-y)/renderer.ppuY <= controlArrows.positionDown.y+WalkingControlArrows.BSIZE* WalkingControlArrows .Coefficient	){
-            //Log.e("Down", "pressed");
-            arrow= true;
-            controller.resetWay();
-            pointers.put("joy",	pointer);
-            controller.downPressed();
-        }
-
-        if(!arrow && pointer == pointers.get("joy")){
-            controller.resetWay();
-            //Log.e("reset", "=\\");
-            if(WorldController.joy){
-                control.getOffsetPosition().x = 0;
-                control.getOffsetPosition().y = 0;
-            }
-        }
-    }
-    private void ChangeNavigation(int x, int y, int pointer){
-        if(WorldController.joy)
-            withControl(x, y, pointer);
-        else
-            withArrowControl(x, y, pointer);
-    }
-    @Override
-    public boolean touchDown(int x, int y, int pointer, int button) {
-
-        if (!Gdx.app.getType().equals(ApplicationType.Android))
-            return false;
-        if(!controller.bomberman.isDead()  && !WorldController.paused&& !(world.getBomberman().getState() == Bomberman.State.WON))
-            ChangeNavigation(x,y, pointer);
-        return true;
+    /** Change Bob's state and parameters based on input controls **/
+    private void processInput() {
+//        player.resetDirection();
+//
+//        if (!player.isDead()){
+//            if (keys.get(Keys.LEFT)) {
+//
+//                // left is pressed
+//                //vedroid.setFacingLeft(true);
+//                player.setState(Bomberman.State.WALKING);
+//                player.setDirection(Bomberman.Direction.LEFT, true);
+//                //player.getDirection().put(Bomberman.Direction.LEFT, true);
+//                player.getVelocity().x = -player.getSpeed();
+//
+//            }
+//
+//            if (keys.get(Keys.RIGHT)) {
+//                player.setDirection(Bomberman.Direction.RIGHT, true);
+//                // right is pressed
+//                //vedroid.setFacingLeft(false);
+//                player.setState(Bomberman.State.WALKING);
+//                //player.getDirection().put(Bomberman.Direction.RIGHT, true);
+//                //if(Math.abs(toX-vedroid.getPosition().x)< Math.abs(toY-vedroid.getPosition().y))
+//                //	vedroid.getVelocity().x = (float)(vedroid.SPEED/45 * Math.atan(Math.abs((toX-vedroid.getPosition().x)/(toY-vedroid.getPosition().y))));
+//                //else
+//                player.getVelocity().x = player.getSpeed();
+//            }
+//
+//            if (keys.get(Keys.UP)) {
+//
+//                //vedroid.setFacingLeft(true);
+//                player.setDirection(Bomberman.Direction.UP, true);
+//                player.setState(Bomberman.State.WALKING);
+//                //player.getDirection().put(Bomberman.Direction.UP, true);
+//                player.getVelocity().y = player.getSpeed();
+//            }
+//
+//            if (keys.get(Keys.DOWN)) {
+//
+//                //vedroid.setFacingLeft(true);
+//                player.setDirection(Bomberman.Direction.DOWN, true);
+//                //player.getDirection().put(Bomberman.Direction.DOWN, true);
+//                player.setState(Bomberman.State.WALKING);
+//                player.getVelocity().y = -player.getSpeed();
+//            }
+//
+//
+//            // need to check if both or none direction are pressed, then Bob is idle
+//            if ((keys.get(Keys.LEFT) && keys.get(Keys.RIGHT)) ||
+//                    (!keys.get(Keys.LEFT) && (!keys.get(Keys.RIGHT)))) {
+//                //player.setState(State.IDLE);
+//                // acceleration is 0 on the x
+//                player.getAcceleration().x = 0;
+//                // horizontal speed is 0
+//                player.getVelocity().x = 0;
+//            }
+//            if ((keys.get(Keys.UP) && keys.get(Keys.DOWN)) ||
+//                    (!keys.get(Keys.UP) && (!keys.get(Keys.DOWN)))) {
+//                //player.setState(State.IDLE);
+//                // acceleration is 0 on the x
+//                player.getAcceleration().y = 0;
+//                // horizontal speed is 0
+//                player.getVelocity().y = 0;
+//            }
+//            if(!keys.get(Keys.LEFT) && !keys.get(Keys.RIGHT)&& !keys.get(Keys.UP) && !keys.get(Keys.DOWN)){
+//                player.getVelocity().x = 0;
+//                player.getVelocity().y = 0;
+//                player.setState(Bomberman.State.IDLE);
+//            }
+//			/*if (keys.get(Keys.UP)){
+//				vedroid.setState(State.JUMPING);
+//			}*/
+//        }
+//        else {
+//            player.getVelocity().x = 0;
+//            player.getVelocity().y = 0;
+//        }
     }
 
-    @Override
-    public boolean touchUp(int x, int y, int pointer, int button) {
-        if (!Gdx.app.getType().equals(ApplicationType.Android) )
-            return false;
-
-        if ( x/renderer.ppuX >= WorldRenderer.CAMERA_WIDTH/2+1F && x/renderer.ppuX<=WorldRenderer.CAMERA_WIDTH/2+3F &&
-                y/renderer.ppuY >= WorldRenderer.CAMERA_HEIGHT/2-1F && y/renderer.ppuY<=WorldRenderer.CAMERA_HEIGHT/2+1F && WorldController.paused)
-            this.resume();
-        //Log.e("resume","go");
-
-        if ( x/renderer.ppuX >= WorldRenderer.CAMERA_WIDTH/2-3F && x/renderer.ppuX<=WorldRenderer.CAMERA_WIDTH/2-1F &&
-                y/renderer.ppuY >= WorldRenderer.CAMERA_HEIGHT/2-1F && y/renderer.ppuY<=WorldRenderer.CAMERA_HEIGHT/2+1F&& WorldController.paused){
-            renderer.dispose();
-            controller.dispose();
-            dispose() ;
-            game.setScreen(game.intro);
-        }
-
-        if(WorldController.joy){
-            if(x/renderer.ppuX >= control.bombPosition.x && x/renderer.ppuX <= control.bombPosition.x+WalkingControl .BSIZE* WalkingControl .Coefficient &&
-                    (height-y)/renderer.ppuY >= control.bombPosition.y && (height-y)/renderer.ppuY <= control.bombPosition.y+WalkingControl .BSIZE* WalkingControl .Coefficient	)
-                controller.bombPressed(Math.round(controller.bomberman.getPosition().x), Math.round(controller.bomberman.getPosition().y));
-
-            if(x/renderer.ppuX >= control.detonatorPosition.x && x/renderer.ppuX <= control.detonatorPosition.x+WalkingControl .BSIZE* WalkingControl .Coefficient &&
-                    (height-y)/renderer.ppuY >= control.detonatorPosition.y && (height-y)/renderer.ppuY <=control.detonatorPosition.y+WalkingControl .BSIZE* WalkingControl .Coefficient	)
-                controller.boomBombPressed();
-        }
-        else{
-            if(x/renderer.ppuX >= controlArrows.bombPosition.x && x/renderer.ppuX <= controlArrows.bombPosition.x+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient &&
-                    (height-y)/renderer.ppuY >= controlArrows.bombPosition.y && (height-y)/renderer.ppuY <= controlArrows.bombPosition.y+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient	)
-                controller.bombPressed(Math.round(controller.bomberman.getPosition().x), Math.round(controller.bomberman.getPosition().y));
-
-            if(x/renderer.ppuX >= controlArrows.detonatorPosition.x && x/renderer.ppuX <= controlArrows.detonatorPosition.x+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient &&
-                    (height-y)/renderer.ppuY >= controlArrows.detonatorPosition.y && (height-y)/renderer.ppuY <= controlArrows.detonatorPosition.y+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient	)
-                controller.boomBombPressed();
-        }
-        if(pointer == pointers.get("joy") /*|| pointers.get("joy") == -1*/){
-            controller.resetWay();
-            if(WorldController.joy){
-                control.getOffsetPosition().x = 0;
-                control.getOffsetPosition().y = 0;
-            }
-            pointers.put("joy",	-1);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean touchDragged(int x, int y, int pointer) {
-        if(!world.getBomberman().isDead() && !WorldController.paused && !(world.getBomberman().getState() == Bomberman.State.WON))
-            ChangeNavigation(x,y, pointer);
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    //@Override
-    public boolean touchMoved(int x, int y) {
-
-        //ChangeNavigation(x,y);
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int x, int y) {
-        //ChangeNavigation(x,y);
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }

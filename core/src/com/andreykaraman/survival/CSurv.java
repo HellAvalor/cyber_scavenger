@@ -1,6 +1,5 @@
 package com.andreykaraman.survival;
 
-import com.andreykaraman.survival.android.AndroidLauncher;
 import com.andreykaraman.survival.screens.GameScreen;
 import com.andreykaraman.survival.screens.IntroScreen;
 import com.badlogic.gdx.Game;
@@ -25,9 +24,10 @@ public class CSurv extends Game {
         this.app = app;
     }
 
-//    public void goHome(){
-//        app.goHome();
-//    }
+    public void goHome(){
+        app.goHome();
+    }
+
 
     public void create() {
 //        stageNumber = getStagePref();
@@ -69,36 +69,35 @@ public class CSurv extends Game {
 //                || !prefs.contains("xr")  || !prefs.contains("yr")
 //                || !prefs.contains("xu")  || !prefs.contains("yu")
 //                || !prefs.contains("xd")  || !prefs.contains("yd"))
-//            setDefSettings();
+            setDefSettings();
 
     }
     private void setDefSettings(){
-//        prefs.putInteger("controller-size", 1);
+        prefs.putInteger("controller-size", 1);
 //        prefs.putInteger("sound-on", 1);
-//
-//        prefs.putInteger("controller-type", 1);
-//        prefs.putFloat("x", 0);
-//        prefs.putFloat("y", 0);
-//        prefs.putFloat("xl", 3F);
-//        prefs.putFloat("yl", 3F);
-//        prefs.putFloat("xr", 7F);
-//        prefs.putFloat("yr", 3F);
-//        prefs.putFloat("xu", 5F);
-//        prefs.putFloat("yu", 5F);
-//        prefs.putFloat("xd", 5F);
-//        prefs.putFloat("yd", 1F);
-//
-//
-//        prefs.putInteger("opacity", 9);
-//        prefs.putFloat("xdetonator", 15F);
-//        prefs.putFloat("ydetonator", 5F);
-//        prefs.putFloat("xbomb",15F);
-//        prefs.putFloat("ybomb", 2F);
-//        prefs.flush();
+
+        prefs.putInteger("controller-type", 1);
+        prefs.putFloat("x", 0);
+        prefs.putFloat("y", 0);
+        prefs.putFloat("xl", 3F);
+        prefs.putFloat("yl", 3F);
+        prefs.putFloat("xr", 7F);
+        prefs.putFloat("yr", 3F);
+        prefs.putFloat("xu", 5F);
+        prefs.putFloat("yu", 5F);
+        prefs.putFloat("xd", 5F);
+        prefs.putFloat("yd", 1F);
+
+
+        prefs.putInteger("opacity", 9);
+        prefs.putFloat("xdetonator", 15F);
+        prefs.putFloat("ydetonator", 5F);
+        prefs.putFloat("xbomb",15F);
+        prefs.putFloat("ybomb", 2F);
+        prefs.flush();
     }
 
     private void setDefault(){
-
 
 //        //Map<String,Integer>  pref = new  HashMap<String,Integer>();
 //        prefs.putInteger("bombs", 0);

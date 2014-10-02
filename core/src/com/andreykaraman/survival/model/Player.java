@@ -336,9 +336,9 @@ public class Player {
                 if (getPosition().x - Bomberman.WIDTH/25>= bomb.getPosition().x && getPosition().x-Bomberman.WIDTH/10 <= (bomb.getPosition().x + Bomb.SIZE) &&
                         ((getPosition().y+Bomberman.HEIGHT*0.1  >= (bomb.getPosition().y) && getPosition().y+Bomberman.HEIGHT*0.1<= (bomb.getPosition().y + Bomb.SIZE))
                                 || (getPosition().y +Bomberman.HEIGHT*0.9 >= (bomb.getPosition().y) &&getPosition().y+ Bomberman.HEIGHT*0.9<= (bomb.getPosition().y + Bomb.SIZE))
-                        // bomberman.getPosition().y+Bomberman.HEIGHT/2 >= (block.getPosition().y) && bomberman.getPosition().y+Bomberman.HEIGHT/2 <= (block.getPosition().y + 1
+                        // player.getPosition().y+Bomberman.HEIGHT/2 >= (block.getPosition().y) && player.getPosition().y+Bomberman.HEIGHT/2 <= (block.getPosition().y + 1
                                 )) {
-                    //bomberman.getPosition().x = block.getPosition().x+BrickBase.SIZE;
+                    //player.getPosition().x = block.getPosition().x+BrickBase.SIZE;
 
                     getVelocity().x = 0;
 
@@ -353,7 +353,7 @@ public class Player {
                         || (getPosition().y +Bomberman.HEIGHT*0.9 >= (bomb.getPosition().y) && getPosition().y+ Bomberman.HEIGHT*0.9<= (bomb.getPosition().y + Bomb.SIZE))
                         ))
                          {
-                    //bomberman.getPosition().x = block.getPosition().x-Bomberman.WIDTH;
+                    //player.getPosition().x = block.getPosition().x-Bomberman.WIDTH;
                 getVelocity().x = 0;
                 }
 
@@ -364,7 +364,7 @@ public class Player {
                 if ((getPosition().x+Bomberman.WIDTH*0.1> bomb.getPosition().x && getPosition().x+Bomberman.WIDTH*0.1 < (bomb.getPosition().x + Bomb.SIZE)
                         || getPosition().x +  Bomberman.WIDTH> bomb.getPosition().x && getPosition().x+Bomberman.WIDTH < (bomb.getPosition().x + Bomb.SIZE))
                         && getPosition().y-Bomberman.HEIGHT*0.1 >= (bomb.getPosition().y) && getPosition().y-Bomberman.HEIGHT*0.1 <= (bomb.getPosition().y + Bomb.SIZE)) {
-                    //bomberman.getPosition().y = block.getPosition().y+BrickBase.SIZE;
+                    //player.getPosition().y = block.getPosition().y+BrickBase.SIZE;
                     getVelocity().y = 0;
                 }
 
@@ -375,7 +375,7 @@ public class Player {
                 if ((getPosition().x+Bomberman.WIDTH*0.1> bomb.getPosition().x && getPosition().x+Bomberman.WIDTH*0.1 < (bomb.getPosition().x + Bomb.SIZE)
                         || getPosition().x +  Bomberman.WIDTH>bomb.getPosition().x && getPosition().x+Bomberman.WIDTH < (bomb.getPosition().x + Bomb.SIZE))
                         && getPosition().y+Bomberman.HEIGHT*1.1 >= (bomb.getPosition().y) && getPosition().y+Bomberman.HEIGHT*1.1 <= (bomb.getPosition().y + Bomb.SIZE)) {
-                    //bomberman.getPosition().y = block.getPosition().y-Bomberman.HEIGHT;
+                    //player.getPosition().y = block.getPosition().y-Bomberman.HEIGHT;
                     getVelocity().y = 0;
                 }
 
@@ -645,7 +645,7 @@ public class Player {
 //				if ((getPosition().x+Bomberman.WIDTH*0.1> block.getPosition().x && getPosition().x+Bomberman.WIDTH*0.1 < (block.getPosition().x + BrickBase.SIZE)
 //						|| getPosition().x +  Bomberman.WIDTH> block.getPosition().x && getPosition().x+Bomberman.WIDTH < (block.getPosition().x + BrickBase.SIZE))
 //						&& getPosition().y+Bomberman.HEIGHT*1.1 >= (block.getPosition().y) && getPosition().y+Bomberman.HEIGHT*1.1 <= (block.getPosition().y + BrickBase.SIZE)) {
-//					//bomberman.getPosition().y = block.getPosition().y-Bomberman.HEIGHT;
+//					//player.getPosition().y = block.getPosition().y-Bomberman.HEIGHT;
 //					getVelocity().y = 0;
 //				}
 //
@@ -658,21 +658,21 @@ public class Player {
 //
 //        try{ collisionDetectionSave();} catch (Exception e){
 //            Log.e("err", e.getMessage());}
-//        //bomberman.setDirection(Bomberman.Direction.NONE);
+//        //player.setDirection(Bomberman.Direction.NONE);
 //
 //
 //
 //
 //		/*
-//		if(bomberman.getVelocity().x<0)
-//			bomberman.setDirection(Bomberman.Direction.LEFT);
+//		if(player.getVelocity().x<0)
+//			player.setDirection(Bomberman.Direction.LEFT);
 //
-//		if(bomberman.getVelocity().x>0)
-//			bomberman.setDirection(Bomberman.Direction.RIGHT);
-//		if(bomberman.getVelocity().y>0)
-//			bomberman.setDirection(Bomberman.Direction.UP);
-//		if(bomberman.getVelocity().y<0)
-//			bomberman.setDirection(Bomberman.Direction.DOWN);*/
+//		if(player.getVelocity().x>0)
+//			player.setDirection(Bomberman.Direction.RIGHT);
+//		if(player.getVelocity().y>0)
+//			player.setDirection(Bomberman.Direction.UP);
+//		if(player.getVelocity().y<0)
+//			player.setDirection(Bomberman.Direction.DOWN);*/
 //    }
 
     public void setSpeed(int count){

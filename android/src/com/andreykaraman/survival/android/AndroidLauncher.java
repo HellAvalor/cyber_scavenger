@@ -3,7 +3,7 @@ package com.andreykaraman.survival.android;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.andreykaraman.survival.CSurv;
+import com.andreykaraman.survival.CSurv1;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
@@ -18,7 +18,7 @@ public class AndroidLauncher extends AndroidApplication {
         config.useWakelock = true;
         config.useGLSurfaceView20API18 = true;
 
-		initialize(new CSurv(this), config);
+		initialize(new CSurv1(), config);
 	}
 
     public void goHome(){

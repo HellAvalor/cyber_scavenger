@@ -5,7 +5,17 @@ sourceCompatibility = 1.6
 
 sourceSets.main.java.srcDirs = [ "src/" ]
 
-
+sourceSets {
+    main {
+        java {
+            exclude '**/GameScreen.java'
+            exclude '**/CSurv.java'
+            exclude '**/WorldRenderer.java'
+            exclude '**/IntroScreen.java'
+            exclude '**/WorldController.java'
+        }
+    }
+}
 eclipse.project {
     name = appName + "-core"
 }

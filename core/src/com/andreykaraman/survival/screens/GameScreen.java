@@ -67,11 +67,11 @@ public class GameScreen implements Screen, InputProcessor {
             WalkingControl.Coefficient = 1+0.3F*game.getPrefs().getInteger("controller-size");
             WalkingControl.Opacity = game.getPrefs().getInteger("opacity");
         }
-        else{
-            WalkingControlArrows.Coefficient = 1+0.3F*game.getPrefs().getInteger("controller-size");
-            WalkingControlArrows.Opacity = game.getPrefs().getInteger("opacity");
-            controlArrows =world.getWalkingControlArrows();
-        }
+//        else{
+//            WalkingControlArrows.Coefficient = 1+0.3F*game.getPrefs().getInteger("controller-size");
+//            WalkingControlArrows.Opacity = game.getPrefs().getInteger("opacity");
+//            controlArrows =world.getWalkingControlArrows();
+//        }
 
 
 
@@ -89,19 +89,19 @@ public class GameScreen implements Screen, InputProcessor {
         pointers.put("joy", -1);
     }
 
-    private void createTimer(){
-        if( timer == null){
-            task = new TimerTask(){
-                public void run()
-                {
-                    won = true;
-                }
-            };
-            timer=new Timer();
-
-            timer.schedule(task, 4000);
-        }
-    }
+//    private void createTimer(){
+//        if( timer == null){
+//            task = new TimerTask(){
+//                public void run()
+//                {
+//                    won = true;
+//                }
+//            };
+//            timer=new Timer();
+//
+//            timer.schedule(task, 4000);
+//        }
+//    }
 
     public void dead(){
         dead = true;
@@ -109,14 +109,14 @@ public class GameScreen implements Screen, InputProcessor {
         game.losePowers();
         game.getPrefs().putInteger("left", left);
         game.getPrefs().flush();
-        game.setPoints(world.points);
+//        game.setPoints(world.points);
     }
     boolean dead;
 
     private void renderSave(float delta){
-        if(!dead && world.getBomberman().getState() == Player.State.DYING)
+        if(!dead && world.getPlayer().getState() == Player.State.DYING)
             dead();
-        if(world.getBomberman().getState() == Player.State.DEAD)
+        if(world.getPlayer().getState() == Player.State.DEAD)
         {
 
             int left = game.getPrefs().getInteger("left");//-1;
@@ -226,7 +226,7 @@ public class GameScreen implements Screen, InputProcessor {
         controller.hasKeyBoard = true;
 
         if(keycode==Keys.SPACE || keycode == Keys.DPAD_CENTER)
-            controller.bombPressed(Math.round(controller.bomberman.getPosition().x), Math.round(controller.bomberman.getPosition().y));
+            controller.bombPressed(Math.round(controller.player.getPosition().x), Math.round(controller.player.getPosition().y));
         if(keycode==Keys.SHIFT_LEFT || keycode == Keys.BUTTON_X)
             controller.boomBombPressed();
         //controller.resetWay();
@@ -292,25 +292,25 @@ public class GameScreen implements Screen, InputProcessor {
             //int calcX = offsetX+renderer.height/2 +x * x /(renderer.width -renderer.height-offsetX  );
             //if (x> 0.7F*width && x< width && height- y > 0.9F*height && height- y<height ){
             if (x> 0.8F*width && x< width && height- y <= 4F*renderer.ppuY){
-                controller.bombPressed(Math.round(controller.bomberman.getPosition().x), Math.round(controller.bomberman.getPosition().y));
+                controller.bombPressed(Math.round(controller.player.getPosition().x), Math.round(controller.player.getPosition().y));
                 return;
             }
 
 
             float calcX = x+(renderer.cam.position.x - WorldRenderer.CAMERA_WIDTH/2)* renderer.ppuX;
-            if ( calcX< controller.bomberman.getPosition().x * renderer.ppuX)
+            if ( calcX< controller.player.getPosition().x * renderer.ppuX)
                 controller.leftPressed();
 
-            if (calcX> (controller.bomberman.getPosition().x +Bomberman.WIDTH)* renderer.ppuX)
+            if (calcX> (controller.player.getPosition().x +Bomberman.WIDTH)* renderer.ppuX)
                 controller.rightPressed();
 
             controller.toX =calcX/renderer.ppuX;
             controller.toY = (height-y)/renderer.ppuY;
 
-            if(height-y >  controller.bomberman.getPosition().y * renderer.ppuY)
+            if(height-y >  controller.player.getPosition().y * renderer.ppuY)
                 controller.upPressed();
 
-            if(height-y <  controller.bomberman.getPosition().y * renderer.ppuY)
+            if(height-y <  controller.player.getPosition().y * renderer.ppuY)
                 controller.downPressed();
         }*/
     private void withControl(int x, int y, int pointer){
@@ -413,7 +413,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         if (!Gdx.app.getType().equals(Application.ApplicationType.Android))
             return false;
-        if(!controller.bomberman.isDead()  && !WorldController.paused&& !(world.getBomberman().getState() == Player.State.WON))
+        if(!controller.player.isDead()  && !WorldController.paused&& !(world.getBomberman().getState() == Player.State.WON))
             ChangeNavigation(x,y, pointer);
         return true;
     }
@@ -439,7 +439,7 @@ public class GameScreen implements Screen, InputProcessor {
         if(WorldController.joy){
             if(x/renderer.ppuX >= control.bombPosition.x && x/renderer.ppuX <= control.bombPosition.x+WalkingControl .BSIZE* WalkingControl .Coefficient &&
                     (height-y)/renderer.ppuY >= control.bombPosition.y && (height-y)/renderer.ppuY <= control.bombPosition.y+WalkingControl .BSIZE* WalkingControl .Coefficient	)
-                controller.bombPressed(Math.round(controller.bomberman.getPosition().x), Math.round(controller.bomberman.getPosition().y));
+                controller.bombPressed(Math.round(controller.player.getPosition().x), Math.round(controller.player.getPosition().y));
 
             if(x/renderer.ppuX >= control.detonatorPosition.x && x/renderer.ppuX <= control.detonatorPosition.x+WalkingControl .BSIZE* WalkingControl .Coefficient &&
                     (height-y)/renderer.ppuY >= control.detonatorPosition.y && (height-y)/renderer.ppuY <=control.detonatorPosition.y+WalkingControl .BSIZE* WalkingControl .Coefficient	)
@@ -448,7 +448,7 @@ public class GameScreen implements Screen, InputProcessor {
         else{
             if(x/renderer.ppuX >= controlArrows.bombPosition.x && x/renderer.ppuX <= controlArrows.bombPosition.x+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient &&
                     (height-y)/renderer.ppuY >= controlArrows.bombPosition.y && (height-y)/renderer.ppuY <= controlArrows.bombPosition.y+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient	)
-                controller.bombPressed(Math.round(controller.bomberman.getPosition().x), Math.round(controller.bomberman.getPosition().y));
+                controller.bombPressed(Math.round(controller.player.getPosition().x), Math.round(controller.player.getPosition().y));
 
             if(x/renderer.ppuX >= controlArrows.detonatorPosition.x && x/renderer.ppuX <= controlArrows.detonatorPosition.x+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient &&
                     (height-y)/renderer.ppuY >= controlArrows.detonatorPosition.y && (height-y)/renderer.ppuY <= controlArrows.detonatorPosition.y+WalkingControlArrows .BSIZE* WalkingControlArrows .Coefficient	)

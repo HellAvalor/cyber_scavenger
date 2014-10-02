@@ -1,6 +1,8 @@
 package com.andreykaraman.survival.model;
 
+import com.andreykaraman.survival.controllers.WalkingControl;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Created by KaramanA on 25.09.2014.
@@ -8,6 +10,21 @@ import com.badlogic.gdx.Preferences;
 public class World {
     public Player player;
     public int[][]  map;
+
+    WalkingControl   walkingControl;
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public WalkingControl getWalkingControl() {
+        return walkingControl;
+    }
+
     //private Preferences prefs;
 
    // Array<NpcBase> npcs;
@@ -15,7 +32,7 @@ public class World {
    // Array<Boom> booms;
    // Array<HiddenObject> hiddenObjects;
    // Array<BrickBase> blocks;
-   // WalkingControl   walkingControl;
+
    // WalkingControlArrows controlArrows;
 
 //    public void generateNpcOnPosition(int count, int type, Vector2 position){
@@ -74,12 +91,12 @@ public class World {
     public void createLevel() {
 //
 //
-//        bomberman = new Bomberman(this, new Vector2(5.01F, 1.01F));
-//        bomberman.setSpeed(getPower("speed"));
-//        bomberman.setWallPass(getPower("wallpass")>=1 ? true : false);
-//        bomberman.setBombPass(getPower("bombpass")>=1 ? true : false);
-//        bomberman.setFlamePass(getPower("flamepass")>=1 ? true : false);
-//        //bomberman = new Bomberman(this, new Vector2(1.1F, 1.1F));
+//        player = new Bomberman(this, new Vector2(5.01F, 1.01F));
+//        player.setSpeed(getPower("speed"));
+//        player.setWallPass(getPower("wallpass")>=1 ? true : false);
+//        player.setBombPass(getPower("bombpass")>=1 ? true : false);
+//        player.setFlamePass(getPower("flamepass")>=1 ? true : false);
+//        //player = new Bomberman(this, new Vector2(1.1F, 1.1F));
 //
 //
 //        for (int i = offset; i <= width-offset; i++) {
@@ -298,11 +315,10 @@ public class World {
 
     public World(/*int w, int h,int stage*/Preferences prefs) {
 //        inreasedPowerUp = "";
-//        //width = w;
-//        //height=h;
+
 //        width = 32;
-//        walkingControl = new WalkingControl (new Vector2(0F,0F), new Vector2(prefs.getFloat("xbomb"),prefs.getFloat("ybomb")),
-//                new Vector2(prefs.getFloat("xdetonator"),prefs.getFloat("ydetonator")));
+        walkingControl = new WalkingControl (new Vector2(0F,0F), new Vector2(prefs.getFloat("xbomb"),prefs.getFloat("ybomb")),
+                new Vector2(prefs.getFloat("xdetonator"),prefs.getFloat("ydetonator")));
 //        //controlArrows = new WalkingControlArrows(new Vector2(3F,3F), new Vector2(7F,3F), new Vector2(5F,5F), new Vector2(5F,1F));
 //        controlArrows = new WalkingControlArrows(new Vector2(prefs.getFloat("xl"),prefs.getFloat("yl")),
 //                new Vector2(prefs.getFloat("xr"),prefs.getFloat("yr")),
@@ -332,7 +348,7 @@ public class World {
 //            for(int j=0;j<width;++j)
 //                map[i][j]= 0;
 //        setMap();
-//        //else bomberman = new Bomberman(this, new Vector2(0, 2F));
+//        //else player = new Bomberman(this, new Vector2(0, 2F));
 //
 //        //createDemoWorld();
 
