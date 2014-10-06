@@ -1,5 +1,7 @@
 package com.andreykaraman.survival.model;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
 /**
  * Created by Andrew on 18.09.2014.
  */
@@ -11,6 +13,16 @@ public class TerrainTile {
     private boolean walkable;
     private int height;
     private String tile;
+
+    public TextureRegion getTextureRegion() {
+        return textureRegion;
+    }
+
+    public void setTextureRegion(TextureRegion textureRegion) {
+        this.textureRegion = textureRegion;
+    }
+
+    private TextureRegion textureRegion;
 
     public TerrainTile(int id, String name, String loot, boolean walkable, int height, String tile) {
         this.id = id;

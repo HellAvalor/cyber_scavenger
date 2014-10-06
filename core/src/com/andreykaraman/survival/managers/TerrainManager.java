@@ -12,22 +12,20 @@ import com.badlogic.gdx.utils.Json;
 public class TerrainManager {
     protected final static String TAG = "terrainManager";
 
-    public static TerrainList getTerrainTiles(){
+    public static TerrainList getTerrainTiles() {
 
         FileHandle handle = Gdx.files.internal("data/terrain.json");
         String fileContent = handle.readString();
-        Json  json = new Json();
+        Json json = new Json();
         json.setElementType(TerrainList.class, "terrainList", TerrainTile.class);
         TerrainList data;
         data = json.fromJson(TerrainList.class, fileContent);
-    //    Gdx.app.log(GameManager.LOG, "Data name = " + data.name);
-        for(Object e :data.getTerrains()){
+
+        for (Object e : data.getTerrains()) {
             TerrainTile tile = (TerrainTile) e;
-         //   log.d(TAG, tile.getName());
             Gdx.app.log(TAG, "type = " + tile.getName() + "x = " + tile.getLoot() + "y =" + tile.getTile());
         }
 
         return data;
     }
-
 }

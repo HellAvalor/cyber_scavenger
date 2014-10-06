@@ -5,7 +5,7 @@
               "loot":"loot0",
               "walkable":true,
               "height":1,
-              "tile":"grass.png"
+              "tile":"grass"
               },
               {
               "id":1,
@@ -13,7 +13,7 @@
               "loot":"loot1",
               "walkable":false,
               "height":0,
-              "tile":"water.png"
+              "tile":"water"
               },
                {
                "id":2,
@@ -21,6 +21,6 @@
                "loot":"loot3",
                "walkable":true,
                "height":1,
-               "tile":"rock.png"
+               "tile":"rocks"
                }]
 }

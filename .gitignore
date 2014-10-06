@@ -28,3 +28,6 @@ build/
 ## unused OS
 ios/
 html/
+
+local.properties
+android/assets/packed

@@ -1,7 +1,7 @@
 package com.andreykaraman.survival.controllers;
 
 import com.andreykaraman.survival.model.Player;
-import com.andreykaraman.survival.model.World;
+import com.andreykaraman.survival.model.World_a;
 import com.andreykaraman.survival.view.WorldRenderer;
 
 import java.util.HashMap;
@@ -16,7 +16,7 @@ public class WorldController {
         LEFT, RIGHT, UP, DOWN
     }
 
-    private World world;
+    private World_a world;
     public Player player;
     public float toX;
     public float toY;
@@ -32,7 +32,7 @@ public class WorldController {
         keys.put(Keys.DOWN, false);
     };
 
-    public WorldController(World world, WorldRenderer renderer) {
+    public WorldController(World_a world, WorldRenderer renderer) {
 
         this.renderer = renderer;
         this.world = world;

@@ -6,6 +6,17 @@ package com.andreykaraman.survival.model;
 public class NewWorld {
     public Player player;
 
+    public TerrainTile[][] getMap() {
+        return map;
+    }
+
+    public void setMap(TerrainTile[][] map) {
+        this.map = map;
+    }
+
+    TerrainTile[][] map;
+
+
     public NewWorld() {
 
     }

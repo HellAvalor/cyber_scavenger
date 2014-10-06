@@ -22,7 +22,7 @@ public class Player {
         LEFT, RIGHT, UP, DOWN, NONE
     }
 
-    World world;
+    World_a world;
 
     //private Direction  direction = Direction.NONE;
     Map<Direction, Boolean> direction = new HashMap<Direction, Boolean>();
@@ -49,7 +49,7 @@ public class Player {
     public static final float WIDTH = 1f;
     public static final float SIZE = 1f;
 
-    public Player(World world , Vector2 position) {
+    public Player(World_a world , Vector2 position) {
         this.world = world;
 //        resetDirection();
 //        //direction = Direction.NONE;

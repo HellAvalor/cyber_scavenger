@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Created by KaramanA on 25.09.2014.
  */
-public class World {
+public class World_a {
     public Player player;
     public int[][]  map;
 
@@ -313,7 +313,7 @@ public class World {
 
     }
 
-    public World(/*int w, int h,int stage*/Preferences prefs) {
+    public World_a(/*int w, int h,int stage*/Preferences prefs) {
 //        inreasedPowerUp = "";
 
 //        width = 32;

@@ -1,7 +1,9 @@
 package com.andreykaraman.survival.screens;
 
 import com.andreykaraman.survival.CSurv1;
+import com.andreykaraman.survival.managers.TerrainManager;
 import com.andreykaraman.survival.model.NewWorld;
+import com.andreykaraman.survival.utils.MapGenerator;
 import com.andreykaraman.survival.view.NewWorldRenderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -64,7 +66,7 @@ public class NewGameScreen implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
-        Gdx.gl20.glClearColor(0, 118F/255, 0, 1);
+        Gdx.gl20.glClearColor(0, 118F / 255, 0, 1);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.render();
     }
@@ -76,17 +78,18 @@ public class NewGameScreen implements Screen, InputProcessor {
         this.height = height;
     }
 
-    public void preLoad(){
+    public void preLoad() {
         renderer = new NewWorldRenderer();
+        world = new NewWorld();
+        world.setMap(MapGenerator.getMap(TerrainManager.getTerrainTiles(), game.getImageProvider()));
     }
 
     @Override
     public void show() {
-        float CAMERA_WIDTH = NewWorldRenderer.CAMERA_WIDTH;
-        float CAMERA_HEIGHT = NewWorldRenderer.CAMERA_HEIGHT;
-        CAMERA_WIDTH =  CAMERA_HEIGHT* Gdx.graphics.getWidth()/Gdx.graphics.getHeight();
-        world = new NewWorld();
-        renderer.init(world, CAMERA_WIDTH,CAMERA_HEIGHT,false);
+
+        float cameraHeightTiles = NewWorldRenderer.cameraHeightTiles;
+        float cameraWidthTiles = cameraHeightTiles * Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
+        renderer.init(world, cameraWidthTiles, cameraHeightTiles, true);
         Gdx.input.setInputProcessor(this);
     }
 

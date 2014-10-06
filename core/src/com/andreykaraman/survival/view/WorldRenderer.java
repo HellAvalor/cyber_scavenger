@@ -1,11 +1,6 @@
 package com.andreykaraman.survival.view;
 
-import com.andreykaraman.survival.CSurv;
-import com.andreykaraman.survival.controllers.WalkingControl;
-import com.andreykaraman.survival.controllers.WalkingControlArrows;
-import com.andreykaraman.survival.controllers.WorldController;
-import com.andreykaraman.survival.model.Player;
-import com.andreykaraman.survival.model.World;
+import com.andreykaraman.survival.model.World_a;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -15,11 +10,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Timer;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimerTask;
 
 /**
  * Created by KaramanA on 26.09.2014.
@@ -29,7 +22,7 @@ public class WorldRenderer {
     public static float CAMERA_WIDTH = 10f;
     public static float CAMERA_HEIGHT = 14f;
 
-    private World world;
+    private World_a world;
     public OrthographicCamera cam;
 //    public Sound sound;
 
@@ -77,7 +70,7 @@ public class WorldRenderer {
         this.cam.update();
     }
 
-    public void init(World world, float w, float h, boolean debug) {
+    public void init(World_a world, float w, float h, boolean debug) {
 
         CAMERA_WIDTH = w;
         CAMERA_HEIGHT = h;
@@ -129,7 +122,7 @@ public class WorldRenderer {
 //    }
 
     private void loadRegions() {
-        texture = new Texture(Gdx.files.internal("images/atlas.png"));
+        texture = new Texture(Gdx.files.internal("images/landTextures.png"));
         TextureRegion tmpLeftRight[][] = TextureRegion.split(texture, texture.getWidth() / 2, texture.getHeight());
 
         TextureRegion tmpMain[][] = tmpLeftRight[0][0].split(tmpLeftRight[0][0].getRegionWidth(), tmpLeftRight[0][0].getRegionHeight() / 2);
@@ -424,17 +417,17 @@ public class WorldRenderer {
 //        String points = Integer.toString(world.points);
 //        int length = points.length();
 //        for (int i = 0; i < length; ++i) {
-//            spriteBatch.draw(textureRegions.get(points.substring(i, i + 1)), (CAMERA_WIDTH * 0.48F + 0.7F * i) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//            spriteBatch.draw(textureRegions.get(points.substring(i, i + 1)), (cameraWidthTiles * 0.48F + 0.7F * i) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
 //        }
     }
 
 
     private void drawTimer() {
 
-//        spriteBatch.draw(textureRegions.get("t"), CAMERA_WIDTH * 0.05F * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
-//        spriteBatch.draw(textureRegions.get("i"), (CAMERA_WIDTH * 0.05F + 0.7F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
-//        spriteBatch.draw(textureRegions.get("m"), (CAMERA_WIDTH * 0.05F + 1.4F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
-//        spriteBatch.draw(textureRegions.get("e"), (CAMERA_WIDTH * 0.05F + 2.1F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//        spriteBatch.draw(textureRegions.get("t"), cameraWidthTiles * 0.05F * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//        spriteBatch.draw(textureRegions.get("i"), (cameraWidthTiles * 0.05F + 0.7F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//        spriteBatch.draw(textureRegions.get("m"), (cameraWidthTiles * 0.05F + 1.4F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//        spriteBatch.draw(textureRegions.get("e"), (cameraWidthTiles * 0.05F + 2.1F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
 //
 //        if (world.bonus && timeLeft > 30) timeLeft = 30;
 //        if (!world.bonus && timeLeft >= 200) timeLeft = 200;
@@ -442,18 +435,18 @@ public class WorldRenderer {
 //        String tLeft = ((world.bonus) ? Integer.toString(30 - timeLeft) : Integer.toString(200 - timeLeft));
 //        int length = tLeft.length();
 //        for (int i = 0; i < length; ++i) {
-//            spriteBatch.draw(textureRegions.get(tLeft.substring(i, i + 1)), (CAMERA_WIDTH * 0.05F + 3.5F + 0.7F * i) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//            spriteBatch.draw(textureRegions.get(tLeft.substring(i, i + 1)), (cameraWidthTiles * 0.05F + 3.5F + 0.7F * i) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
 //        }
-//        spriteBatch.draw(textureRegions.get("l"), CAMERA_WIDTH * 0.8F * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
-//        spriteBatch.draw(textureRegions.get("e"), (CAMERA_WIDTH * 0.8F + 0.7F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
-//        spriteBatch.draw(textureRegions.get("f"), (CAMERA_WIDTH * 0.8F + 1.4F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
-//        spriteBatch.draw(textureRegions.get("t"), (CAMERA_WIDTH * 0.8F + 2.1F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//        spriteBatch.draw(textureRegions.get("l"), cameraWidthTiles * 0.8F * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//        spriteBatch.draw(textureRegions.get("e"), (cameraWidthTiles * 0.8F + 0.7F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//        spriteBatch.draw(textureRegions.get("f"), (cameraWidthTiles * 0.8F + 1.4F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//        spriteBatch.draw(textureRegions.get("t"), (cameraWidthTiles * 0.8F + 2.1F) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
 //
 //        String lLeft = Integer.toString(world.Left);
 //
 //        int length2 = lLeft.length();
 //        for (int i = 0; i < length2; ++i)
-//            spriteBatch.draw(textureRegions.get(lLeft.substring(i, i + 1)), (CAMERA_WIDTH * 0.8F + 3F + 0.7F * i) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
+//            spriteBatch.draw(textureRegions.get(lLeft.substring(i, i + 1)), (cameraWidthTiles * 0.8F + 3F + 0.7F * i) * ppuX, (CAMERA_HEIGHT - 1F) * ppuY, 1F * ppuX, 1F * ppuY);
 
     }
 
@@ -469,15 +462,15 @@ public class WorldRenderer {
 //        bgRenderer.setProjectionMatrix(cam.combined);
 //        bgRenderer.begin(ShapeType.FilledRectangle);
 //        bgRenderer.setColor(new Color(188F / 255, 188F / 255, 188F / 255, 1));
-//        bgRenderer.filledRect(-CAMERA_WIDTH, 0, CAMERA_WIDTH + 4.1F, CAMERA_HEIGHT);
-//        bgRenderer.filledRect(world.width - 3.5F, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+//        bgRenderer.filledRect(-cameraWidthTiles, 0, cameraWidthTiles + 4.1F, CAMERA_HEIGHT);
+//        bgRenderer.filledRect(world.width - 3.5F, 0, cameraWidthTiles, CAMERA_HEIGHT);
 //
 //        bgRenderer.filledRect(0, CAMERA_HEIGHT - 1F, world.width, 1F);
 //        bgRenderer.end();
     }
 
     private boolean insideCameraBorder() {
-//        return CAMERA_WIDTH / 2f <= world.getBomberman().getPosition().x && world.width - CAMERA_WIDTH / 2F >= world.getBomberman().getPosition().x;
+//        return cameraWidthTiles / 2f <= world.getBomberman().getPosition().x && world.width - cameraWidthTiles / 2F >= world.getBomberman().getPosition().x;
         return true;
     }
 
@@ -524,16 +517,16 @@ public class WorldRenderer {
     public void drawPauseControlls() {
 //        spriteBatch.setColor(0.9f, 0.9f, 0.9f, 0.7f);
 //        spriteBatch.draw(textureRegions.get("fon"),
-//                (CAMERA_WIDTH / 2 - 4F) * ppuX, (CAMERA_HEIGHT / 2 - 2F) * ppuY,
+//                (cameraWidthTiles / 2 - 4F) * ppuX, (CAMERA_HEIGHT / 2 - 2F) * ppuY,
 //                8F * ppuX, 4F * ppuY);
 //        spriteBatch.setColor(1f, 1f, 1f, 1f);
 //
 //        spriteBatch.draw(textureRegions.get("home"),
-//                (CAMERA_WIDTH / 2 + 1F) * ppuX, (CAMERA_HEIGHT / 2 - 1F) * ppuY,
+//                (cameraWidthTiles / 2 + 1F) * ppuX, (CAMERA_HEIGHT / 2 - 1F) * ppuY,
 //                2F * ppuX, 2F * ppuY);
 //
 //        spriteBatch.draw(textureRegions.get("resume"),
-//                (CAMERA_WIDTH / 2 - 3F) * ppuX, (CAMERA_HEIGHT / 2 - 1F) * ppuY,
+//                (cameraWidthTiles / 2 - 3F) * ppuX, (CAMERA_HEIGHT / 2 - 1F) * ppuY,
 //                2F * ppuX, 2F * ppuY);
     }
 
@@ -596,7 +589,7 @@ public class WorldRenderer {
 
     private void drawObjects() {
 //        for (HiddenObject object : world.getHiddenObjects()) {
-//            spriteBatch.draw(textureRegions.get(object.getName()), (object.getPosition().x - cam.position.x + CAMERA_WIDTH / 2) * ppuX, object.getPosition().y * ppuY, HiddenObject.SIZE * ppuX, HiddenObject.SIZE * ppuY);
+//            spriteBatch.draw(textureRegions.get(object.getName()), (object.getPosition().x - cam.position.x + cameraWidthTiles / 2) * ppuX, object.getPosition().y * ppuY, HiddenObject.SIZE * ppuX, HiddenObject.SIZE * ppuY);
 //        }
     }
 
@@ -606,7 +599,7 @@ public class WorldRenderer {
 //
 //                for (BoomPart boomPart : boom.getParts())
 //
-//                    spriteBatch.draw(animations.get(Boom.Name).getKeyFrame(boomPart.getAnimationState(), true), (boomPart.getPosition().x - cam.position.x + CAMERA_WIDTH / 2) * ppuX, boomPart.getPosition().y * ppuY, BoomPart.SIZE * ppuX, BoomPart.SIZE * ppuY);
+//                    spriteBatch.draw(animations.get(Boom.Name).getKeyFrame(boomPart.getAnimationState(), true), (boomPart.getPosition().x - cam.position.x + cameraWidthTiles / 2) * ppuX, boomPart.getPosition().y * ppuY, BoomPart.SIZE * ppuX, BoomPart.SIZE * ppuY);
 //        } catch (NullPointerException e) {
 //            if (e.getMessage() != null) Log.e("drawBooms", e.getMessage());
 //            if (e.getLocalizedMessage() != null) Log.e("drawBooms", e.getLocalizedMessage());
@@ -731,22 +724,22 @@ public class WorldRenderer {
 
     private void drawBombs() {
 //        for (Bomb bomb : world.getBombs()) {
-//            spriteBatch.draw(animations.get(Bomb.Name).getKeyFrame(bomb.getAnimationState(), true), (bomb.getPosition().x - cam.position.x + CAMERA_WIDTH / 2) * ppuX, bomb.getPosition().y * ppuY, Bomb.SIZE * ppuX, Bomb.SIZE * ppuY);
+//            spriteBatch.draw(animations.get(Bomb.Name).getKeyFrame(bomb.getAnimationState(), true), (bomb.getPosition().x - cam.position.x + cameraWidthTiles / 2) * ppuX, bomb.getPosition().y * ppuY, Bomb.SIZE * ppuX, Bomb.SIZE * ppuY);
 //        }
     }
 
     private void drawNpcs() {
 //        for (NpcBase npc : world.getNpcs()) {
-//            spriteBatch.draw(animations.get(npc.getName()).getKeyFrame(npc.getAnimationState(), true), (npc.getPosition().x - cam.position.x + CAMERA_WIDTH / 2) * ppuX, npc.getPosition().y * ppuY, NpcBase.SIZE * ppuX, NpcBase.SIZE * ppuY);
+//            spriteBatch.draw(animations.get(npc.getName()).getKeyFrame(npc.getAnimationState(), true), (npc.getPosition().x - cam.position.x + cameraWidthTiles / 2) * ppuX, npc.getPosition().y * ppuY, NpcBase.SIZE * ppuX, NpcBase.SIZE * ppuY);
 //        }
     }
 
     private void drawBricks() {
 //        for (BrickBase block : world.getBlocks()) {
 //            if (block.getName() == HardBrick.Name)
-//                spriteBatch.draw(textureRegions.get("HardBrick"), (block.getPosition().x - cam.position.x + CAMERA_WIDTH / 2) * ppuX, block.getPosition().y * ppuY, BrickBase.SIZE * ppuX, BrickBase.SIZE * ppuY);
+//                spriteBatch.draw(textureRegions.get("HardBrick"), (block.getPosition().x - cam.position.x + cameraWidthTiles / 2) * ppuX, block.getPosition().y * ppuY, BrickBase.SIZE * ppuX, BrickBase.SIZE * ppuY);
 //            if (block.getName() == Brick.Name)
-//                spriteBatch.draw(animations.get(Brick.Name).getKeyFrame(block.getAnimationState(), true), (block.getPosition().x - cam.position.x + CAMERA_WIDTH / 2) * ppuX, block.getPosition().y * ppuY, BrickBase.SIZE * ppuX, BrickBase.SIZE * ppuY);
+//                spriteBatch.draw(animations.get(Brick.Name).getKeyFrame(block.getAnimationState(), true), (block.getPosition().x - cam.position.x + cameraWidthTiles / 2) * ppuX, block.getPosition().y * ppuY, BrickBase.SIZE * ppuX, BrickBase.SIZE * ppuY);
 //        }
     }
 
@@ -763,13 +756,13 @@ public class WorldRenderer {
 //        if (!insideCameraBorder()) {
 //            float fromX = 0;
 //            if (!(player.getPosition().x < world.width / 2))
-//                fromX = world.width - CAMERA_WIDTH;
+//                fromX = world.width - cameraWidthTiles;
 //            spriteBatch.draw(animations.get("player").getKeyFrame(player.getAnimationState(), true),
 //                    (player.getPosition().x - fromX) * ppuX, player.getPosition().y * ppuY,
 //                    Bomberman.SIZE * ppuX, Bomberman.SIZE * ppuY);
 //        } else
 //            spriteBatch.draw(animations.get("player").getKeyFrame(player.getAnimationState(), true),
-//                    (player.getPosition().x - (player.getPosition().x - CAMERA_WIDTH / 2)) * ppuX, player.getPosition().y * ppuY,
+//                    (player.getPosition().x - (player.getPosition().x - cameraWidthTiles / 2)) * ppuX, player.getPosition().y * ppuY,
 //                    Bomberman.SIZE * ppuX, Bomberman.SIZE * ppuY);
 //        spriteBatch.setColor(1f, 1f, 1f, 1f);
     }

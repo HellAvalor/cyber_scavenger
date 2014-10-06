@@ -6,6 +6,7 @@ import java.util.ArrayList;
  * Created by Andrew on 19.09.2014.
  */
 public class TerrainList {
+    protected ArrayList terrainList;
 
     public ArrayList getTerrains() {
         return terrainList;
@@ -15,5 +16,5 @@ public class TerrainList {
         this.terrainList = terrainList;
     }
 
-    protected ArrayList terrainList;
+
 }
