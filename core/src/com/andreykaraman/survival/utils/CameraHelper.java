@@ -22,14 +22,17 @@ public class CameraHelper {
         zoom = 1.0f;
     }
 
+    public CameraHelper(float x, float y) {
+        position = new Vector2(x, y);
+        zoom = 1.0f;
+    }
+
     public void update(double deltaTime) {
         if(!hasTarget())
             return;
-        //position.x = target.position.x + target.origin.x;
-        //position.y = target.position.y + target.origin.y;
         position.lerp(target.position, FOLLOW_SPEED*(float)deltaTime);
         // prevent camera from moving down too far
-        position.y = Math.max(-1f, position.y);
+        //position.y = Math.max(-1f, position.y);
     }
 
 
@@ -70,9 +73,17 @@ public class CameraHelper {
     }
 
     public void applyTo(OrthographicCamera camera) {
+        chechBorgers(camera);
         camera.position.x = position.x;
         camera.position.y = position.y;
         camera.zoom = zoom;
         camera.update();
+    }
+
+    private void chechBorgers (OrthographicCamera camera){
+        if (position.x < camera.viewportWidth / 2) position.x = camera.viewportWidth / 2;
+        if (position.y < camera.viewportHeight/ 2) position.y = camera.viewportHeight / 2;
+        if (position.x > Constants.TEXTURE_TILE_SIZE*(Constants.MAP_SIZE) - camera.viewportWidth / 2) position.x = Constants.TEXTURE_TILE_SIZE*(Constants.MAP_SIZE)- camera.viewportWidth / 2;
+        if (position.y > Constants.TEXTURE_TILE_SIZE*(Constants.MAP_SIZE)- camera.viewportHeight/ 2) position.y = Constants.TEXTURE_TILE_SIZE*(Constants.MAP_SIZE) - camera.viewportHeight / 2;
     }
 }

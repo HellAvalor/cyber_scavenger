@@ -5,12 +5,18 @@ package com.andreykaraman.survival.utils;
  */
 public class Constants {
     // Visible game world is 5 meters wide
-    public static final float VIEWPORT_WIDTH = 5.0f;
+    public static final float VIEWPORT_WIDTH = 800.0f;
     // Visible game world is 5 meters height.
-    public static final float VIEWPORT_HEIGHT = 5.0f;
+    public static final float VIEWPORT_HEIGHT = 480.0f;
     // GUI width/height
     public static final float VIEWPORT_GUI_WIDTH = 800.0f;
     public static final float VIEWPORT_GUI_HEIGHT = 480.0f;
+
+    public static final boolean TEXTURE_REPACK = false;
+    public static final int TEXTURE_TILE_SIZE = 64;
+    public static final int MAP_SIZE = 24;
+    public static final int MAP_SIZE_IN_PX = TEXTURE_TILE_SIZE*MAP_SIZE;
+
     // Location of description of texture atlas
     public static final String TEXTURE_ATLAS_OBJECTS =
             "images/canyonbunny.pack";
@@ -23,7 +29,7 @@ public class Constants {
 
     // Delay after game over
     public static final float TIME_DELAY_GAME_OVER = 3;
-
+    public static final String TEXTURE_ATLAS_GROUND = "packed/land.atlas";
     public static final String TEXTURE_ATLAS_UI = "images/canyonbunny-ui.pack";
     public static final String TEXTURE_ATLAS_LIBGDX_UI = "images/uiskin.atlas";
     // Location of description file for skins

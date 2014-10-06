@@ -1,7 +1,9 @@
 package com.andreykaraman.survival.Game;
 
+import com.andreykaraman.survival.model.Objects.GameMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 /**
  * Created by Andrew on 05.10.2014.
@@ -31,6 +33,7 @@ public class Level {
         }
     }
 
+    public GameMap gameMap;
 //    public BunnyHead bunnyHead;
 //    public Array<GoldCoin> goldCoins;
 //    public Array<Feather> feathers;
@@ -46,11 +49,13 @@ public class Level {
 //    public Array<Carrot> carrots;
 
 
-    public Level(String filename) {
-        init(filename);
+    public Level() {
+        init();
     }
 
-    public void init(String filename) {
+    public void init() {
+
+        gameMap = new GameMap();
         // player character
 //        bunnyHead = null;
 //        // objects
@@ -140,7 +145,7 @@ public class Level {
 //        waterOverlay.position.set(0, -3.75f);
         // free memory
 //        pixmap.dispose();
-        Gdx.app.debug(TAG, "level " + filename + " loaded");
+        Gdx.app.debug(TAG, "level loaded");
     }
 
     public void update(double deltaTime) {
@@ -154,10 +159,10 @@ public class Level {
 //        for (Carrot carrot : carrots)
 //            carrot.update(deltaTime);
 //        clouds.update(deltaTime);
-//
     }
 
     public void render(SpriteBatch batch) {
+        gameMap.render(batch);
         // draw mountains
 //        mountains.render(batch);
 //        // Draw Goal

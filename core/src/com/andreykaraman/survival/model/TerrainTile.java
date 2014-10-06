@@ -14,16 +14,6 @@ public class TerrainTile {
     private int height;
     private String tile;
 
-    public TextureRegion getTextureRegion() {
-        return textureRegion;
-    }
-
-    public void setTextureRegion(TextureRegion textureRegion) {
-        this.textureRegion = textureRegion;
-    }
-
-    private TextureRegion textureRegion;
-
     public TerrainTile(int id, String name, String loot, boolean walkable, int height, String tile) {
         this.id = id;
         this.name = name;

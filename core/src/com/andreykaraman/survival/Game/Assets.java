@@ -1,12 +1,20 @@
 package com.andreykaraman.survival.Game;
 
+import com.andreykaraman.survival.managers.TerrainManager;
+import com.andreykaraman.survival.model.TerrainList;
+import com.andreykaraman.survival.model.TerrainTile;
+import com.andreykaraman.survival.utils.Constants;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Disposable;
+
+import java.util.ArrayList;
 
 /**
  * Created by Andrew on 05.10.2014.
@@ -16,6 +24,7 @@ public class Assets implements Disposable, AssetErrorListener {
     public static final Assets instance = new Assets();
     private AssetManager assetManager;
 
+    public AssetMap assetMap;
 
 //    public AssetBunny bunny;
 //    public AssetRock rock;
@@ -55,6 +64,7 @@ public class Assets implements Disposable, AssetErrorListener {
         this.assetManager = assetManager;
         // set asset manager error handler
         assetManager.setErrorListener(this);
+        assetManager.load(Constants.TEXTURE_ATLAS_GROUND, TextureAtlas.class);
         // load texture atlas
 //        assetManager.load(Constants.TEXTURE_ATLAS_OBJECTS, TextureAtlas.class);
         // load sounds
@@ -83,7 +93,7 @@ public class Assets implements Disposable, AssetErrorListener {
 //        levelDecoration = new AssetLevelDecoration(atlas);
 //        sounds = new AssetSounds(assetManager);
 //        music = new AssetMusic(assetManager);
-
+        assetMap = new AssetMap((TextureAtlas)assetManager.get(Constants.TEXTURE_ATLAS_GROUND));
 
         fonts = new AssetFonts();
     }
@@ -103,6 +113,17 @@ public class Assets implements Disposable, AssetErrorListener {
         Gdx.app.error(TAG, "could not load asset '" + asset.fileName + "'", (Exception)throwable);
     }
 
+    public class AssetMap {
+        
+        public final ArrayList<AtlasRegion> map= new ArrayList<AtlasRegion>();
+
+        public AssetMap(TextureAtlas atlas) {
+            for ( TerrainTile ar : TerrainManager.getTerrainTiles().getTerrains()){
+                map.add(atlas.findRegion(ar.getTile()));
+            }
+        }
+    }
+    
 //    public class AssetBunny {
 //        public final AtlasRegion head;
 //        public final Animation animNormal;

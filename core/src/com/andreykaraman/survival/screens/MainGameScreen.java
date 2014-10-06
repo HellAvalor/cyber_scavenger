@@ -1,10 +1,11 @@
 package com.andreykaraman.survival.screens;
 
-import com.andreykaraman.survival.view.ANewWorldController;
-import com.andreykaraman.survival.view.ANewWorldRenderer;
+import com.andreykaraman.survival.view.WorldController;
+import com.andreykaraman.survival.view.WorldRenderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 /**
  * Created by Andrew on 05.10.2014.
@@ -13,8 +14,8 @@ public class MainGameScreen extends AbstractGameScreen {
     private static final String TAG = MainGameScreen.class.getName();
 
 
-    private ANewWorldController worldController;
-    private ANewWorldRenderer worldRenderer;
+    private WorldController worldController;
+    private WorldRenderer worldRenderer;
     private boolean paused;
 
     public MainGameScreen(DirectedGame game) {
@@ -48,8 +49,8 @@ public class MainGameScreen extends AbstractGameScreen {
     @Override
     public void show() {
         // Initialize controller and renderer
-        worldController = new ANewWorldController(game);
-        worldRenderer = new ANewWorldRenderer(worldController);
+        worldController = new WorldController(game);
+        worldRenderer = new WorldRenderer(worldController);
         Gdx.input.setCatchBackKey(true);
     }
 
@@ -57,7 +58,6 @@ public class MainGameScreen extends AbstractGameScreen {
     @Override
     public void hide() {
         worldRenderer.dispose();
-        worldController.dispose();
         Gdx.input.setCatchBackKey(false);
     }
 
