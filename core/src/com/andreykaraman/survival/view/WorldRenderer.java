@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
@@ -19,6 +20,7 @@ public class WorldRenderer implements Disposable {
     private OrthographicCamera camera;
     private OrthographicCamera cameraGUI;
     private static final boolean DEBUG = true;
+    private Stage stage;
 
     public WorldRenderer(WorldController worldController) {
         this.worldController = worldController;
@@ -26,24 +28,27 @@ public class WorldRenderer implements Disposable {
     }
 
     private void init() {
-        batch = new SpriteBatch();
-        camera = new OrthographicCamera(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT);
-        camera.position.set(0, 0, 0);
-        camera.setToOrtho(true);
-        camera.update();
 
-        cameraGUI = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
-        cameraGUI.position.set(0, 0, 0);
-        cameraGUI.setToOrtho(true);
-        cameraGUI.update();
+        batch = new SpriteBatch();
+        stage = new Stage();
+
+//        camera = new OrthographicCamera(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT);
+//        camera.position.set(0, 0, 0);
+//        camera.setToOrtho(true);
+//        camera.update();
+
+//        cameraGUI = new OrthographicCamera(Constants.VIEWPORT_GUI_WIDTH, Constants.VIEWPORT_GUI_HEIGHT);
+//        cameraGUI.position.set(0, 0, 0);
+//        cameraGUI.setToOrtho(true);
+//        cameraGUI.update();
     }
 
     public void render() {
         renderWorld(batch);
-        renderGui(batch);
-        if (DEBUG) {
-            renderDebug(batch);
-        }
+//        renderGui(batch);
+//        if (DEBUG) {
+//            renderDebug(batch);
+//        }
     }
 
     private void renderGui(SpriteBatch batch) {
@@ -61,8 +66,8 @@ public class WorldRenderer implements Disposable {
 
         BitmapFont fpsFont = Assets.instance.fonts.defaultNormal;
 
-        fpsFont.draw(batch, "coord: x " + (int) camera.position.x + " y " + (int) camera.position.y, x, y);
-        fpsFont.setColor(1, 1, 1, 1);
+//        fpsFont.draw(batch, "coord: x " + (int) camera.position.x + " y " + (int) camera.position.y, x, y);
+//        fpsFont.setColor(1, 1, 1, 1);
 
         batch.end();
     }
@@ -87,8 +92,8 @@ public class WorldRenderer implements Disposable {
     }
 
     private void renderWorld(SpriteBatch batch) {
-        worldController.cameraHelper.applyTo(camera);
-        batch.setProjectionMatrix(camera.combined);
+//        worldController.cameraHelper.applyTo(camera);
+//        batch.setProjectionMatrix(camera.combined);
         batch.begin();
         worldController.level.render(batch);
         batch.setShader(null);
@@ -96,16 +101,17 @@ public class WorldRenderer implements Disposable {
     }
 
     public void resize(int width, int height) {
-        camera.viewportWidth = (Constants.VIEWPORT_HEIGHT / height) * width;
-        camera.update();
-        cameraGUI.viewportHeight = Constants.VIEWPORT_GUI_HEIGHT;
-        cameraGUI.viewportWidth = (Constants.VIEWPORT_GUI_HEIGHT / (float) height) * (float) width;
-        cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
-        cameraGUI.update();
+//        camera.viewportWidth = (Constants.VIEWPORT_HEIGHT / height) * width;
+//        camera.update();
+//        cameraGUI.viewportHeight = Constants.VIEWPORT_GUI_HEIGHT;
+//        cameraGUI.viewportWidth = (Constants.VIEWPORT_GUI_HEIGHT / (float) height) * (float) width;
+//        cameraGUI.position.set(cameraGUI.viewportWidth / 2, cameraGUI.viewportHeight / 2, 0);
+//        cameraGUI.update();
     }
 
     @Override
     public void dispose() {
         batch.dispose();
+        stage.dispose();
     }
 }

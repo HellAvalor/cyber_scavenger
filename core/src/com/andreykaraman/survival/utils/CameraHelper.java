@@ -73,14 +73,14 @@ public class CameraHelper {
     }
 
     public void applyTo(OrthographicCamera camera) {
-        chechBorgers(camera);
+        checkBorgers(camera);
         camera.position.x = position.x;
         camera.position.y = position.y;
         camera.zoom = zoom;
         camera.update();
     }
 
-    private void chechBorgers (OrthographicCamera camera){
+    private void checkBorgers (OrthographicCamera camera){
         if (position.x < camera.viewportWidth / 2) position.x = camera.viewportWidth / 2;
         if (position.y < camera.viewportHeight/ 2) position.y = camera.viewportHeight / 2;
         if (position.x > Constants.TEXTURE_TILE_SIZE*(Constants.MAP_SIZE) - camera.viewportWidth / 2) position.x = Constants.TEXTURE_TILE_SIZE*(Constants.MAP_SIZE)- camera.viewportWidth / 2;

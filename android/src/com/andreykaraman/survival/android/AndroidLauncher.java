@@ -1,9 +1,8 @@
 package com.andreykaraman.survival.android;
 
-import android.content.Intent;
 import android.os.Bundle;
 
-import com.andreykaraman.survival.CSurv1;
+import com.andreykaraman.survival.NewScavengerGame;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
@@ -16,15 +15,15 @@ public class AndroidLauncher extends AndroidApplication {
         config.useAccelerometer = false;
         config.useCompass = false;
         config.useWakelock = true;
-        config.useGLSurfaceView20API18 = true;
+        config.useGLSurfaceView20API18 = false;
 
-		initialize(new CSurv1(), config);
+		initialize(new NewScavengerGame(), config);
 	}
 
-    public void goHome(){
-        Intent i = new Intent();
-        i.setAction(Intent.ACTION_MAIN);
-        i.addCategory(Intent.CATEGORY_HOME);
-        this.startActivity(i);
-    }
+//    public void goHome(){
+//        Intent i = new Intent();
+//        i.setAction(Intent.ACTION_MAIN);
+//        i.addCategory(Intent.CATEGORY_HOME);
+//        this.startActivity(i);
+//    }
 }

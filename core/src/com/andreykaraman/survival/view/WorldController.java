@@ -1,7 +1,7 @@
 package com.andreykaraman.survival.view;
 
 import com.andreykaraman.survival.Game.Level;
-import com.andreykaraman.survival.screens.DirectedGame;
+
 import com.andreykaraman.survival.utils.CameraHelper;
 import com.andreykaraman.survival.utils.Constants;
 import com.badlogic.gdx.Application;
@@ -17,7 +17,7 @@ public class WorldController extends InputAdapter{
     private static final String TAG = WorldController.class.getName();
     public CameraHelper cameraHelper;
     public Level level;
-    private DirectedGame game;
+//    private DirectedGame game;
 
 //    private void backToMenu() {
 //        ScreenTransition transition = ScreenTransitionSlide.init(0.75f,
@@ -30,11 +30,11 @@ public class WorldController extends InputAdapter{
         level = new Level();
     }
 
-    public WorldController(DirectedGame game)
-    {
-        this.game = game;
-        init();
-    }
+//    public WorldController(DirectedGame game)
+//    {
+//        this.game = game;
+//        init();
+//    }
 
     private void init()
     {
