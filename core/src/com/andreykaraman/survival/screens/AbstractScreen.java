@@ -33,12 +33,14 @@ public class AbstractScreen implements Screen {
     }
 
     public void setStage(Stage stage) {
+        Gdx.app.log("Abstract screen", "setStage");
         this.stage = stage;
         this.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.input.setInputProcessor(this.stage);
     }
 
     public Stage getStage() {
+        Gdx.app.log("Abstract screen", "getStage");
         if (stage == null) {
             this.setStage(new Stage());
         }
@@ -54,6 +56,7 @@ public class AbstractScreen implements Screen {
     }
 
     public void loadResources() {
+        Gdx.app.log("Abstract screen", "loadResources");
         // Do loading
     }
 
@@ -69,25 +72,27 @@ public class AbstractScreen implements Screen {
 
     @Override
     public void hide() {
-        //Gdx.app.log(this.getClass().getName(), "hide");
+
+        Gdx.app.log("Abstract screen", "hide");
         this.dispose();
     }
 
 
     @Override
     public void pause() {
-        //Gdx.app.log(this.getClass().getName(), "pause");
+        Gdx.app.log("Abstract screen", "pause");
     }
 
 
     @Override
     public void resume() {
-        //Gdx.app.log(this.getClass().getName(), "resume");
+        Gdx.app.log("Abstract screen", "resume");
     }
 
 
     @Override
     public void resize(int width, int height) {
+        Gdx.app.log("Abstract screen", "resize");
         Vector2 size = Scaling.fit.apply(NewScavengerGame.getInstance().GAME_WIDTH, NewScavengerGame.getInstance().GAME_HEIGHT, width, height);
         int viewportX = (int)(width - size.x) / 2;
         int viewportY = (int)(height - size.y) / 2;
@@ -102,12 +107,12 @@ public class AbstractScreen implements Screen {
         v.setScreenPosition(viewportX, viewportY);
         this.stage.setViewport(v);
         //this.stage.setViewport(NewScavengerGame.getInstance().GAME_WIDTH, NewScavengerGame.getInstance().GAME_HEIGHT, true, viewportX, viewportY, viewportWidth, viewportHeight);
-        //Gdx.app.log(this.getClass().getName(), "resize");
+
     }
 
     @Override
     public void show() {
-        //Gdx.app.log(this.getClass().getName(), "show");
+        Gdx.app.log("Abstract screen", "show");
 //        if (this.music != null) {
 //            this.music.setLooping(true);
 //            this.music.setVolume(NewScavengerGame.getInstance().getPreferences().getFloat("musicVolume"));
@@ -118,6 +123,7 @@ public class AbstractScreen implements Screen {
 
     @Override
     public void dispose() {
+        Gdx.app.log("Abstract screen", "dispose");
         if (stage != null) {
             stage.clear();
             stage.dispose();
@@ -126,7 +132,7 @@ public class AbstractScreen implements Screen {
 //            this.music.stop();
 //            this.music.dispose();
 //        }
-        //Gdx.app.log(this.getClass().getName(), "dispose");
+
     }
 
 

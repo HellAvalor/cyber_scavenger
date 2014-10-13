@@ -26,7 +26,7 @@ public class NewScavengerGame extends Game {
     public void create() {
 
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
-        Gdx.app.debug("NewScavengerGame", "init");
+        Gdx.app.log(this.getClass().getName(), "create");
         if (getScreen() == null) {
             loadScreen(new GameScreen());
         }
@@ -76,12 +76,14 @@ public class NewScavengerGame extends Game {
 //    }
 
     public void loadScreen(final AbstractScreen newScreen) {
+        Gdx.app.log(this.getClass().getName(), "loadScreen");
         this.setScreen(this.getLoadingScreen(newScreen));
         this.getManager().clear();
         newScreen.loadResources();
     }
 
     public void dispose() {
+        Gdx.app.log(this.getClass().getName(), "dispose");
         super.dispose();
         if (this.getScreen() != this.loadingScreen && this.loadingScreen != null) this.loadingScreen.dispose();
 //        if (this.font != null) this.font.dispose();

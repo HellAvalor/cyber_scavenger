@@ -18,7 +18,7 @@ public class LoadingScreen extends AbstractScreen {
 
     public LoadingScreen() {
         super();
-        Gdx.app.debug("in loading", "init");
+        Gdx.app.log(this.getClass().getName(), "init after super");
         //TextureRegion region = NewScavengerGame.getInstance().getTexture("loader");
         Texture region = new Texture(Gdx.files.internal("loading.png"));
         Image loadingImage = new Image(region);
@@ -32,7 +32,7 @@ public class LoadingScreen extends AbstractScreen {
 
     public LoadingScreen(AbstractScreen nextScreen) {
         this();
-        Gdx.app.debug("in LoadingScreen", "constructor");
+        Gdx.app.log(this.getClass().getName(), "Constructor");
         this.setNextScreen(nextScreen);
     }
 
@@ -48,6 +48,6 @@ public class LoadingScreen extends AbstractScreen {
     }
 
     public void hide() {
-        //Gdx.app.log(this.getClass().getName(), "hide");
+        Gdx.app.log(this.getClass().getName(), "hide");
     }
 }
