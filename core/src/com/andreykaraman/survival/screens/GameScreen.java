@@ -73,8 +73,7 @@ public class GameScreen extends AbstractScreen {
 //        Gdx.app.debug("in gamescreen", "loadResources loaded.png");
 //        Texture thumbnail = getManager().get("loaded", Texture.class);
 
-
-            getManager().load("loaded.png", Texture.class);
+          getManager().load("loaded.png", Texture.class);
 //        if (Gdx.files.internal("loaded.png").exists()) {
 //            getManager().load("loaded.png", Texture.class);
 //        } else {

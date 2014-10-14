@@ -3,6 +3,7 @@ package com.andreykaraman.survival.android;
 import android.os.Bundle;
 
 import com.andreykaraman.survival.NewScavengerGame;
+import com.andreykaraman.survival.Tyrian;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
@@ -17,7 +18,13 @@ public class AndroidLauncher extends AndroidApplication {
         config.useWakelock = true;
         config.useGLSurfaceView20API18 = false;
 
-		initialize(new NewScavengerGame(), config);
+//		initialize(new NewScavengerGame(), config);
+//
+//        // whether to use OpenGL ES 2.0
+//        boolean useOpenGLES2 = false;
+
+        // create the game
+        initialize( new Tyrian(), config );
 	}
 
 //    public void goHome(){
