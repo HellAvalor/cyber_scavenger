@@ -39,4 +39,5 @@ task afterEclipseImport(description: "Post processing after project generation",
 }
 dependencies {
     compile project(':android')
+    compile files('libs/tween-engine-api.jar')
 }
