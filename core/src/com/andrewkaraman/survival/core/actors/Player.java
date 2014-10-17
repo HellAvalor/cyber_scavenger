@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 /**
  * Created by KaramanA on 15.10.2014.
@@ -73,7 +72,7 @@ public class Player extends Actor {
 
     public Player() {
         region = new Texture(Gdx.files.internal("ship-model.png"));
-        listener = new CustomListener();
+        listener = new PlayerListener();
         addListener(listener);
 
     }
@@ -102,11 +101,10 @@ public class Player extends Actor {
         return region.getHeight();
     }
 
-    public class CustomListener extends InputListener {
+    public class PlayerListener extends InputListener {
 
         public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
             Gdx.app.log(LOG_CLASS_NAME, "down " + x + " / " + y);
-//                actor.moveBy(10,10);
             return true;
         }
 

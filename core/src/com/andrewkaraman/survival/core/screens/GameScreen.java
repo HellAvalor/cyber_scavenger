@@ -45,7 +45,7 @@ public class GameScreen extends AbstractScreen {
         actor.setBounds(0, 0, actor.getWidth(), actor.getHeight());
 
         welcomeLabel = new Label( "Welcome to Tyrian for Android!", skin );
-        stage.addActor( welcomeLabel );
+        uiStage.addActor(welcomeLabel);
 
         Gdx.app.log(LOG_CLASS_NAME, actor.getWidth() + " / " + actor.getHeight() );
     }
@@ -53,17 +53,21 @@ public class GameScreen extends AbstractScreen {
     public void resize (int width, int height) {
         // See below for what true means.
         stage.getViewport().update(width, height, true);
+        uiStage.getViewport().update(width, height, true);
     }
 
     public void render (float delta) {
         super.render(delta);
         stage.act(delta);
+        uiStage.act(delta);
         welcomeLabel.setText(actor.getHorisontalSpeed() + " / " +actor.getVerticalSpeed());
         stage.draw();
+        uiStage.draw();
     }
 
     public void dispose() {
         stage.dispose();
+        uiStage.dispose();
     }
 
 //    public Actor hit (float x, float y, boolean touchable) {
