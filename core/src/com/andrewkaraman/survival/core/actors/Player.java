@@ -20,13 +20,27 @@ public class Player extends Actor {
     Texture region;
 
     boolean moveRight;
+    boolean moveLeft;
+    boolean moveUp;
+    boolean moveDown;
+
+    float horisontalSpeed;
+
+
+
+    float verticalSpeed;
+
+    float velocity = 2;
+    private final String LOG_CLASS_NAME = this.getClass().getName();
+    private static final float MAX_MOVEMENT_SPEED = 5;
+    private static final float MIN_MOVEMENT_SPEED = 0.1f;
 
     public boolean isMoveRight() {
         return moveRight;
     }
 
     public void setMoveRight(boolean moveRight) {
-        if(moveLeft && moveRight) moveLeft = false;
+        if (moveLeft && moveRight) moveLeft = false;
         this.moveRight = moveRight;
     }
 
@@ -35,7 +49,7 @@ public class Player extends Actor {
     }
 
     public void setMoveLeft(boolean moveLeft) {
-        if(moveLeft && moveRight) moveRight = false;
+        if (moveLeft && moveRight) moveRight = false;
         this.moveLeft = moveLeft;
     }
 
@@ -44,7 +58,7 @@ public class Player extends Actor {
     }
 
     public void setMoveUp(boolean moveUp) {
-        //todo
+        if (moveUp && moveDown) moveDown = false;
         this.moveUp = moveUp;
     }
 
@@ -53,19 +67,11 @@ public class Player extends Actor {
     }
 
     public void setMoveDown(boolean moveDown) {
-        //todo
+        if (moveUp && moveDown) moveUp = false;
         this.moveDown = moveDown;
     }
 
-    boolean moveLeft;
-    boolean moveUp;
-    boolean moveDown;
-    float velocity;
-
-    private final String LOG_CLASS_NAME = this.getClass().getName();
-    private static final float MAX_MOVEMENT_SPEED = 25;
-
-    public Player () {
+    public Player() {
         region = new Texture(Gdx.files.internal("ship-model.png"));
         listener = new CustomListener();
         addListener(listener);
@@ -73,10 +79,11 @@ public class Player extends Actor {
     }
 
     @Override
-    public void draw (Batch batch, float parentAlpha) {
+    public void draw(Batch batch, float parentAlpha) {
+        updateMotion();
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
-        batch.draw(region, getX(), getY(), getWidth()*5, getHeight()*5);
+        batch.draw(region, getX(), getY(), getWidth() * 5, getHeight() * 5);
 
     }
 
@@ -97,19 +104,19 @@ public class Player extends Actor {
 
     public class CustomListener extends InputListener {
 
-        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-            Gdx.app.log(LOG_CLASS_NAME, "down " + x +" / " +y);
+        public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+            Gdx.app.log(LOG_CLASS_NAME, "down " + x + " / " + y);
 //                actor.moveBy(10,10);
             return true;
         }
 
-        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-            Gdx.app.log(LOG_CLASS_NAME, "up" );
+        public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+            Gdx.app.log(LOG_CLASS_NAME, "up");
         }
 
-        public void touchDragged(InputEvent event, float x, float y, int pointer){
-            Gdx.app.log(LOG_CLASS_NAME, "touchDragged " + x +" / " +y + " actor " + getCenterX() + " / " + getCenterY());
-            setCenterPosition(x,y);
+        public void touchDragged(InputEvent event, float x, float y, int pointer) {
+            Gdx.app.log(LOG_CLASS_NAME, "touchDragged " + x + " / " + y + " actor " + getCenterX() + " / " + getCenterY());
+            setCenterPosition(x, y);
         }
 
 
@@ -118,28 +125,7 @@ public class Player extends Actor {
 
             Gdx.app.log(LOG_CLASS_NAME, "keyDown " + Input.Keys.toString(keycode));
 
-//            switch (keycode){
-//                case Input.Keys.LEFT: {
-//                    addAction(Actions.moveBy(-20,0,5));
-//                    return false;
-//                }
-//                case Input.Keys.RIGHT: {
-//                    addAction(Actions.moveBy(20, 0, 5));
-//                    return false;
-//                }
-//                case Input.Keys.UP: {
-//                    addAction(Actions.moveBy(0, 20, 5));
-//                    return false;
-//                }
-//                case Input.Keys.DOWN: {
-//                    addAction(Actions.moveBy(0, -20, 5));
-//                    return false;
-//                }
-//                default:
-//                    return false;
-//            }
-            switch (keycode)
-            {
+            switch (keycode) {
                 case Input.Keys.LEFT:
                     setMoveLeft(true);
                     break;
@@ -162,8 +148,7 @@ public class Player extends Actor {
         @Override
         public boolean keyUp(InputEvent event, int keycode) {
             Gdx.app.log(LOG_CLASS_NAME, "keyup " + Input.Keys.toString(keycode));
-            switch (keycode)
-            {
+            switch (keycode) {
                 case Input.Keys.LEFT:
                     setMoveLeft(false);
                     break;
@@ -184,24 +169,59 @@ public class Player extends Actor {
         }
     }
 
-    private void updateMotion()
-    {
-        if (isMoveLeft())
-        {
-            x -= 5 * Gdx.graphics.getDeltaTime();
+    private void updateMotion() {
+        if (isMoveLeft()) {
+            horisontalSpeed -= velocity * Gdx.graphics.getDeltaTime();
         }
-        if (isMoveRight())
-        {
-            x += 5 * Gdx.graphics.getDeltaTime();
+        if (isMoveRight()) {
+            horisontalSpeed += velocity * Gdx.graphics.getDeltaTime();
+        }
+        if (Math.abs(horisontalSpeed) > MAX_MOVEMENT_SPEED) {
+            horisontalSpeed = Math.signum(horisontalSpeed) * MAX_MOVEMENT_SPEED;
         }
 
-        if (isMoveUp())
-        {
-            y -= 5 * Gdx.graphics.getDeltaTime();
+        if (!isMoveLeft() && !isMoveRight()) {
+            if ((Math.abs(horisontalSpeed) > MIN_MOVEMENT_SPEED)) {
+                horisontalSpeed += -Math.signum(horisontalSpeed) * velocity * Gdx.graphics.getDeltaTime();
+            } else {
+                horisontalSpeed = 0;
+            }
         }
-        if (isMoveDown())
-        {
-            y += 5 * Gdx.graphics.getDeltaTime();
+
+        if (isMoveUp()) {
+            verticalSpeed += velocity * Gdx.graphics.getDeltaTime();
         }
+        if (isMoveDown()) {
+            verticalSpeed -= velocity * Gdx.graphics.getDeltaTime();
+        }
+
+        if (Math.abs(verticalSpeed) > MAX_MOVEMENT_SPEED) {
+            verticalSpeed = Math.signum(verticalSpeed) * MAX_MOVEMENT_SPEED;
+        }
+
+        if (!isMoveUp() && !isMoveDown()) {
+            if ((Math.abs(verticalSpeed) > MIN_MOVEMENT_SPEED)) {
+                verticalSpeed += -Math.signum(verticalSpeed) * velocity * Gdx.graphics.getDeltaTime();
+            } else {
+                verticalSpeed = 0;
+            }
+        }
+        moveBy(horisontalSpeed, verticalSpeed);
+    }
+
+    public float getVerticalSpeed() {
+        return verticalSpeed;
+    }
+
+    public void setVerticalSpeed(float verticalSpeed) {
+        this.verticalSpeed = verticalSpeed;
+    }
+
+    public float getHorisontalSpeed() {
+        return horisontalSpeed;
+    }
+
+    public void setHorisontalSpeed(float horisontalSpeed) {
+        this.horisontalSpeed = horisontalSpeed;
     }
 }

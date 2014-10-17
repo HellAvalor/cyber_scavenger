@@ -3,9 +3,12 @@ package com.andrewkaraman.survival.core.screens;
 import com.andrewkaraman.survival.core.MyGame;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 /**
  * Created by KaramanA on 15.10.2014.
@@ -15,6 +18,7 @@ public abstract class AbstractScreen implements Screen {
     protected final MyGame game;
     protected final BitmapFont font;
     protected final SpriteBatch batch;
+    private Skin skin;
 
     public AbstractScreen(MyGame game) {
         this.game = game;
@@ -39,6 +43,19 @@ public abstract class AbstractScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
+    protected Skin getSkin()
+    {
+        if( skin == null ) {
+            FileHandle skinFile = Gdx.files.internal( "uiskin.json" );
+            skin = new Skin( skinFile );
+        }
+        return skin;
+//        if( skin == null ) {
+//            skin = new Skin( Gdx.files.internal( "uiskin.json" ),new TextureAtlas( Gdx.files.internal( "uiskin.png" ) ));
+//        }
+//        return skin;
+    }
+
     @Override
     public void hide() {
     }
@@ -53,7 +70,8 @@ public abstract class AbstractScreen implements Screen {
 
     @Override
     public void dispose() {
-        font.dispose();
-        batch.dispose();
+        if( font != null ) font.dispose();
+        if( batch != null ) batch.dispose();
+        if( skin != null ) skin.dispose();
     }
 }
