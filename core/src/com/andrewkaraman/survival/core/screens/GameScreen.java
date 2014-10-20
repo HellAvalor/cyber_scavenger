@@ -36,7 +36,7 @@ public class GameScreen extends AbstractScreen {
 //        multiplexer.addProcessor(new MyGameInputProcessor());
 //        Gdx.input.setInputProcessor(multiplexer);
         Gdx.input.setInputProcessor(stage);
-        actor = new Player();
+        actor = new Player(stage);
         enemy = new Enemy();
         enemy.setPosition(stage.getWidth()/2, stage.getHeight()/2);
         stage.addActor(actor);

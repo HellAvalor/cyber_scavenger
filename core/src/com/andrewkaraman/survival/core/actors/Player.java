@@ -5,10 +5,14 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 /**
  * Created by KaramanA on 15.10.2014.
@@ -17,22 +21,31 @@ public class Player extends Actor {
 
     InputListener listener;
     Texture region;
+    Stage stage;
+    private Array<Bullet> bullets;
+    private long lastBulletTime;
 
     boolean moveRight;
     boolean moveLeft;
     boolean moveUp;
     boolean moveDown;
+    boolean isShooting;
 
     float horisontalSpeed;
-
-
-
     float verticalSpeed;
 
     float velocity = 2;
     private final String LOG_CLASS_NAME = this.getClass().getName();
     private static final float MAX_MOVEMENT_SPEED = 5;
     private static final float MIN_MOVEMENT_SPEED = 0.1f;
+
+    public boolean isShooting() {
+        return isShooting;
+    }
+
+    public void setShooting(boolean isShooting) {
+        this.isShooting = isShooting;
+    }
 
     public boolean isMoveRight() {
         return moveRight;
@@ -70,11 +83,13 @@ public class Player extends Actor {
         this.moveDown = moveDown;
     }
 
-    public Player() {
+    public Player(Stage stage) {
+        this.stage = stage;
         region = new Texture(Gdx.files.internal("ship-model.png"));
         listener = new PlayerListener();
         addListener(listener);
-
+        bullets = new Array<Bullet>();
+        lastBulletTime = TimeUtils.nanoTime();
     }
 
     @Override
@@ -82,8 +97,18 @@ public class Player extends Actor {
         updateMotion();
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
-        batch.draw(region, getX(), getY(), getWidth() * 5, getHeight() * 5);
+        batch.draw(region, getX(), getY(), getWidth(), getHeight());
+        for(Bullet bullet: bullets) {
+            bullet.draw(batch, parentAlpha);
+        }
+    }
 
+    private void shoot() {
+        Gdx.app.log(LOG_CLASS_NAME, "Shooting");
+        Bullet bullet = new Bullet(10, 25f, 25f);
+        stage.addActor(bullet);
+        bullets.add(bullet);
+        lastBulletTime = TimeUtils.nanoTime();
     }
 
     @Override
@@ -139,6 +164,10 @@ public class Player extends Actor {
                 case Input.Keys.DOWN:
                     setMoveDown(true);
                     break;
+
+                case Input.Keys.SPACE:
+                    setShooting(true);
+                    break;
             }
             return false;
         }
@@ -161,6 +190,9 @@ public class Player extends Actor {
 
                 case Input.Keys.DOWN:
                     setMoveDown(false);
+                    break;
+                case Input.Keys.SPACE:
+                    setShooting(false);
                     break;
             }
             return false;
@@ -205,6 +237,11 @@ public class Player extends Actor {
             }
         }
         moveBy(horisontalSpeed, verticalSpeed);
+
+        if (isShooting()) {
+//            Gdx.app.log(LOG_CLASS_NAME, "timeout " + (TimeUtils.nanoTime() - lastBulletTime));
+            if (TimeUtils.nanoTime() - lastBulletTime > 100000000) shoot();
+        }
     }
 
     public float getVerticalSpeed() {
