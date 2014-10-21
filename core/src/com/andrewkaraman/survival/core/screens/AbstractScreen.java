@@ -41,6 +41,8 @@ public abstract class AbstractScreen implements Screen {
         // the following code clears the screen with the given RGB color (black)
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        update(delta);
+        draw(delta);
     }
 
     protected Skin getSkin()
@@ -50,10 +52,6 @@ public abstract class AbstractScreen implements Screen {
             skin = new Skin( skinFile );
         }
         return skin;
-//        if( skin == null ) {
-//            skin = new Skin( Gdx.files.internal( "uiskin.json" ),new TextureAtlas( Gdx.files.internal( "uiskin.png" ) ));
-//        }
-//        return skin;
     }
 
     @Override
@@ -74,4 +72,8 @@ public abstract class AbstractScreen implements Screen {
         if( batch != null ) batch.dispose();
         if( skin != null ) skin.dispose();
     }
+
+    public abstract void update(float delta);
+
+    public abstract void draw (float delta);
 }

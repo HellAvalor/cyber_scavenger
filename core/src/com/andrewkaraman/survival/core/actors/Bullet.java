@@ -5,24 +5,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Pool;
 
 /**
  * Created by KaramanA on 17.10.2014.
  */
-public class Bullet extends Actor {
+public class Bullet extends Actor implements Pool.Poolable {
 
-    private enum Type {
-        BULLET(1),
-        MISSILE(2),
-        FIREBALL(3),
-        PROTON(4),
-        WAVE(5);
+    private final String LOG_CLASS_NAME = this.getClass().getName();
 
-        Type(int type) {
-        }
-    }
-
-    private final int damage;
+    public boolean alive;
     private final float speed;
     private Texture texture;
     private final int angle;
@@ -30,21 +22,21 @@ public class Bullet extends Actor {
     float verticalSpeed;
     private float x,y;
 
-    public Bullet(int damage, float x, float y) {
+    public Bullet(float x, float y) {
         this.x = x;
         this.y = y;
-        this.damage = damage;
-        speed = 0.01f;
+        speed = 5f;
         angle = 0;
         texture = new Texture(Gdx.files.internal("bullet.png"));
         setPosition(x, y);
+        alive = false;
+        this.setVisible(alive);
     }
 
-    /**
-     * Retrieves the damage caused by this shot.
-     */
-    public int getDamage() {
-        return damage;
+    public void init(float posX, float posY) {
+        setPosition(posX,  posY);
+        alive = true;
+        this.setVisible(alive);
     }
 
     public Texture getTexture() {
@@ -58,13 +50,12 @@ public class Bullet extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         updateMotion();
-        Color color = getColor();
-        batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
-        batch.draw(texture, x, y, getWidth(), getHeight());
+        batch.draw(texture, getX(), getY(), texture.getWidth(), texture.getHeight());
     }
 
     private void updateMotion(){
         moveBy(0, speed);
+        if (isOutOfScreen()) alive = false;
     }
 
     public float getVerticalSpeed() {
@@ -82,5 +73,22 @@ public class Bullet extends Actor {
     public void setHorisontalSpeed(float horisontalSpeed) {
         this.horisontalSpeed = horisontalSpeed;
     }
+
+    public boolean isOutOfScreen(){
+        if ((getX()<0) ||
+            (getX()<0) ||
+            (getRight() > this.getParent().getStage().getWidth()) ||
+            (getTop() > this.getParent().getStage().getHeight())){
+            return true;
+        }
+        else return false;
+    }
+
+    @Override
+    public void reset() {
+        alive = false;
+        this.setVisible(alive);
+    }
+
 
 }
