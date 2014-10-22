@@ -5,15 +5,13 @@ import com.andrewkaraman.survival.core.PlayerInputListener;
 import com.andrewkaraman.survival.core.actors.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 /**
  * Created by KaramanA on 22.10.2014.
@@ -44,28 +42,15 @@ public class GameScreenBox extends AbstractScreen {
 
     @Override
     public void render(float delta) {
+        super.render(delta);
 
-//        if (Gdx.app.getType() == Application.ApplicationType.Android) {
-//            inputHandler.accelerometerChange(Gdx.input.getAccelerometerX());
-//        }
+//        welcomeLabel.setText(player.getX() + " / " + player.getY() +" camera " + camera.position.x + " / " + camera.position.y);
 
-        // TODO Auto-generated method stub
-        camera = stage.getCamera();
-        camera.position.y = player.getY();
-        camera.position.x = player.getX();
-//        checkCollision();
-
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        welcomeLabel.setText(player.getX() + " / " + player.getY() +" camera " + camera.position.x + " / " + camera.position.y);
-
-        staticStage.act(delta);
-        staticStage.draw();
+//        staticStage.act(delta);
         stage.act(delta);
-        stage.draw();
 
         world.step(1/60f, 6, 2);
-        debugRenderer.render(world, camera.combined);
+//        debugRenderer.render(world, camera.combined);
 
     }
 
@@ -74,10 +59,10 @@ public class GameScreenBox extends AbstractScreen {
 
         Skin skin = super.getSkin();
         // TODO Auto-generated method stub
-        world = new World(new Vector2(0f, -1), true);
+        world = new World(new Vector2(0f, 0f), true);
 
         stage = new Stage();
-        staticStage = new Stage();
+//        staticStage = new Stage();
         stage.setDebugAll(true);
 
         player = new Player(stage);
@@ -88,37 +73,10 @@ public class GameScreenBox extends AbstractScreen {
         Gdx.input.setInputProcessor(stage);
 
         welcomeLabel = new Label("Test", skin);
-        staticStage.addActor(welcomeLabel);
+//        staticStage.addActor(welcomeLabel);
 
-//        fallingMan = new FallingMan(world);
-//        inputHandler = new InputHandler(fallingMan);
-//
-//        platforms = new Platforms(world);
-//        stage.addListener(inputHandler);
-//        stage.addActor(fallingMan);
-//        stage.addActor(platforms);
+//        camera = stage.getCamera();
 
-//        Image testPlatform = new Image(Assets.backgroundTexture);
-//        testPlatform.setPosition(0,  0);
-//        staticStage.addActor(testPlatform);
-
-//        InputMultiplexer im = new InputMultiplexer(staticStage, stage);
-//
-//        Gdx.input.setInputProcessor(im);
-
-//        testPlatform.addListener(new InputListener() {
-//            public boolean touchDown(InputEvent event, float x, float y,
-//                                     int pointer, int button) {
-//                System.out.println("down platform");
-//                return false;
-//            }
-//
-//
-//            public void touchUp(InputEvent event, float x, float y, int pointer,
-//                                int button) {
-//                System.out.println("up platform");
-//            }
-//        });
     }
 
     @Override
@@ -128,7 +86,8 @@ public class GameScreenBox extends AbstractScreen {
 
     @Override
     public void draw(float delta) {
-
+        stage.draw();
+//        staticStage.draw();
     }
 
     @Override
@@ -137,9 +96,9 @@ public class GameScreenBox extends AbstractScreen {
 //        stage.setViewport(FRUSTUM_WIDTH, FRUSTUM_HEIGHT, false);
 
         //Uncomment for keep aspect ratio
-		stage.setViewport(new ExtendViewport(FRUSTUM_WIDTH, FRUSTUM_HEIGHT));
+		stage.setViewport(new StretchViewport(FRUSTUM_WIDTH, FRUSTUM_HEIGHT));
 //		stage.getCamera().position.set(FRUSTUM_WIDTH/2 - stage.getWidth(), WORLD_HEIGHT
-//				- FRUSTUM_HEIGHT / 2 - stage.getHeight(), 0);
+//                - FRUSTUM_HEIGHT / 2 - stage.getHeight(), 0);
     }
 
     @Override
