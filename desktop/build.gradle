@@ -40,4 +40,5 @@ task afterEclipseImport(description: "Post processing after project generation",
 dependencies {
     compile project(':android')
     compile files('libs/tween-engine-api.jar')
+    compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 }

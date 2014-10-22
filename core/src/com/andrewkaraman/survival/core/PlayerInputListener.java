@@ -12,10 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 public class PlayerInputListener extends InputListener {
 
     Player player;
+//    World world;
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
-    public PlayerInputListener(Player player) {
+    public PlayerInputListener(/*World world,*/ Player player) {
+//        this.world = world;
         this.player = player;
     }
 
@@ -59,6 +61,10 @@ public class PlayerInputListener extends InputListener {
             case Input.Keys.SPACE:
                 player.setShooting(true);
                 break;
+
+            case Input.Keys.G:
+//                world.setGenerateEnemy(true);
+                break;
         }
         return false;
     }
@@ -82,8 +88,13 @@ public class PlayerInputListener extends InputListener {
             case Input.Keys.DOWN:
                 player.setMoveDown(false);
                 break;
+
             case Input.Keys.SPACE:
                 player.setShooting(false);
+                break;
+
+            case Input.Keys.G:
+//                world.setGenerateEnemy(false);
                 break;
         }
         return false;

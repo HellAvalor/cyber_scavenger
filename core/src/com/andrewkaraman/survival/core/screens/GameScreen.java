@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
  */
 public class GameScreen extends AbstractScreen {
 
-    private final String LOG_CLASS_NAME = this.getClass().getName();
+    private final String LOG_CLASS_NAME = GameScreen.class.getName();
 
     private World world;
     private Stage stage;

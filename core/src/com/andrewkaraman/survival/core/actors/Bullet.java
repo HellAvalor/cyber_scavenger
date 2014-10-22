@@ -20,23 +20,20 @@ public class Bullet extends Actor implements Pool.Poolable {
     private final int angle;
     float horisontalSpeed;
     float verticalSpeed;
-    private float x,y;
 
     public Bullet(float x, float y) {
-        this.x = x;
-        this.y = y;
         speed = 5f;
         angle = 0;
         texture = new Texture(Gdx.files.internal("bullet.png"));
         setPosition(x, y);
         alive = false;
-        this.setVisible(alive);
+        setVisible(alive);
     }
 
     public void init(float posX, float posY) {
         setPosition(posX,  posY);
         alive = true;
-        this.setVisible(alive);
+        setVisible(alive);
     }
 
     public Texture getTexture() {
@@ -87,8 +84,6 @@ public class Bullet extends Actor implements Pool.Poolable {
     @Override
     public void reset() {
         alive = false;
-        this.setVisible(alive);
+        setVisible(alive);
     }
-
-
 }

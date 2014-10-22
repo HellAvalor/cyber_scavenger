@@ -7,4 +7,5 @@ eclipse.project {
 }
 dependencies {
     compile files('libs/tween-engine-api.jar')
+    compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
 }

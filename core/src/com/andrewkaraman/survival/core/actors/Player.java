@@ -37,6 +37,7 @@ public class Player extends Actor {
         region = new Texture(Gdx.files.internal("ship-model.png"));
         lastBulletTime = TimeUtils.nanoTime();
         isShooting = false;
+        setBounds(0, 0, getWidth(), getHeight());
     }
 
     public long getShootingSpeed() {
