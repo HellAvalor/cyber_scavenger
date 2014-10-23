@@ -1,6 +1,7 @@
 package com.andrewkaraman.survival.core;
 
 import com.andrewkaraman.survival.core.actors.Player;
+import com.andrewkaraman.survival.core.screens.GameScreenBox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,14 +12,17 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
  */
 public class PlayerInputListener extends InputListener {
 
-    Player player;
+    private Player player;
 //    World world;
+    private MyGame myGame;
+
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
-    public PlayerInputListener(/*World world,*/ Player player) {
+    public PlayerInputListener(/*World world,*/ Player player, MyGame myGame) {
 //        this.world = world;
         this.player = player;
+        this.myGame = myGame;
     }
 
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -65,8 +69,12 @@ public class PlayerInputListener extends InputListener {
             case Input.Keys.G:
 //                world.setGenerateEnemy(true);
                 break;
+
+            case Input.Keys.R:
+                  myGame.create();
+                break;
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -97,6 +105,6 @@ public class PlayerInputListener extends InputListener {
 //                world.setGenerateEnemy(false);
                 break;
         }
-        return false;
+        return true;
     }
 }

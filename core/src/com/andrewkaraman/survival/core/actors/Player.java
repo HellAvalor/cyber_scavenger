@@ -1,22 +1,33 @@
 package com.andrewkaraman.survival.core.actors;
 
+import com.andrewkaraman.survival.core.screens.GameScreenBox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.TimeUtils;
+
+import aurelienribon.bodyeditor.BodyEditorLoader;
 
 /**
  * Created by KaramanA on 15.10.2014.
  */
 public class Player extends Actor {
 
-    Texture region;
-    Stage stage;
+    private World world;
+    TextureRegion region;
+
     private long shootingSpeed = 100000000;
     private long lastBulletTime;
+    private Body body = null;
 
     boolean moveRight;
     boolean moveLeft;
@@ -32,12 +43,48 @@ public class Player extends Actor {
     private static final float MAX_MOVEMENT_SPEED = 5;
     private static final float MIN_MOVEMENT_SPEED = 0.1f;
 
-    public Player(Stage stage) {
-        this.stage = stage;
-        region = new Texture(Gdx.files.internal("ship-model.png"));
+    public Player(World world) {
+       this(world, 0, 0);
+    }
+
+    public Player(World world, int x, int y) {
+        this.world = world;
+
+        setPosition(x, y);
+        region = new TextureRegion (new Texture(Gdx.files.internal("ship-model.png")));
         lastBulletTime = TimeUtils.nanoTime();
         isShooting = false;
-        setBounds(0, 0, getWidth(), getHeight());
+//        setBounds(0, 0, getWidth(), getHeight());
+
+
+        BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
+
+        // 1. Create a BodyDef, as usual.
+        BodyDef bd = new BodyDef();
+        bd.position.set(getX(), getY());
+        bd.type = BodyDef.BodyType.DynamicBody;
+
+
+
+        // 2. Create a FixtureDef, as usual.
+        FixtureDef fd = new FixtureDef();
+        fd.friction = 0.1f;
+        fd.restitution = 0.3f;
+        fd.density = 5;
+
+//        if (body!=null) removeBodySafely(body);
+
+        // 3. Create a Body, as usual.
+        body = world.createBody(bd);
+        body.setLinearVelocity(0f, 0f);
+        // 4. Create the body fixture automatically by using the loader.
+        loader.attachFixture(body, "player-ship", fd, 2);
+
+        setWidth(2);
+        setHeight(2);
+        setPosition(GameScreenBox.WORLD_WIDTH / 2 - GameScreenBox.FRUSTUM_WIDTH / 2, GameScreenBox.WORLD_HEIGHT
+                - GameScreenBox.FRUSTUM_HEIGHT / 2);
+
     }
 
     public long getShootingSpeed() {
@@ -103,7 +150,36 @@ public class Player extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         updateMotion();
-        batch.draw(region, getX(), getY(), getWidth(), getHeight());
+
+        batch.draw(region, getX(), getY(), 0, 0, getWidth(), getHeight(),
+                    1, 1, getRotation());
+
+        //Not go over camera by X
+//        if (getX() < 0) setX(0);
+//        else if (getX() > GameScreenBox.WORLD_WIDTH) setX(GameScreenBox.WORLD_WIDTH - getWidth());
+
+//        batch.draw(region, getX(), getY(), 9, 9, getWidth(), getHeight(), 20, 20, getRotation(), 0, 0, 0, 0, false, false);
+
+//        if (fallingManState == FallingManState.Falling) {
+//
+//
+//            TextureRegion keyFrame = Assets.fallingManAnim
+//                    .getKeyFrame(stateTime, true);
+//
+//
+//            batch.draw(keyFrame, getX(), getY(), 0, 0, getWidth(), getHeight(),
+//                    1, 1, getRotation());
+//
+//
+//        } else if (fallingManState == FallingManState.Splashed) {
+//
+//
+//            batch.draw(Assets.fallingManSplash, getX(), getY(), 0, 0, getWidth(),
+//                    getHeight(), 1, 1, getRotation());
+//
+//
+//        }
+
     }
 
     @Override
@@ -111,55 +187,56 @@ public class Player extends Actor {
         return super.getTouchable();
     }
 
-    @Override
-    public float getWidth() {
-        return region.getWidth();
-    }
-
-    @Override
-    public float getHeight() {
-        return region.getHeight();
-    }
 
     private void updateMotion() {
+
         if (isMoveLeft()) {
-            horisontalSpeed -= velocity * Gdx.graphics.getDeltaTime();
+            body.applyForceToCenter(-2,0,true);
+
+//            horisontalSpeed -= velocity * Gdx.graphics.getDeltaTime();
         }
         if (isMoveRight()) {
-            horisontalSpeed += velocity * Gdx.graphics.getDeltaTime();
-        }
-        if (Math.abs(horisontalSpeed) > MAX_MOVEMENT_SPEED) {
-            horisontalSpeed = Math.signum(horisontalSpeed) * MAX_MOVEMENT_SPEED;
-        }
+            body.applyForceToCenter(2,0,true);
 
-        if (!isMoveLeft() && !isMoveRight()) {
-            if ((Math.abs(horisontalSpeed) > MIN_MOVEMENT_SPEED)) {
-                horisontalSpeed += -Math.signum(horisontalSpeed) * velocity * Gdx.graphics.getDeltaTime();
-            } else {
-                horisontalSpeed = 0;
-            }
+//            horisontalSpeed += velocity * Gdx.graphics.getDeltaTime();
         }
+//        if (Math.abs(horisontalSpeed) > MAX_MOVEMENT_SPEED) {
+//            horisontalSpeed = Math.signum(horisontalSpeed) * MAX_MOVEMENT_SPEED;
+//        }
+
+//        if (!isMoveLeft() && !isMoveRight()) {
+//            if ((Math.abs(horisontalSpeed) > MIN_MOVEMENT_SPEED)) {
+//                horisontalSpeed += -Math.signum(horisontalSpeed) * velocity * Gdx.graphics.getDeltaTime();
+//            } else {
+//                horisontalSpeed = 0;
+//            }
+//        }
 
         if (isMoveUp()) {
-            verticalSpeed += velocity * Gdx.graphics.getDeltaTime();
+            body.setLinearVelocity(body.getLinearVelocity().x, 2);
+//            verticalSpeed += velocity * Gdx.graphics.getDeltaTime();
         }
         if (isMoveDown()) {
-            verticalSpeed -= velocity * Gdx.graphics.getDeltaTime();
+            body.setLinearVelocity(body.getLinearVelocity().x, -2);
+//            verticalSpeed -= velocity * Gdx.graphics.getDeltaTime();
         }
 
-        if (Math.abs(verticalSpeed) > MAX_MOVEMENT_SPEED) {
-            verticalSpeed = Math.signum(verticalSpeed) * MAX_MOVEMENT_SPEED;
-        }
+//        if (Math.abs(verticalSpeed) > MAX_MOVEMENT_SPEED) {
+//            verticalSpeed = Math.signum(verticalSpeed) * MAX_MOVEMENT_SPEED;
+//        }
+//
+//        if (!isMoveUp() && !isMoveDown()) {
+//            if ((Math.abs(verticalSpeed) > MIN_MOVEMENT_SPEED)) {
+//                verticalSpeed += -Math.signum(verticalSpeed) * velocity * Gdx.graphics.getDeltaTime();
+//            } else {
+//                verticalSpeed = 0;
+//            }
+//        }
 
-        if (!isMoveUp() && !isMoveDown()) {
-            if ((Math.abs(verticalSpeed) > MIN_MOVEMENT_SPEED)) {
-                verticalSpeed += -Math.signum(verticalSpeed) * velocity * Gdx.graphics.getDeltaTime();
-            } else {
-                verticalSpeed = 0;
-            }
-        }
-        moveBy(horisontalSpeed, verticalSpeed);
+//        moveBy(horisontalSpeed, verticalSpeed);
 
+        setRotation(MathUtils.radiansToDegrees * body.getAngle());
+        setPosition(body.getPosition().x, body.getPosition().y);
     }
 
     public float getVerticalSpeed() {

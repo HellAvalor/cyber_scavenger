@@ -8,7 +8,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 
         LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-        cfg.title = "libgdx-tyrian";
+        cfg.title = "scavenger";
         cfg.useGL30 = false;
         cfg.width = 480;
         cfg.height = 320;

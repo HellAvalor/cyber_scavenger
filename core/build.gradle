@@ -6,6 +6,6 @@ eclipse.project {
     name = appName + "-core"
 }
 dependencies {
-    compile files('libs/tween-engine-api.jar')
+    compile files('libs/bodyeditor-loader.jar')
     compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
 }

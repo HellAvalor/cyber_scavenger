@@ -34,7 +34,7 @@ public class World implements Disposable {
 
     public World(Stage stage) {
         this.stage = stage;
-        player = new Player(stage);
+//        player = new Player( stage);
 //        listener = new PlayerInputListener(this, player);
 //        player.addListener(listener);
         stage.addActor(player);
