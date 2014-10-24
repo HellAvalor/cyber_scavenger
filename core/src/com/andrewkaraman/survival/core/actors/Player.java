@@ -1,5 +1,6 @@
 package com.andrewkaraman.survival.core.actors;
 
+import com.andrewkaraman.survival.core.WorldProcessor;
 import com.andrewkaraman.survival.core.screens.GameScreenBox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -38,24 +39,24 @@ public class Player extends Actor {
     float horisontalSpeed;
     float verticalSpeed;
 
-    float velocity = 2;
+    float velocity = 5;
     private final String LOG_CLASS_NAME = this.getClass().getName();
     private static final float MAX_MOVEMENT_SPEED = 5;
     private static final float MIN_MOVEMENT_SPEED = 0.1f;
 
     public Player(World world) {
-       this(world, 0, 0);
+        this(world, 0, 0);
     }
 
     public Player(World world, int x, int y) {
         this.world = world;
 
-        setPosition(x, y);
-        region = new TextureRegion (new Texture(Gdx.files.internal("ship-model.png")));
+        region = new TextureRegion(new Texture(Gdx.files.internal("ship-model.png")));
         lastBulletTime = TimeUtils.nanoTime();
         isShooting = false;
-//        setBounds(0, 0, getWidth(), getHeight());
 
+        setPosition(WorldProcessor.WORLD_WIDTH / 2, WorldProcessor.WORLD_HEIGHT / 2);
+        setOrigin(getWidth()/2, getHeight()/2);
 
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
@@ -65,26 +66,24 @@ public class Player extends Actor {
         bd.type = BodyDef.BodyType.DynamicBody;
 
 
-
         // 2. Create a FixtureDef, as usual.
         FixtureDef fd = new FixtureDef();
         fd.friction = 0.1f;
         fd.restitution = 0.3f;
-        fd.density = 5;
+//        fd.density = 5;
 
 //        if (body!=null) removeBodySafely(body);
 
         // 3. Create a Body, as usual.
         body = world.createBody(bd);
-        body.setLinearVelocity(0f, 0f);
+//        body.setLinearVelocity(0f, 0f);
         // 4. Create the body fixture automatically by using the loader.
         loader.attachFixture(body, "player-ship", fd, 2);
 
         setWidth(2);
         setHeight(2);
-        setPosition(GameScreenBox.WORLD_WIDTH / 2 - GameScreenBox.FRUSTUM_WIDTH / 2, GameScreenBox.WORLD_HEIGHT
-                - GameScreenBox.FRUSTUM_HEIGHT / 2);
 
+        Gdx.app.log(LOG_CLASS_NAME, "Player generated at " + getX() + " / " + getY());
     }
 
     public long getShootingSpeed() {
@@ -150,15 +149,12 @@ public class Player extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         updateMotion();
-
         batch.draw(region, getX(), getY(), 0, 0, getWidth(), getHeight(),
-                    1, 1, getRotation());
+                1, 1, getRotation());
 
         //Not go over camera by X
 //        if (getX() < 0) setX(0);
 //        else if (getX() > GameScreenBox.WORLD_WIDTH) setX(GameScreenBox.WORLD_WIDTH - getWidth());
-
-//        batch.draw(region, getX(), getY(), 9, 9, getWidth(), getHeight(), 20, 20, getRotation(), 0, 0, 0, 0, false, false);
 
 //        if (fallingManState == FallingManState.Falling) {
 //
@@ -191,52 +187,24 @@ public class Player extends Actor {
     private void updateMotion() {
 
         if (isMoveLeft()) {
-            body.applyForceToCenter(-2,0,true);
-
-//            horisontalSpeed -= velocity * Gdx.graphics.getDeltaTime();
+            body.applyForceToCenter(-velocity, 0, true);
         }
         if (isMoveRight()) {
-            body.applyForceToCenter(2,0,true);
-
-//            horisontalSpeed += velocity * Gdx.graphics.getDeltaTime();
+            body.applyForceToCenter(velocity, 0, true);
         }
-//        if (Math.abs(horisontalSpeed) > MAX_MOVEMENT_SPEED) {
-//            horisontalSpeed = Math.signum(horisontalSpeed) * MAX_MOVEMENT_SPEED;
-//        }
-
-//        if (!isMoveLeft() && !isMoveRight()) {
-//            if ((Math.abs(horisontalSpeed) > MIN_MOVEMENT_SPEED)) {
-//                horisontalSpeed += -Math.signum(horisontalSpeed) * velocity * Gdx.graphics.getDeltaTime();
-//            } else {
-//                horisontalSpeed = 0;
-//            }
-//        }
 
         if (isMoveUp()) {
-            body.setLinearVelocity(body.getLinearVelocity().x, 2);
-//            verticalSpeed += velocity * Gdx.graphics.getDeltaTime();
+            body.applyForceToCenter(0, velocity, true);
+
         }
         if (isMoveDown()) {
-            body.setLinearVelocity(body.getLinearVelocity().x, -2);
-//            verticalSpeed -= velocity * Gdx.graphics.getDeltaTime();
+            body.applyForceToCenter(0, -velocity, true);
         }
 
-//        if (Math.abs(verticalSpeed) > MAX_MOVEMENT_SPEED) {
-//            verticalSpeed = Math.signum(verticalSpeed) * MAX_MOVEMENT_SPEED;
-//        }
-//
-//        if (!isMoveUp() && !isMoveDown()) {
-//            if ((Math.abs(verticalSpeed) > MIN_MOVEMENT_SPEED)) {
-//                verticalSpeed += -Math.signum(verticalSpeed) * velocity * Gdx.graphics.getDeltaTime();
-//            } else {
-//                verticalSpeed = 0;
-//            }
-//        }
-
-//        moveBy(horisontalSpeed, verticalSpeed);
-
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
+        // TODO fix origin position of texture setOrigin();
         setPosition(body.getPosition().x, body.getPosition().y);
+        Gdx.app.log(LOG_CLASS_NAME, "Player texture position at " + getCenterX() + " / " + getCenterY() +" body " + body.getPosition().x +" / "+ body.getPosition().y);
     }
 
     public float getVerticalSpeed() {

@@ -4,6 +4,7 @@ import com.andrewkaraman.survival.core.actors.Player;
 import com.andrewkaraman.survival.core.screens.GameScreenBox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 
@@ -15,12 +16,14 @@ public class PlayerInputListener extends InputListener {
     private Player player;
 //    World world;
     private MyGame myGame;
+    private GameScreenBox screen;
 
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
-    public PlayerInputListener(/*World world,*/ Player player, MyGame myGame) {
+    public PlayerInputListener(/*World world,*/ Player player, MyGame myGame, GameScreenBox screen) {
 //        this.world = world;
+        this.screen = screen;
         this.player = player;
         this.myGame = myGame;
     }
@@ -72,6 +75,13 @@ public class PlayerInputListener extends InputListener {
 
             case Input.Keys.R:
                   myGame.create();
+                break;
+
+            case Input.Keys.COMMA:
+                screen.zoomIn();
+                break;
+            case Input.Keys.PERIOD:
+                screen.zoomOut();
                 break;
         }
         return true;

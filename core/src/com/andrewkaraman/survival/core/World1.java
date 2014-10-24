@@ -11,15 +11,14 @@ import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
 /**
  * Created by KaramanA on 21.10.2014.
  */
-public class World implements Disposable {
+public class World1 implements Disposable {
 
-    private final String LOG_CLASS_NAME = World.class.getName();
+    private final String LOG_CLASS_NAME = World1.class.getName();
 
     private long enemyGenerationSpeed = 200000000;
     private long lastEnemyGenerateTime;
@@ -32,7 +31,7 @@ public class World implements Disposable {
     private Player player;
     public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 
-    public World(Stage stage) {
+    public World1(Stage stage) {
         this.stage = stage;
 //        player = new Player( stage);
 //        listener = new PlayerInputListener(this, player);
@@ -55,16 +54,16 @@ public class World implements Disposable {
     public ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 
     // bullet pool.
-    private final Pool<Enemy> enemyPool = new Pool<Enemy>() {
-
-        @Override
-        protected Enemy newObject() {
-            Vector2 coord = generateRandomCoordinates();
-            Enemy enemy = new Enemy(coord.x, coord.y);
-            stage.addActor(enemy);
-            return enemy;
-        }
-    };
+//    private final Pool<Enemy> enemyPool = new Pool<Enemy>() {
+//
+//        @Override
+//        protected Enemy newObject() {
+//            Vector2 coord = generateRandomCoordinates();
+////            Enemy enemy = new Enemy(coord.x, coord.y);
+//            stage.addActor(enemy);
+//            return enemy;
+//        }
+//    };
 
 
 
@@ -101,10 +100,10 @@ public class World implements Disposable {
             //      Gdx.app.log(LOG_CLASS_NAME, "Size bullets " + bullets.size() +" bulletPool "+ bulletPool.peak + " stage actors count " + stage.getRoot().getChildren().size);
             if (TimeUtils.nanoTime() - lastEnemyGenerateTime > enemyGenerationSpeed) {
                 Gdx.app.log(LOG_CLASS_NAME, "Generating enemy");
-                Enemy enemy = enemyPool.obtain();
+//                Enemy enemy = enemyPool.obtain();
                 Vector2 coord = generateRandomCoordinates();
-                enemy.init(coord.x, coord.y);
-                enemies.add(enemy);
+//                enemy.init(coord.x, coord.y);
+//                enemies.add(enemy);
                 lastEnemyGenerateTime =TimeUtils.nanoTime();
             }
         }

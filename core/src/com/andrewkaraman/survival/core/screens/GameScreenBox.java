@@ -2,9 +2,8 @@ package com.andrewkaraman.survival.core.screens;
 
 import com.andrewkaraman.survival.core.MyGame;
 import com.andrewkaraman.survival.core.PlayerInputListener;
-import com.andrewkaraman.survival.core.actors.Player;
+import com.andrewkaraman.survival.core.WorldProcessor;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -12,9 +11,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+
 
 /**
  * Created by KaramanA on 22.10.2014.
@@ -23,24 +23,16 @@ public class GameScreenBox extends AbstractScreen {
 
     private final String LOG_CLASS_NAME = GameScreenBox.class.getName();
 
-    private World world;
+    private World physWorld;
+    private WorldProcessor gameWorld;
     private Stage stage;
     Stage staticStage;
     Camera camera;
-    // World size Meters
-    private Player player;
-    private  Label welcomeLabel;
-    private Player player2;
+
+//    private Player player;
+    private Label debugLabel;
+//    private Enemy enemy;
     private PlayerInputListener listener;
-
-    protected float cameraW;
-    protected float cameraH;
-
-
-    public static final float FRUSTUM_HEIGHT = 25;
-    public static final float WORLD_HEIGHT = FRUSTUM_HEIGHT * 10;
-    public static final float FRUSTUM_WIDTH = 15;
-    public static final float WORLD_WIDTH = FRUSTUM_WIDTH *10;
 
     Box2DDebugRenderer debugRenderer = new Box2DDebugRenderer();
 
@@ -52,56 +44,52 @@ public class GameScreenBox extends AbstractScreen {
     public void render(float delta) {
         super.render(delta);
 
-        stage.getCamera().position.set(player.getX(),player.getY(), 0);
-//        stage.getViewport().getCamera()
-        Gdx.app.log(LOG_CLASS_NAME, player.getX() + "/" + player.getY() + " " + stage.getViewport().getWorldWidth() +"/"+ stage.getViewport().getWorldHeight());
-        Gdx.app.log(LOG_CLASS_NAME, player2.getX() + "/" + player2.getY() + " " + stage.getViewport().getScreenX() +"/"+ stage.getViewport().getScreenY());
-//        welcomeLabel.setText(player.getX() + " / " + player.getY() +" camera " + camera.position.x + " / " + camera.position.y);
+        stage.getCamera().position.set(gameWorld.getPlayer().getX(),gameWorld.getPlayer().getY(), 0);
 
-//        staticStage.act(delta);
+        debugLabel.setText( (int) gameWorld.getPlayer().getX() + " / " + (int) gameWorld.getPlayer().getY() + " camera " + (int) camera.position.x + " / " +(int) camera.position.y);
+
+        staticStage.act(delta);
         stage.act(delta);
 
-        world.step(1/60f, 6, 2);
-//        debugRenderer.render(world, camera.combined);
-        debugRenderer.render(world, stage.getCamera().combined);
+        physWorld.step(1 / 60f, 6, 2);
+//        debugRenderer.render(physWorld, camera.combined);
+        debugRenderer.render(physWorld, stage.getCamera().combined);
     }
 
     @Override
     public void show() {
 
-
         Skin skin = super.getSkin();
 
-        world = new World(new Vector2(0f, 0f), true);
+        physWorld = new World(new Vector2(0f, 0f), true);
 
         stage = new Stage();
-//        staticStage = new Stage();
-        stage.setDebugAll(true);
+        staticStage = new Stage();
 
-        player = new Player(world);
-        player2 = new Player(world, 5, 5);
-        PlayerInputListener listener = new PlayerInputListener(player, game);
+
+        gameWorld = new WorldProcessor(stage, physWorld);
+
+        PlayerInputListener listener = new PlayerInputListener(gameWorld.getPlayer(), game, this);
         stage.addListener(listener);
-        stage.addActor(player);
-        stage.addActor(player2);
 
-        stage.setKeyboardFocus(player);
+        stage.setDebugAll(true);
+        stage.setDebugTableUnderMouse(true);
+        stage.setKeyboardFocus(gameWorld.getPlayer());
+
         Gdx.input.setInputProcessor(stage);
 
-//        welcomeLabel = new Label("Test", skin);
-//        staticStage.addActor(welcomeLabel);
+        debugLabel = new Label("Test", skin);
+
+        debugLabel.setFontScale(0.3f);
+        staticStage.addActor(debugLabel);
 
         camera = stage.getCamera();
-//        camera.viewportHeight = 5;
-//        camera.viewportWidth = 5;
-//        camera.position.y = player.getY();
-//        camera.position.x = player.getX();
 
-        Viewport v = new FitViewport(FRUSTUM_WIDTH, FRUSTUM_HEIGHT);
+        Viewport v = new ExtendViewport(20, 20, WorldProcessor.WORLD_WIDTH, WorldProcessor.WORLD_HEIGHT);
         //Uncomment for keep aspect ratio
         stage.setViewport(v);
+//        staticStage.setViewport(new StretchViewport(FRUSTUM_WIDTH, FRUSTUM_HEIGHT));
 //        camera = stage.getCamera();
-
 
     }
 
@@ -113,33 +101,44 @@ public class GameScreenBox extends AbstractScreen {
     @Override
     public void draw(float delta) {
         stage.draw();
-//        staticStage.draw();
+        staticStage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-
         stage.getViewport().update(width, height, false);
-
-        //        stage.getViewport().setScreenPosition((int) player.getX(), (int)player.getY());
-//        stage.setViewport(FRUSTUM_WIDTH, FRUSTUM_HEIGHT, false);
-//        Viewport v = new StretchViewport(FRUSTUM_WIDTH, FRUSTUM_HEIGHT);
-//        //Uncomment for keep aspect ratio
-//        stage.setViewport(v);
-//        stage.getCamera().viewportHeight = FRUSTUM_HEIGHT;
-//        stage.getCamera().viewportWidth = FRUSTUM_WIDTH;
-
+     //   staticStage.getViewport().update(width, height, false);
     }
 
     @Override
     public void dispose() {
-        world.dispose();
+        physWorld.dispose();
+        staticStage.dispose();
         stage.dispose();
-//        staticStage.dispose();
     }
 
     public void reset(){
         dispose();
         show();
+    }
+
+    public void zoomIn(){
+        ((ExtendViewport) stage.getViewport()).setMinWorldHeight(getMinWorldHeight() -5);
+        ((ExtendViewport) stage.getViewport()).setMinWorldWidth(getMinWorldWidth() - 5);
+        stage.getViewport().update(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
+    }
+
+    public void zoomOut() {
+        ((ExtendViewport) stage.getViewport()).setMinWorldHeight(getMinWorldHeight() + 5);
+        ((ExtendViewport) stage.getViewport()).setMinWorldWidth(getMinWorldWidth() + 5);
+        stage.getViewport().update(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
+    }
+
+    private float getMinWorldHeight(){
+        return ((ExtendViewport) stage.getViewport()).getMinWorldHeight();
+    }
+
+    private float getMinWorldWidth(){
+        return ((ExtendViewport) stage.getViewport()).getMinWorldWidth();
     }
 }

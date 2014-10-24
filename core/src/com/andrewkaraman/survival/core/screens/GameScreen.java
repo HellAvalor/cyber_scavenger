@@ -1,14 +1,8 @@
 package com.andrewkaraman.survival.core.screens;
 
 import com.andrewkaraman.survival.core.MyGame;
-import com.andrewkaraman.survival.core.World;
-import com.andrewkaraman.survival.core.actors.Bullet;
-import com.andrewkaraman.survival.core.actors.Enemy;
-import com.andrewkaraman.survival.core.actors.Player;
+import com.andrewkaraman.survival.core.World1;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -21,7 +15,7 @@ public class GameScreen extends AbstractScreen {
 
     private final String LOG_CLASS_NAME = GameScreen.class.getName();
 
-    private World world;
+    private World1 world;
     private Stage stage;
     private Stage uiStage;
 
@@ -32,7 +26,7 @@ public class GameScreen extends AbstractScreen {
         Skin skin = super.getSkin();
         stage = new Stage(new FitViewport(640, 480));
         stage.setDebugAll(true);
-        world = new World(stage);
+        world = new World1(stage);
         uiStage = new Stage(new FitViewport(640, 480));
 //        InputMultiplexer multiplexer = new InputMultiplexer();
 //        multiplexer.addProcessor(new MyUiInputProcessor());

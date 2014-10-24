@@ -27,19 +27,15 @@ public abstract class AbstractScreen implements Screen {
     }
 
     @Override
-    public void show() {
-    }
+    public void show() { }
 
     @Override
-    public void resize(
-            int width,
-            int height) {
-    }
+    public void resize(int width, int height) { }
 
     @Override
     public void render(float delta) {
         // the following code clears the screen with the given RGB color (black)
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+        Gdx.gl.glClearColor(0f, 0f, 0.1f, 0.2f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         update(delta);
         draw(delta);
