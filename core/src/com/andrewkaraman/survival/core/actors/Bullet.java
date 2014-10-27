@@ -23,7 +23,7 @@ public class Bullet extends Image implements Pool.Poolable {
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
-    private final float MAX_BULLET_DISTANCE = 2;
+    private final float MAX_BULLET_DISTANCE = 5;
     private float startPosX, startPosY;
     public boolean alive;
     public final Body body;

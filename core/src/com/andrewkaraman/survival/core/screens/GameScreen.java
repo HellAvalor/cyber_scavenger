@@ -77,7 +77,14 @@ public class GameScreen extends AbstractScreen{
 
     @Override
     public void update(float delta) {
-
+        if (world.isResetGame()) {
+            world.resetWorld();
+            resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+        if (world.isResized) {
+            resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            world.isResized = false;
+        }
     }
 
     @Override

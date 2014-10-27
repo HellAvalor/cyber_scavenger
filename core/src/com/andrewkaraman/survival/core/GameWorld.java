@@ -32,8 +32,6 @@ public class GameWorld {
     public NewPlayer newPlayer; // our playing character
     public NewEnemy newEnemy;
     public boolean isResized = false;
-
-
     private boolean resetGame = false;
 
     // bullet pool.
@@ -82,9 +80,9 @@ public class GameWorld {
         box2dWorld.step(delta, 3, 3); // update box2d world
         stage.act(delta); // update game stage
 
-        if (isResetGame()){
-            resetWorld();
-        }
+//        if (isResetGame()){
+//            resetWorld();
+//        }
     }
 
 
@@ -123,6 +121,7 @@ public class GameWorld {
         UNIT_HEIGHT = getUnitHeight();
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0,0)); // set the game stage viewport to the meters size
         isResized = true;
+stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 //        stage.getViewport().update(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
     }
 
@@ -131,6 +130,8 @@ public class GameWorld {
         UNIT_HEIGHT = getUnitHeight();
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0,0)); // set the game stage viewport to the meters size
         isResized = true;
+
+        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 //        ((ExtendViewport) stage.getViewport()).setMinWorldHeight(getMinWorldHeight() + 5);
 //        ((ExtendViewport) stage.getViewport()).setMinWorldWidth(getMinWorldWidth() + 5);
 //        stage.getViewport().update(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
