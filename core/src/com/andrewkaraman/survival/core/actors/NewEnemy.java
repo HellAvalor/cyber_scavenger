@@ -11,85 +11,48 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Scaling;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
 
 /**
- * Created by KaramanA on 17.10.2014.
+ * Created by Andrew on 26.10.2014.
  */
-public class Bullet extends Image implements Pool.Poolable {
+public class NewEnemy extends Image {
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
-
-    public boolean alive;
     public final Body body;
-    private final float SHIP_WIDTH = 0.2f;
+    private final int SHIP_WIDTH = 1;
 
-    public Bullet(GameWorld world, float x, float y) {
+    public NewEnemy(GameWorld world) {
 
-        Texture tex = new Texture(Gdx.files.internal("bullet.png"));
+        Texture tex = new Texture(Gdx.files.internal("front-gun-proton-launcher.png"));
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-//        bodyDef.position.x = x;
-//        bodyDef.position.y = y;
+        bodyDef.position.x = 6f;
+        bodyDef.position.y = 6f;
+        bodyDef.linearDamping = 0.1f;
+        bodyDef.angularDamping = 0.5f;
 
         this.body = world.box2dWorld.createBody(bodyDef);
 
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
+        fd.friction = 0.1f;
+        fd.restitution = 0.3f;
+        fd.density = 5;
 
-        loader.attachFixture(body, "Bullet", fd, SHIP_WIDTH);
+        loader.attachFixture(body, "Enemy", fd, 1);
 
-
+        setPosition(body.getPosition().x, body.getPosition().y); // set the actor position at the box2d body position
         setSize(SHIP_WIDTH, SHIP_WIDTH * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture
         setAlign(Align.center);
         setOrigin(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
-
-        init(x, y);
-        setVisible(alive);
     }
-
-    public void init(float posX, float posY) {
-        body.setTransform(posX, posY, 0);
-        setPosition(body.getPosition().x, body.getPosition().y); // set the actor position at the box2d body position
-        body.setLinearVelocity(0, 10);
-        alive = true;
-        setVisible(alive);
-    }
-
-//    @Override
-//    public void draw(Batch batch, float parentAlpha) {
-//        updateMotion();
-//        batch.draw(texture, getX(), getY(), texture.getWidth(), texture.getHeight());
-//    }
-
-//    private void updateMotion(){
-//
-//        if (isOutOfScreen()) alive = false;
-//    }
-
-//    public boolean isOutOfScreen(){
-//        if ((getX()<0) ||
-//            (getX()<0) ||
-//            (getRight() > this.getParent().getStage().getWidth()) ||
-//            (getTop() > this.getParent().getStage().getHeight())){
-//            return true;
-//        }
-//        else return false;
-//    }
-
-    @Override
-    public void reset() {
-        alive = false;
-        setVisible(alive);
-    }
-
 
     @Override
     public void act(float delta) {
@@ -98,4 +61,5 @@ public class Bullet extends Image implements Pool.Poolable {
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
         setPosition(body.getPosition().x, body.getPosition().y);
     }
+
 }

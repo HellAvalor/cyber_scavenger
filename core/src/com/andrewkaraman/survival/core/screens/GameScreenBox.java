@@ -46,12 +46,17 @@ public class GameScreenBox extends AbstractScreen {
 
         stage.getCamera().position.set(gameWorld.getPlayer().getX(),gameWorld.getPlayer().getY(), 0);
 
-        debugLabel.setText( (int) gameWorld.getPlayer().getX() + " / " + (int) gameWorld.getPlayer().getY() + " camera " + (int) camera.position.x + " / " +(int) camera.position.y);
+
+        physWorld.step(1 / 60f, 6, 2);
 
         staticStage.act(delta);
         stage.act(delta);
 
-        physWorld.step(1 / 60f, 6, 2);
+
+        String playerPosition = gameWorld.getPlayer().getX() + " / " + gameWorld.getPlayer().getY();
+        String playerBodyPosition = gameWorld.getPlayer().getBody().getPosition().x + " / " + gameWorld.getPlayer().getBody().getPosition().y;
+        debugLabel.setText(playerPosition + " " + playerBodyPosition );
+
 //        debugRenderer.render(physWorld, camera.combined);
         debugRenderer.render(physWorld, stage.getCamera().combined);
     }
@@ -73,7 +78,6 @@ public class GameScreenBox extends AbstractScreen {
         stage.addListener(listener);
 
         stage.setDebugAll(true);
-        stage.setDebugTableUnderMouse(true);
         stage.setKeyboardFocus(gameWorld.getPlayer());
 
         Gdx.input.setInputProcessor(stage);
@@ -85,7 +89,7 @@ public class GameScreenBox extends AbstractScreen {
 
         camera = stage.getCamera();
 
-        Viewport v = new ExtendViewport(20, 20, WorldProcessor.WORLD_WIDTH, WorldProcessor.WORLD_HEIGHT);
+        Viewport v = new ExtendViewport(20, 20, 0, 0);
         //Uncomment for keep aspect ratio
         stage.setViewport(v);
 //        staticStage.setViewport(new StretchViewport(FRUSTUM_WIDTH, FRUSTUM_HEIGHT));

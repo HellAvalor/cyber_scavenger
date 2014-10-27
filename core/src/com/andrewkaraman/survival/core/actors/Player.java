@@ -1,7 +1,6 @@
 package com.andrewkaraman.survival.core.actors;
 
 import com.andrewkaraman.survival.core.WorldProcessor;
-import com.andrewkaraman.survival.core.screens.GameScreenBox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -12,7 +11,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -28,6 +26,7 @@ public class Player extends Actor {
 
     private long shootingSpeed = 100000000;
     private long lastBulletTime;
+
     private Body body = null;
 
     boolean moveRight;
@@ -54,9 +53,14 @@ public class Player extends Actor {
         region = new TextureRegion(new Texture(Gdx.files.internal("ship-model.png")));
         lastBulletTime = TimeUtils.nanoTime();
         isShooting = false;
-
+        setBounds(0,0, region.getRegionWidth(), region.getRegionHeight());
         setPosition(WorldProcessor.WORLD_WIDTH / 2, WorldProcessor.WORLD_HEIGHT / 2);
-        setOrigin(getWidth()/2, getHeight()/2);
+//        setOrigin(getWidth()/2, getHeight()/2);
+
+        float prop = getWidth() / getHeight();
+        setWidth(getWidth()/20);
+        setHeight(getHeight()/20 * prop);
+
 
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
@@ -78,12 +82,14 @@ public class Player extends Actor {
         body = world.createBody(bd);
 //        body.setLinearVelocity(0f, 0f);
         // 4. Create the body fixture automatically by using the loader.
-        loader.attachFixture(body, "player-ship", fd, 2);
-
-        setWidth(2);
-        setHeight(2);
+        loader.attachFixture(body, "player-ship", fd, 1);
 
         Gdx.app.log(LOG_CLASS_NAME, "Player generated at " + getX() + " / " + getY());
+    }
+
+
+    public Body getBody() {
+        return body;
     }
 
     public long getShootingSpeed() {
@@ -148,7 +154,9 @@ public class Player extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+
         updateMotion();
+
         batch.draw(region, getX(), getY(), 0, 0, getWidth(), getHeight(),
                 1, 1, getRotation());
 
@@ -202,9 +210,8 @@ public class Player extends Actor {
         }
 
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
-        // TODO fix origin position of texture setOrigin();
         setPosition(body.getPosition().x, body.getPosition().y);
-        Gdx.app.log(LOG_CLASS_NAME, "Player texture position at " + getCenterX() + " / " + getCenterY() +" body " + body.getPosition().x +" / "+ body.getPosition().y);
+//        Gdx.app.log(LOG_CLASS_NAME, "Player texture position at " + getX() + " / " + getY() +" body " + body.getPosition().x +" / "+ body.getPosition().y);
     }
 
     public float getVerticalSpeed() {
@@ -223,4 +230,16 @@ public class Player extends Actor {
         this.horisontalSpeed = horisontalSpeed;
     }
 
+    public void stop(){
+        body.setLinearVelocity(0,0);
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+
+        setRotation(MathUtils.radiansToDegrees * body.getAngle());
+        setPosition(body.getPosition().x, body.getPosition().y);
+
+    }
 }

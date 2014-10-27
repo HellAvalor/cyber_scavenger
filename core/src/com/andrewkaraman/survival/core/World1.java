@@ -45,9 +45,10 @@ public class World1 implements Disposable {
 
         @Override
         protected Bullet newObject() {
-            Bullet bullet = new Bullet(player.getCenterX(), player.getCenterY());
-            stage.addActor(bullet);
-            return bullet;
+//            Bullet bullet = new Bullet(player.getCenterX(), player.getCenterY());
+//            stage.addActor(bullet);
+//            return bullet;
+            return null;
         }
     };
 
@@ -110,16 +111,16 @@ public class World1 implements Disposable {
     }
 
     private void shoot(){
-        if (player.isShooting()) {
-            //      Gdx.app.log(LOG_CLASS_NAME, "Size bullets " + bullets.size() +" bulletPool "+ bulletPool.peak + " stage actors count " + stage.getRoot().getChildren().size);
-            if (TimeUtils.nanoTime() - player.getLastBulletTime() > player.getShootingSpeed()) {
-                Gdx.app.log(LOG_CLASS_NAME, "Shooting");
-                Bullet bullet = bulletPool.obtain();
-                bullet.init(player.getCenterX(), player.getCenterY());
-                bullets.add(bullet);
-                player.setLastBulletTime(TimeUtils.nanoTime());
-            }
-        }
+//        if (player.isShooting()) {
+//            //      Gdx.app.log(LOG_CLASS_NAME, "Size bullets " + bullets.size() +" bulletPool "+ bulletPool.peak + " stage actors count " + stage.getRoot().getChildren().size);
+//            if (TimeUtils.nanoTime() - player.getLastBulletTime() > player.getShootingSpeed()) {
+//                Gdx.app.log(LOG_CLASS_NAME, "Shooting");
+//                Bullet bullet = bulletPool.obtain();
+//                bullet.init(player.getCenterX(), player.getCenterY());
+//                bullets.add(bullet);
+//                player.setLastBulletTime(TimeUtils.nanoTime());
+//            }
+//        }
     }
 
     private void checkCollision(){

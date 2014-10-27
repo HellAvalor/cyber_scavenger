@@ -1,7 +1,6 @@
 package com.andrewkaraman.survival.core;
 
 import com.andrewkaraman.survival.core.screens.GameScreen;
-import com.andrewkaraman.survival.core.screens.GameScreenBox;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -23,8 +22,8 @@ public class MyGame extends Game {
 
     // Screen methods
 
-    public GameScreenBox getGameScreen() {
-        return new GameScreenBox(this);
+    public GameScreen getGameScreen() {
+        return new GameScreen(this);
     }
 
     // Game methods

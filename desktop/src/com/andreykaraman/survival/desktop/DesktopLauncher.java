@@ -10,8 +10,8 @@ public class DesktopLauncher {
         LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
         cfg.title = "scavenger";
         cfg.useGL30 = false;
-        cfg.width = 480;
-        cfg.height = 320;
+        cfg.width = 800;
+        cfg.height = 600;
 
         new LwjglApplication(new MyGame(), cfg);
 	}

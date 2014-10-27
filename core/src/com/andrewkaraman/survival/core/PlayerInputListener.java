@@ -1,10 +1,10 @@
 package com.andrewkaraman.survival.core;
 
+import com.andrewkaraman.survival.core.actors.NewPlayer;
 import com.andrewkaraman.survival.core.actors.Player;
 import com.andrewkaraman.survival.core.screens.GameScreenBox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 
@@ -13,7 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
  */
 public class PlayerInputListener extends InputListener {
 
-    private Player player;
+    private NewPlayer player;
+
 //    World world;
     private MyGame myGame;
     private GameScreenBox screen;
@@ -24,9 +25,17 @@ public class PlayerInputListener extends InputListener {
     public PlayerInputListener(/*World world,*/ Player player, MyGame myGame, GameScreenBox screen) {
 //        this.world = world;
         this.screen = screen;
-        this.player = player;
+//        this.player = player;
         this.myGame = myGame;
     }
+
+    public PlayerInputListener(/*World world,*/ NewPlayer player) {
+//        this.world = world;
+
+        this.player = player;
+
+    }
+
 
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         Gdx.app.log(LOG_CLASS_NAME, "down " + x + " / " + y);
@@ -67,6 +76,10 @@ public class PlayerInputListener extends InputListener {
 
             case Input.Keys.SPACE:
                 player.setShooting(true);
+                break;
+
+            case Input.Keys.BACKSPACE:
+                player.stop();
                 break;
 
             case Input.Keys.G:
