@@ -63,7 +63,9 @@ public class GameScreen extends AbstractScreen{
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
-        labelStatus.setText(world.newPlayer.getX() + " / " + world.newPlayer.getY() + " Objects "+ world.box2dWorld.getBodyCount()+" / stage actors count " + world.stage.getRoot().getChildren().size);
+        labelStatus.setText(world.newPlayer.getX() + " / " + world.newPlayer.getY() +
+                " Objects "+ world.box2dWorld.getBodyCount()+" / stage actors count " + world.stage.getRoot().getChildren().size +
+                " bullets " +world.bullets.size() +" / pool "+ world.bulletPool.peak+" / pool free "+ world.bulletPool.getFree()+" / pool free "+ world.bulletPool.max);
         guiCam.update();
 
         world.update(delta); // update the box2d world
@@ -88,5 +90,6 @@ public class GameScreen extends AbstractScreen{
         super.resize(width, height);
         stage.getViewport().update(width, height);
         world.stage.getViewport().update(width, height);
+        renderer.resize();
     }
 }

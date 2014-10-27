@@ -2,9 +2,11 @@ package com.andrewkaraman.survival.core;
 
 import com.andrewkaraman.survival.core.actors.NewPlayer;
 import com.andrewkaraman.survival.core.actors.Player;
+import com.andrewkaraman.survival.core.screens.GameScreen;
 import com.andrewkaraman.survival.core.screens.GameScreenBox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 
@@ -15,23 +17,23 @@ public class PlayerInputListener extends InputListener {
 
     private NewPlayer player;
 
-//    World world;
+    private GameWorld world;
     private MyGame myGame;
-    private GameScreenBox screen;
+    private GameScreen screen;
 
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
     public PlayerInputListener(/*World world,*/ Player player, MyGame myGame, GameScreenBox screen) {
 //        this.world = world;
-        this.screen = screen;
+//        this.screen = screen;
 //        this.player = player;
         this.myGame = myGame;
     }
 
-    public PlayerInputListener(/*World world,*/ NewPlayer player) {
-//        this.world = world;
-
+    public PlayerInputListener(GameWorld world, NewPlayer player) {
+        this.world = world;
+//        this.screen = screen;
         this.player = player;
 
     }
@@ -87,14 +89,14 @@ public class PlayerInputListener extends InputListener {
                 break;
 
             case Input.Keys.R:
-                  myGame.create();
+                world.setResetGame(true);
                 break;
 
             case Input.Keys.COMMA:
-                screen.zoomIn();
+                world.zoomIn();
                 break;
             case Input.Keys.PERIOD:
-                screen.zoomOut();
+                world.zoomOut();
                 break;
         }
         return true;

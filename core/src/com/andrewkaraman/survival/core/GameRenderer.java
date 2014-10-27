@@ -28,6 +28,10 @@ public class GameRenderer {
 
     public void render()
     {
+//        if (world.isResized){
+//            this.camera = (OrthographicCamera) world.stage.getCamera();
+//            world.isResized = false;
+//        }
         // have the camera follow newPlayer
         camera.position.x = world.newPlayer.body.getPosition().x;
         camera.position.y = world.newPlayer.body.getPosition().y;
@@ -40,5 +44,13 @@ public class GameRenderer {
 
         // game stage rendering
         world.stage.draw();
+    }
+
+    public void resize(){
+        this.camera = (OrthographicCamera) world.stage.getCamera();
+
+        // center the camera on newPlayer (optional)
+        camera.position.x = world.newPlayer.body.getPosition().x;
+        camera.position.y = world.newPlayer.body.getPosition().y;
     }
 }
