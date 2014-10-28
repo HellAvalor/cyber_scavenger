@@ -20,15 +20,14 @@ import aurelienribon.bodyeditor.BodyEditorLoader;
  * Created by Andrew on 26.10.2014.
  */
 public class NewPlayer extends Image {
-
     private final String LOG_CLASS_NAME = this.getClass().getName();
-    public static final float RADIUS = 0.5f; // newPlayer is a ball with 0.8m diameter
     public final Body body; // newPlayer's box2d body
     private final int SHIP_WIDTH = 1;
-
+    float DEG_TO_RAD =0.017453292519943295769236907684886f;
 
     private long shootingSpeed = 100000000;
     private long lastBulletTime;
+    public float angle;
 
     boolean isShooting;
     boolean moveRight;
@@ -55,6 +54,7 @@ public class NewPlayer extends Image {
         bodyDef.position.y = 4f;
         bodyDef.linearDamping = 0.1f;
         bodyDef.angularDamping = 0.5f;
+        bodyDef.angle = angle;
 
         this.body = world.box2dWorld.createBody(bodyDef);
 //            this.body.setUserData(ElementType.BOB);
@@ -108,9 +108,32 @@ public class NewPlayer extends Image {
             body.applyForceToCenter(0, -velocity, true);
         }
 
+        updateAngle();
 //        Gdx.app.log(LOG_CLASS_NAME, "Player texture position at " + getX() + " / " + getY() +" body " + body.getPosition().x +" / "+ body.getPosition().y);
+
+        //TODO idea for max speed
+//        Vector2 velocity = body.getLinearVelocity();
+//        float speed = velocity.len();
+//        if (speed > MAX_SPEED) {
+//            body.setLinearVelocity(velocity.scl(MAX_SPEED / speed));
+//        }
     }
 
+
+    private void updateAngle(){
+
+//        angle = body.getLinearVelocity().x / (float) Math.sqrt(Math.pow(body.getLinearVelocity().x, 2) + (Math.pow(body.getLinearVelocity().y, 2)));
+        float desiredAngle = (float) Math.atan2( -body.getLinearVelocity().y, body.getLinearVelocity().x );
+        float nextAngle = angle + body.getAngularVelocity() / 60f;
+        float totalRotation = desiredAngle - nextAngle;
+        while ( totalRotation < -180 * DEG_TO_RAD ) totalRotation += 360 * DEG_TO_RAD;
+        while ( totalRotation >  180 * DEG_TO_RAD ) totalRotation -= 360 * DEG_TO_RAD;
+        float desiredAngularVelocity = totalRotation * 60;
+        float change = 1 * DEG_TO_RAD; //allow 1 degree rotation per time step
+        desiredAngularVelocity = Math.min( change, Math.max(-change, desiredAngularVelocity));
+        float impulse = body.getInertia() * desiredAngularVelocity;
+        body.applyAngularImpulse(impulse, true);
+    }
 
     public boolean isMoveRight() {
         return moveRight;
