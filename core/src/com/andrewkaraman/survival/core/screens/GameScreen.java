@@ -65,7 +65,8 @@ public class GameScreen extends AbstractScreen{
         Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
         labelStatus.setText(world.newPlayer.getX() + " / " + world.newPlayer.getY() +
                 " Objects "+ world.box2dWorld.getBodyCount()+" / stage actors count " + world.stage.getRoot().getChildren().size +
-                " bullets " +world.bullets.size() +" / pool "+ world.bulletPool.peak+" / pool free "+ world.bulletPool.getFree()+" / pool free "+ world.bulletPool.max);
+                "\n bullets " +world.bullets.size() +" / pool "+ world.bulletPool.peak+" / pool free "+ world.bulletPool.getFree()+" / pool max "+ world.bulletPool.max +
+                "\n enemies " +world.enemies.size() +" / pool "+ world.enemyPool.peak+" / pool free "+ world.enemyPool.getFree()+" / pool max "+ world.enemyPool.max);
         guiCam.update();
 
         world.update(delta); // update the box2d world

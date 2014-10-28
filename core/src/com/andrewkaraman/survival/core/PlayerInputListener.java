@@ -6,7 +6,6 @@ import com.andrewkaraman.survival.core.screens.GameScreen;
 import com.andrewkaraman.survival.core.screens.GameScreenBox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 
@@ -85,7 +84,7 @@ public class PlayerInputListener extends InputListener {
                 break;
 
             case Input.Keys.G:
-//                world.setGenerateEnemy(true);
+                world.generateEnemy();
                 break;
 
             case Input.Keys.R:
@@ -124,10 +123,6 @@ public class PlayerInputListener extends InputListener {
 
             case Input.Keys.SPACE:
                 player.setShooting(false);
-                break;
-
-            case Input.Keys.G:
-//                world.setGenerateEnemy(false);
                 break;
         }
         return true;

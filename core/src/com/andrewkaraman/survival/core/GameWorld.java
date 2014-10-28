@@ -23,29 +23,21 @@ public class GameWorld {
 
     // here we set up the actual viewport size of the game in meters.
     public static float UNIT_WIDTH = 20;
-    public static float UNIT_HEIGHT =  getUnitHeight(); // 3.75 meters height
+    public static float UNIT_HEIGHT = getUnitHeight(); // 3.75 meters height
 
     public static final Vector2 GRAVITY = new Vector2(0, 0);
 
     public final Stage stage; // stage containing game actors (not GUI, but actual game elements)
     public World box2dWorld; // box2d world
     public NewPlayer newPlayer; // our playing character
-    public NewEnemy newEnemy;
     public boolean isResized = false;
     private boolean resetGame = false;
 
     // bullet pool.
-    public ArrayList<Bullet> bullets = new ArrayList<Bullet>();
-
-    public final Pool<Bullet> bulletPool = new Pool<Bullet>() {
-
-        @Override
-        protected Bullet newObject() {
-            Bullet bullet = new Bullet(box2dWorld, newPlayer.getCenterX(), newPlayer.getCenterY()+newPlayer.getHeight());
-            stage.addActor(bullet);
-            return bullet;
-        }
-    };
+    public ArrayList<Bullet> bullets;
+    public Pool<Bullet> bulletPool;
+    public ArrayList<NewEnemy> enemies;
+    public Pool<NewEnemy> enemyPool;
 
     public GameWorld() {
         stage = new Stage(); // create the game stage
@@ -54,9 +46,10 @@ public class GameWorld {
 
     private void createWorld() {
         box2dWorld = new World(GRAVITY, true);
-        Gdx.app.log(LOG_CLASS_NAME, "Unit size " +UNIT_WIDTH + " / "+ UNIT_HEIGHT);
-        stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0,0)); // set the game stage viewport to the meters size
+        Gdx.app.log(LOG_CLASS_NAME, "Unit size " + UNIT_WIDTH + " / " + UNIT_HEIGHT);
+        stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         stage.setDebugAll(true);
+        initPools();
         // create box2d bodies and the respective actors here.
         newPlayer = new NewPlayer(this);
         stage.addActor(newPlayer);
@@ -69,84 +62,118 @@ public class GameWorld {
 
         Gdx.input.setInputProcessor(stage);
         // add more game elements here
+        generateEnemy();
+    }
 
-        newEnemy = new NewEnemy(this);
-        stage.addActor(newEnemy);
+    private void initPools(){
+        // bullet pool.
+        bullets = new ArrayList<Bullet>();
+
+        bulletPool = new Pool<Bullet>() {
+
+            @Override
+            protected Bullet newObject() {
+                Bullet bullet = new Bullet(box2dWorld, newPlayer.getCenterX(), newPlayer.getCenterY() + newPlayer.getHeight());
+                stage.addActor(bullet);
+                return bullet;
+            }
+        };
+
+         enemies = new ArrayList<NewEnemy>();
+
+        enemyPool = new Pool<NewEnemy>() {
+
+            @Override
+            protected NewEnemy newObject() {
+                NewEnemy enemy = new NewEnemy(box2dWorld);
+                stage.addActor(enemy);
+                return enemy;
+            }
+        };
     }
 
     public void update(float delta) {
         shoot();
+        destroyObjects();
         // perform game logic here
         box2dWorld.step(delta, 3, 3); // update box2d world
         stage.act(delta); // update game stage
 
-//        if (isResetGame()){
-//            resetWorld();
-//        }
     }
 
 
-    private void shoot(){
+    private void shoot() {
         if (newPlayer.isShooting()) {
-            //      Gdx.app.log(LOG_CLASS_NAME, "Size bullets " + bullets.size() +" bulletPool "+ bulletPool.peak + " stage actors count " + stage.getRoot().getChildren().size);
             if (TimeUtils.nanoTime() - newPlayer.getLastBulletTime() > newPlayer.getShootingSpeed()) {
                 Gdx.app.log(LOG_CLASS_NAME, "Shooting");
-//                Bullet bullet = new Bullet(box2dWorld, newPlayer.getCenterX(), newPlayer.getCenterY()+newPlayer.getHeight());
-//                stage.addActor(bullet);
                 Bullet bullet = bulletPool.obtain();
-                bullet.init(newPlayer.getCenterX(), newPlayer.getCenterY()+newPlayer.getHeight());
+                bullet.init(newPlayer.getCenterX(), newPlayer.getCenterY() + newPlayer.getHeight());
                 bullets.add(bullet);
                 newPlayer.setLastBulletTime(TimeUtils.nanoTime());
             }
         }
-        updateShots ();
     }
 
-    private void updateShots () {
+    public void generateEnemy() {
+        Gdx.app.log(LOG_CLASS_NAME, "Generating enemy");
+        NewEnemy enemy = enemyPool.obtain();
+        enemy.init(2, 2);
+        enemies.add(enemy);
+    }
+
+    private void destroyObjects() {
         // if you want to free dead bullets, returning them to the pool:
         Bullet bullet;
         int len = bullets.size();
-        for (int i = len; --i >= 0;) {
+        for (int i = len; --i >= 0; ) {
             bullet = bullets.get(i);
             if (!bullet.alive) {
                 bullets.remove(i);
                 bulletPool.free(bullet);
-                //todo remove actor if free
+            }
+        }
+
+        NewEnemy enemy;
+        int lenE = enemies.size();
+        for (int i = lenE; --i >= 0; ) {
+            enemy = enemies.get(i);
+            if (!enemy.alive) {
+                enemies.remove(i);
+                enemyPool.free(enemy);
             }
         }
     }
 
-    public void zoomIn(){
-        UNIT_WIDTH = UNIT_WIDTH-5;
+    public void zoomIn() {
+        UNIT_WIDTH = UNIT_WIDTH - 5;
         UNIT_HEIGHT = getUnitHeight();
-        stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0,0)); // set the game stage viewport to the meters size
+        stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         isResized = true;
-stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//        stage.getViewport().update(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
+        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     public void zoomOut() {
-        UNIT_WIDTH = UNIT_WIDTH+5;
+        UNIT_WIDTH = UNIT_WIDTH + 5;
         UNIT_HEIGHT = getUnitHeight();
-        stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0,0)); // set the game stage viewport to the meters size
+        stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         isResized = true;
 
         stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//        ((ExtendViewport) stage.getViewport()).setMinWorldHeight(getMinWorldHeight() + 5);
-//        ((ExtendViewport) stage.getViewport()).setMinWorldWidth(getMinWorldWidth() + 5);
-//        stage.getViewport().update(stage.getViewport().getScreenWidth(), stage.getViewport().getScreenHeight());
     }
 
-    private static float getUnitHeight(){
-        return UNIT_WIDTH * GameScreen.SCREEN_HEIGHT/GameScreen.SCREEN_WIDTH; // 3.75 meters height
+    private static float getUnitHeight() {
+        return UNIT_WIDTH * GameScreen.SCREEN_HEIGHT / GameScreen.SCREEN_WIDTH; // 3.75 meters height
     }
 
-    public void resetWorld(){
+    public void resetWorld() {
         setResetGame(false);
+        bullets.clear();
+        enemies.clear();
         stage.clear();
         box2dWorld.dispose();
         createWorld();
     }
+
     public boolean isResetGame() {
         return resetGame;
     }
