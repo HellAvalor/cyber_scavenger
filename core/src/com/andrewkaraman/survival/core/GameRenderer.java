@@ -22,8 +22,8 @@ public class GameRenderer {
         this.camera = (OrthographicCamera) world.stage.getCamera();
 
         // center the camera on newPlayer (optional)
-        camera.position.x = world.newPlayer.body.getPosition().x;
-        camera.position.y = world.newPlayer.body.getPosition().y;
+        camera.position.x = world.newPlayer.getCenterX();
+        camera.position.y = world.newPlayer.getCenterY();
     }
 
     public void render()
@@ -33,8 +33,8 @@ public class GameRenderer {
 //            world.isResized = false;
 //        }
         // have the camera follow newPlayer
-        camera.position.x = world.newPlayer.body.getPosition().x;
-        camera.position.y = world.newPlayer.body.getPosition().y;
+        camera.position.x = world.newPlayer.getCenterX();
+        camera.position.y = world.newPlayer.getCenterY();
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -50,7 +50,7 @@ public class GameRenderer {
         this.camera = (OrthographicCamera) world.stage.getCamera();
 
         // center the camera on newPlayer (optional)
-        camera.position.x = world.newPlayer.body.getPosition().x;
-        camera.position.y = world.newPlayer.body.getPosition().y;
+        camera.position.x = world.newPlayer.getCenterX();
+        camera.position.y = world.newPlayer.getCenterY();
     }
 }

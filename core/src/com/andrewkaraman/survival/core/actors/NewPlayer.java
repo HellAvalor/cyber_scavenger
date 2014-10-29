@@ -3,7 +3,9 @@ package com.andrewkaraman.survival.core.actors;
 import com.andrewkaraman.survival.core.GameWorld;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -53,7 +55,7 @@ public class NewPlayer extends Image {
         bodyDef.position.x = 4f;
         bodyDef.position.y = 4f;
         bodyDef.linearDamping = 0.1f;
-        bodyDef.angularDamping = 0.5f;
+        bodyDef.angularDamping = 0.1f;
         bodyDef.angle = angle;
 
         this.body = world.box2dWorld.createBody(bodyDef);
@@ -64,6 +66,7 @@ public class NewPlayer extends Image {
         FixtureDef fd = new FixtureDef();
         fd.friction = 0.1f;
         fd.restitution = 0.3f;
+        fd.density = 1;
 
 //        Fixture fix = body.createFixture(circle, 50);
 //        fix.setDensity(1);
@@ -123,15 +126,19 @@ public class NewPlayer extends Image {
     private void updateAngle(){
 
 //        angle = body.getLinearVelocity().x / (float) Math.sqrt(Math.pow(body.getLinearVelocity().x, 2) + (Math.pow(body.getLinearVelocity().y, 2)));
-        float desiredAngle = (float) Math.atan2( -body.getLinearVelocity().y, body.getLinearVelocity().x );
-        float nextAngle = angle + body.getAngularVelocity() / 60f;
+
+        int y = 5;
+        int x = 5;
+//        float desiredAngle = (float) Math.atan2( -body.getLinearVelocity().y, body.getLinearVelocity().x );
+        float desiredAngle = (float) Math.atan2( -y, x );
+        float nextAngle = body.getAngle() + body.getAngularVelocity() / 60f;
         float totalRotation = desiredAngle - nextAngle;
         while ( totalRotation < -180 * DEG_TO_RAD ) totalRotation += 360 * DEG_TO_RAD;
         while ( totalRotation >  180 * DEG_TO_RAD ) totalRotation -= 360 * DEG_TO_RAD;
         float desiredAngularVelocity = totalRotation * 60;
         float change = 1 * DEG_TO_RAD; //allow 1 degree rotation per time step
         desiredAngularVelocity = Math.min( change, Math.max(-change, desiredAngularVelocity));
-        float impulse = body.getInertia() * desiredAngularVelocity;
+        float impulse = body.getAngularDamping() * desiredAngularVelocity;
         body.applyAngularImpulse(impulse, true);
     }
 
