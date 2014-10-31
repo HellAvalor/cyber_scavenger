@@ -80,11 +80,11 @@ public class NewPlayer extends Image {
         loader.attachFixture(body, "player-ship", fd, 1);
 
         // generate newPlayer's actor
-        setPosition(body.getPosition().x, body.getPosition().y); // set the actor position at the box2d body position
+        setPosition(body.getPosition().x - getWidth()/2, body.getPosition().y- getHeight()/2); // set the actor position at the box2d body position
         setSize(SHIP_WIDTH, SHIP_WIDTH * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture
-        setAlign(Align.center);
-        setOrigin(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
+//        setAlign(Align.center);
+//        setOrigin(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
     }
 
     @Override
