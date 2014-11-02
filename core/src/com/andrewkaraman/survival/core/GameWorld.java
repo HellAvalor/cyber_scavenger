@@ -73,7 +73,7 @@ public class GameWorld {
 
             @Override
             protected Bullet newObject() {
-                Bullet bullet = new Bullet(box2dWorld, newPlayer.getCenterX(), newPlayer.getCenterY() + newPlayer.getHeight());
+                Bullet bullet = new Bullet(box2dWorld, newPlayer.getShootingPoint().x, newPlayer.getShootingPoint().y, newPlayer.body.getAngle(), newPlayer.body.getLinearVelocity());
                 stage.addActor(bullet);
                 return bullet;
             }
@@ -107,7 +107,7 @@ public class GameWorld {
             if (TimeUtils.nanoTime() - newPlayer.getLastBulletTime() > newPlayer.getShootingSpeed()) {
                 Gdx.app.log(LOG_CLASS_NAME, "Shooting");
                 Bullet bullet = bulletPool.obtain();
-                bullet.init(newPlayer.getCenterX(), newPlayer.getCenterY() + newPlayer.getHeight());
+                bullet.init(newPlayer.getShootingPoint().x, newPlayer.getShootingPoint().y, newPlayer.body.getAngle(), newPlayer.body.getLinearVelocity());
                 bullets.add(bullet);
                 newPlayer.setLastBulletTime(TimeUtils.nanoTime());
             }

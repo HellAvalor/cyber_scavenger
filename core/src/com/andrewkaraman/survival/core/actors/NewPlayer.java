@@ -3,16 +3,13 @@ package com.andrewkaraman.survival.core.actors;
 import com.andrewkaraman.survival.core.GameWorld;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -31,8 +28,12 @@ public class NewPlayer extends Image {
     private long shootingSpeed = 100000000;
     private long lastBulletTime;
     public float angle;
+    float vectorX;
+    float vectorY;
 
     boolean isShooting;
+
+    Vector2 shootingPoint;
 
     boolean rotating;
     boolean moveRight;
@@ -40,6 +41,7 @@ public class NewPlayer extends Image {
     boolean moveUp;
     boolean moveDown;
     float velocity = 5;
+
 
     public NewPlayer(GameWorld world) {
         lastBulletTime = TimeUtils.nanoTime();
@@ -69,7 +71,6 @@ public class NewPlayer extends Image {
         FixtureDef fd = new FixtureDef();
         fd.friction = 0.1f;
         fd.restitution = 0.3f;
-        fd.density = 2;
 
         body.getMassData().center.set(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
 //        Fixture fix = body.createFixture(circle, 50);
@@ -78,13 +79,16 @@ public class NewPlayer extends Image {
 //        fix.setRestitution(0.8f);
 //            fix.setFilterData(filter);
         loader.attachFixture(body, "player-ship", fd, 1);
-
+        vectorX = 0;
+        vectorY = 0;
         // generate newPlayer's actor
-        setPosition(body.getPosition().x - getWidth()/2, body.getPosition().y- getHeight()/2); // set the actor position at the box2d body position
+//        setPosition(body.getPosition().x - getWidth()/2, body.getPosition().y- getHeight()/2); // set the actor position at the box2d body position
         setSize(SHIP_WIDTH, SHIP_WIDTH * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture
 //        setAlign(Align.center);
 //        setOrigin(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
+        setOrigin(getWidth()/2,getHeight()/2);
+        shootingPoint = new Vector2(getCenterX(), getCenterY());
     }
 
     @Override
@@ -92,9 +96,9 @@ public class NewPlayer extends Image {
         // here we override Actor's act() method to make the actor follow the box2d body
         super.act(delta);
         updateMotion();
-
+        shootingPoint.set(getCenterX(), getCenterY());
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
-        setPosition(body.getPosition().x, body.getPosition().y);
+        setPosition(body.getPosition().x - getWidth()/2, body.getPosition().y-getHeight()/2);
 //        Gdx.app.log(LOG_CLASS_NAME, "Player texture position at " + getX() + " / " + getY() +" body " + body.getPosition().x +" / "+ body.getPosition().y);
     }
 
@@ -102,17 +106,27 @@ public class NewPlayer extends Image {
 
         if (isMoveLeft()) {
             body.applyForceToCenter(-velocity, 0, true);
+            vectorX = -1;
         }
         if (isMoveRight()) {
             body.applyForceToCenter(velocity, 0, true);
+            vectorX = 1;
+        }
+        if (!isMoveRight()&&!isMoveLeft()){
+            vectorX = 0;
         }
 
         if (isMoveUp()) {
             body.applyForceToCenter(0, velocity, true);
-
+            vectorY = 1;
         }
         if (isMoveDown()) {
             body.applyForceToCenter(0, -velocity, true);
+            vectorY = -1;
+        }
+
+        if (!isMoveUp()&&!isMoveDown()){
+            vectorY = 0;
         }
 
         //TODO idea for max speed
@@ -136,7 +150,8 @@ public class NewPlayer extends Image {
 //
 //        int y = 5;
 //        int x = 5;
-            float desiredAngle = (float) Math.atan2(-body.getLinearVelocity().x, body.getLinearVelocity().y);
+//            float desiredAngle = (float) Math.atan2(-body.getLinearVelocity().x, body.getLinearVelocity().y);
+            float desiredAngle = (float) Math.atan2(-vectorX, vectorY);
 //        float desiredAngle = (float) Math.atan2( -y, x );
             float nextAngle = body.getAngle() + body.getAngularVelocity() / 60f;
             float totalRotation = desiredAngle - nextAngle;
@@ -225,8 +240,17 @@ public class NewPlayer extends Image {
     }
 
     private void checkNeedRotating(){
-       setRotating(moveDown || moveLeft ||moveRight || moveUp);
+       setRotating(moveDown || moveLeft || moveRight || moveUp);
     }
+
+    public Vector2 getShootingPoint() {
+        return shootingPoint;
+    }
+
+    public void setShootingPoint(Vector2 shootingPoint) {
+        this.shootingPoint = shootingPoint;
+    }
+
 }
 
 

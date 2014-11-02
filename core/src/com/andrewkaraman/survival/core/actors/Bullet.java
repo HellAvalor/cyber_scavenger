@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -27,9 +28,10 @@ public class Bullet extends Image implements Pool.Poolable {
     private float startPosX, startPosY;
     public boolean alive;
     public final Body body;
+    private int speed = 10;
     private final float SHIP_WIDTH = 0.2f;
 
-    public Bullet(World world, float x, float y) {
+    public Bullet(World world, float posX, float posY, float angle, Vector2 velocity) {
 
         Texture tex = new Texture(Gdx.files.internal("bullet.png"));
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
@@ -53,17 +55,26 @@ public class Bullet extends Image implements Pool.Poolable {
         setAlign(Align.center);
         setOrigin(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
 
-        init(x, y);
+        init(posX, posY, angle, velocity);
         alive = false;
         setVisible(alive);
     }
 
-    public void init(float posX, float posY) {
-        body.setTransform(posX, posY, 0);
+    public void init(float posX, float posY, float angle, Vector2 velocity) {
+        posX -= getWidth()/2;
+        posY -= getHeight()/2;
+
+        Vector2 v = new Vector2(- (float) Math.sin(angle), (float) Math.cos(angle));
+        v.set(v.nor());
+        startPosX = v.x+posX;
+        startPosY = v.y+posY;
+
+        body.setTransform(startPosX, startPosY, 0);
+
+        v.scl(speed);
+        body.setLinearVelocity(v.add(velocity));
+
         setPosition(body.getPosition().x, body.getPosition().y); // set the actor position at the box2d body position
-        body.setLinearVelocity(0, 10);
-        startPosX = posX;
-        startPosY = posY;
         body.setActive(true);
         alive = true;
         setVisible(alive);
