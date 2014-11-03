@@ -23,8 +23,16 @@ public class NewPlayer extends Image {
     private final String LOG_CLASS_NAME = this.getClass().getName();
     public final Body body; // newPlayer's box2d body
     private final int SHIP_WIDTH = 1;
-    float DEG_TO_RAD =0.017453292519943295769236907684886f;
+
+    public final static int TURN_LEFT = 1;
+    public final static int TURN_RIGHT = -1;
+    public final static int SPEED_UP = 1;
+    public final static int STOP = 0;
+    public final static int FORCE_STOP = -1;
+
+    float DEG_TO_RAD = 0.017453292519943295769236907684886f;
     private final float MAX_SPEED = 10;
+    private final float THRUST = 5;
     private long shootingSpeed = 100000000;
     private long lastBulletTime;
     public float angle;
@@ -35,6 +43,11 @@ public class NewPlayer extends Image {
 
     Vector2 shootingPoint;
 
+    int turning;
+    int speedUp;
+
+
+    boolean isThrust;
     boolean rotating;
     boolean moveRight;
     boolean moveLeft;
@@ -59,7 +72,7 @@ public class NewPlayer extends Image {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.x = 0;
         bodyDef.position.y = 0;
-        bodyDef.linearDamping = 0.1f;
+        bodyDef.linearDamping = 0.3f;
         bodyDef.angularDamping = 0.1f;
         bodyDef.angle = angle;
 
@@ -72,7 +85,7 @@ public class NewPlayer extends Image {
         fd.friction = 0.1f;
         fd.restitution = 0.3f;
 
-        body.getMassData().center.set(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
+        body.getMassData().center.set(SHIP_WIDTH / 2, SHIP_WIDTH * (tex.getHeight() / tex.getWidth()) / 2);
 //        Fixture fix = body.createFixture(circle, 50);
 //        fix.setDensity(1);
 //        fix.setFriction(1f);
@@ -87,7 +100,7 @@ public class NewPlayer extends Image {
         setScaling(Scaling.stretch); // stretch the texture
 //        setAlign(Align.center);
 //        setOrigin(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
-        setOrigin(getWidth()/2,getHeight()/2);
+        setOrigin(getWidth() / 2, getHeight() / 2);
         shootingPoint = new Vector2(getCenterX(), getCenterY());
     }
 
@@ -98,7 +111,7 @@ public class NewPlayer extends Image {
         updateMotion();
         shootingPoint.set(getCenterX(), getCenterY());
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
-        setPosition(body.getPosition().x - getWidth()/2, body.getPosition().y-getHeight()/2);
+        setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2);
 //        Gdx.app.log(LOG_CLASS_NAME, "Player texture position at " + getX() + " / " + getY() +" body " + body.getPosition().x +" / "+ body.getPosition().y);
     }
 
@@ -112,7 +125,7 @@ public class NewPlayer extends Image {
             body.applyForceToCenter(velocity, 0, true);
             vectorX = 1;
         }
-        if (!isMoveRight()&&!isMoveLeft()){
+        if (!isMoveRight() && !isMoveLeft()) {
             vectorX = 0;
         }
 
@@ -125,11 +138,14 @@ public class NewPlayer extends Image {
             vectorY = -1;
         }
 
-        if (!isMoveUp()&&!isMoveDown()){
+        if (!isMoveUp() && !isMoveDown()) {
             vectorY = 0;
         }
 
-        //TODO idea for max speed
+
+        turnCheck(turning);
+        speedCheck(speedUp);
+
         Vector2 velocity = body.getLinearVelocity();
         float speed = velocity.len();
         if (speed > MAX_SPEED) {
@@ -138,21 +154,28 @@ public class NewPlayer extends Image {
 
         checkNeedRotating();
         updateAngle();
-//        Gdx.app.log(LOG_CLASS_NAME, "Player texture position at " + getX() + " / " + getY() +" body " + body.getPosition().x +" / "+ body.getPosition().y);
-
 
     }
 
 
+    private void turnCheck(int rotation) {
+        float impulse = body.getAngularDamping() * rotation / 5;
+        body.setTransform(body.getPosition(), body.getAngle() + impulse);
+    }
+
+    private void speedCheck(int speedUp) {
+
+        if (speedUp != 0) {
+            Vector2 v = new Vector2(-(float) Math.sin(body.getAngle()), (float) Math.cos(body.getAngle()));
+            if (speedUp < 0) speedUp /= 5;
+            v.nor().scl(THRUST * speedUp);
+            body.applyForceToCenter(v, true);
+        }
+    }
+
     private void updateAngle() {
         if (rotating) {
-//        angle = body.getLinearVelocity().x / (float) Math.sqrt(Math.pow(body.getLinearVelocity().x, 2) + (Math.pow(body.getLinearVelocity().y, 2)));
-//
-//        int y = 5;
-//        int x = 5;
-//            float desiredAngle = (float) Math.atan2(-body.getLinearVelocity().x, body.getLinearVelocity().y);
             float desiredAngle = (float) Math.atan2(-vectorX, vectorY);
-//        float desiredAngle = (float) Math.atan2( -y, x );
             float nextAngle = body.getAngle() + body.getAngularVelocity() / 60f;
             float totalRotation = desiredAngle - nextAngle;
             while (totalRotation < -180 * DEG_TO_RAD) totalRotation += 360 * DEG_TO_RAD;
@@ -161,7 +184,6 @@ public class NewPlayer extends Image {
             float change = 10 * DEG_TO_RAD; //allow 1 degree rotation per time step
             desiredAngularVelocity = Math.min(change, Math.max(-change, desiredAngularVelocity));
             float impulse = body.getAngularDamping() * desiredAngularVelocity;
-//        body.applyAngularImpulse(impulse, true);
             body.setTransform(body.getPosition(), body.getAngle() + impulse);
         }
     }
@@ -235,12 +257,12 @@ public class NewPlayer extends Image {
         this.shootingSpeed = shootingSpeed;
     }
 
-    public void stop(){
-        body.setLinearVelocity(0,0);
+    public void stop() {
+        body.setLinearVelocity(0, 0);
     }
 
-    private void checkNeedRotating(){
-       setRotating(moveDown || moveLeft || moveRight || moveUp);
+    private void checkNeedRotating() {
+        setRotating(moveDown || moveLeft || moveRight || moveUp);
     }
 
     public Vector2 getShootingPoint() {
@@ -251,6 +273,29 @@ public class NewPlayer extends Image {
         this.shootingPoint = shootingPoint;
     }
 
+    public boolean isThrust() {
+        return isThrust;
+    }
+
+    public void setThrust(boolean isThrust) {
+        this.isThrust = isThrust;
+    }
+
+    public int getSpeedUp() {
+        return speedUp;
+    }
+
+    public void setSpeedUp(int speedUp) {
+        this.speedUp = speedUp;
+    }
+
+    public int getTurning() {
+        return turning;
+    }
+
+    public void setTurning(int turning) {
+        this.turning = turning;
+    }
 }
 
 

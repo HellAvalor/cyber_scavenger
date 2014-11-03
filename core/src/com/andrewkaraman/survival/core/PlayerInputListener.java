@@ -91,9 +91,26 @@ public class PlayerInputListener extends InputListener {
                 world.setResetGame(true);
                 break;
 
+            case Input.Keys.W:
+                player.setSpeedUp(NewPlayer.SPEED_UP);
+                break;
+
+            case Input.Keys.A:
+                player.setTurning(NewPlayer.TURN_LEFT);
+                break;
+
+            case Input.Keys.D:
+                player.setTurning(NewPlayer.TURN_RIGHT);
+                break;
+
+            case Input.Keys.S:
+                player.setSpeedUp(NewPlayer.FORCE_STOP);
+                break;
+
             case Input.Keys.COMMA:
                 world.zoomIn();
                 break;
+
             case Input.Keys.PERIOD:
                 world.zoomOut();
                 break;
@@ -124,6 +141,16 @@ public class PlayerInputListener extends InputListener {
             case Input.Keys.SPACE:
                 player.setShooting(false);
                 break;
+
+            case Input.Keys.W:
+            case Input.Keys.S:
+                player.setSpeedUp(NewPlayer.STOP);
+                break;
+            case Input.Keys.A:
+            case Input.Keys.D:
+                player.setTurning(NewPlayer.STOP);
+                break;
+
         }
         return true;
     }
