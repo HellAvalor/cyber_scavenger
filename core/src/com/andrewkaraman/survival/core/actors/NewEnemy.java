@@ -74,7 +74,6 @@ public class NewEnemy extends Image implements Pool.Poolable{
     @Override
     public void act(float delta) {
         super.act(delta);
-
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
         setPosition(body.getPosition().x, body.getPosition().y);
     }

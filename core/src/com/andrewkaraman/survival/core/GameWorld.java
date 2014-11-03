@@ -53,20 +53,13 @@ public class GameWorld {
         // create box2d bodies and the respective actors here.
         newPlayer = new NewPlayer(this);
         stage.addActor(newPlayer);
-
-        PlayerInputListener listener = new PlayerInputListener(this, newPlayer);
-        stage.addListener(listener);
-
         stage.setDebugAll(true);
-        stage.setKeyboardFocus(newPlayer);
 
-        Gdx.input.setInputProcessor(stage);
         // add more game elements here
         generateEnemy();
     }
 
     private void initPools(){
-        // bullet pool.
         bullets = new ArrayList<Bullet>();
 
         bulletPool = new Pool<Bullet>() {
@@ -100,7 +93,6 @@ public class GameWorld {
         stage.act(delta); // update game stage
 
     }
-
 
     private void shoot() {
         if (newPlayer.isShooting()) {
@@ -145,7 +137,7 @@ public class GameWorld {
     }
 
     public void zoomIn() {
-        UNIT_WIDTH = UNIT_WIDTH - 5;
+        UNIT_WIDTH -= 5;
         UNIT_HEIGHT = getUnitHeight();
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         isResized = true;
@@ -153,7 +145,7 @@ public class GameWorld {
     }
 
     public void zoomOut() {
-        UNIT_WIDTH = UNIT_WIDTH + 5;
+        UNIT_WIDTH += 5;
         UNIT_HEIGHT = getUnitHeight();
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         isResized = true;
@@ -162,16 +154,20 @@ public class GameWorld {
     }
 
     private static float getUnitHeight() {
-        return UNIT_WIDTH * GameScreen.SCREEN_HEIGHT / GameScreen.SCREEN_WIDTH; // 3.75 meters height
+        return UNIT_WIDTH * GameScreen.SCREEN_HEIGHT / GameScreen.SCREEN_WIDTH;
     }
 
     public void resetWorld() {
         setResetGame(false);
+        destroyWorld();
+        createWorld();
+    }
+
+    private void destroyWorld(){
         bullets.clear();
         enemies.clear();
         stage.clear();
         box2dWorld.dispose();
-        createWorld();
     }
 
     public boolean isResetGame() {

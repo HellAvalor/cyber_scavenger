@@ -28,10 +28,6 @@ public class GameRenderer {
 
     public void render()
     {
-//        if (world.isResized){
-//            this.camera = (OrthographicCamera) world.stage.getCamera();
-//            world.isResized = false;
-//        }
         // have the camera follow newPlayer
         camera.position.x = world.newPlayer.getCenterX();
         camera.position.y = world.newPlayer.getCenterY();

@@ -16,6 +16,8 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
 
+import static com.badlogic.gdx.math.MathUtils.atan2;
+
 /**
  * Created by Andrew on 26.10.2014.
  */
@@ -36,8 +38,8 @@ public class NewPlayer extends Image {
     private long shootingSpeed = 100000000;
     private long lastBulletTime;
     public float angle;
-    float vectorX;
-    float vectorY;
+    float directionX;
+    float directionY;
 
     boolean isShooting;
 
@@ -47,27 +49,16 @@ public class NewPlayer extends Image {
     int speedUp;
 
 
-    boolean isThrust;
     boolean rotating;
-    boolean moveRight;
-    boolean moveLeft;
-    boolean moveUp;
-    boolean moveDown;
-    float velocity = 5;
-
 
     public NewPlayer(GameWorld world) {
         lastBulletTime = TimeUtils.nanoTime();
         // newPlayer is an Image, so we load the graphics from the assetmanager
 //            Texture tex = Assets.manager.get("characters.png", Texture.class);
         Texture tex = new Texture(Gdx.files.internal("ship-model.png"));
-//            this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex, 0, 256, 128, 128)));
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
 
         // generate newPlayer's box2d body
-//        CircleShape circle = new CircleShape();
-//        circle.setRadius(RADIUS);
-
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.x = 0;
@@ -86,16 +77,8 @@ public class NewPlayer extends Image {
         fd.restitution = 0.3f;
 
         body.getMassData().center.set(SHIP_WIDTH / 2, SHIP_WIDTH * (tex.getHeight() / tex.getWidth()) / 2);
-//        Fixture fix = body.createFixture(circle, 50);
-//        fix.setDensity(1);
-//        fix.setFriction(1f);
-//        fix.setRestitution(0.8f);
-//            fix.setFilterData(filter);
         loader.attachFixture(body, "player-ship", fd, 1);
-        vectorX = 0;
-        vectorY = 0;
         // generate newPlayer's actor
-//        setPosition(body.getPosition().x - getWidth()/2, body.getPosition().y- getHeight()/2); // set the actor position at the box2d body position
         setSize(SHIP_WIDTH, SHIP_WIDTH * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture
 //        setAlign(Align.center);
@@ -117,31 +100,42 @@ public class NewPlayer extends Image {
 
     private void updateMotion() {
 
-        if (isMoveLeft()) {
-            body.applyForceToCenter(-velocity, 0, true);
-            vectorX = -1;
-        }
-        if (isMoveRight()) {
-            body.applyForceToCenter(velocity, 0, true);
-            vectorX = 1;
-        }
-        if (!isMoveRight() && !isMoveLeft()) {
-            vectorX = 0;
-        }
+        Vector2 v = new Vector2(directionX, directionY);
 
-        if (isMoveUp()) {
-            body.applyForceToCenter(0, velocity, true);
-            vectorY = 1;
-        }
-        if (isMoveDown()) {
-            body.applyForceToCenter(0, -velocity, true);
-            vectorY = -1;
-        }
+        float angle =  body.getAngle()%(float) Math.PI - atan2(directionY, directionX);
+//        angle = angle
 
-        if (!isMoveUp() && !isMoveDown()) {
-            vectorY = 0;
-        }
+//        if (angle > (float) Math.PI/2) angle =-1*((angle)- (float) Math.PI);
+//        if (angle < -(float) Math.PI/2) angle =-1*((angle)+  (float) Math.PI);
 
+        if (angle < 0){
+            turning = TURN_LEFT;
+        } else {
+            turning = TURN_RIGHT;
+        }
+//        Gdx.app.log(LOG_CLASS_NAME, "Strength " +v.len() +  knobPercentX+" / "+knobPercentY + " angle " +body.getAngle() + " / touch angle " + v.angle());
+
+
+//        float angleDiffClock = Math.abs((convertAngle360(body.getAngle()) - v.angle()));
+//        float angleDiffOffClock = Math.abs(convertAngle360(body.getAngle()) - (v.angle() + 360));
+//        if (Math.min(angleDiffClock, angleDiffOffClock) < 1) {
+//            turning = STOP;
+//        } else if (angleDiffClock < angleDiffOffClock) {
+//            turning = TURN_RIGHT;
+//        } else {
+//            turning = TURN_LEFT;
+//        }
+
+        Gdx.app.log(LOG_CLASS_NAME, "converted angle " + angle);
+
+        if (v.len() > 0.7f) {
+            speedUp = SPEED_UP;
+        } else if (v.len() < 0.1f) {
+            speedUp = STOP;
+            turning = STOP;
+        } else {
+            speedUp = STOP;
+        }
 
         turnCheck(turning);
         speedCheck(speedUp);
@@ -151,10 +145,6 @@ public class NewPlayer extends Image {
         if (speed > MAX_SPEED) {
             body.setLinearVelocity(velocity.scl(MAX_SPEED / speed));
         }
-
-        checkNeedRotating();
-        updateAngle();
-
     }
 
 
@@ -173,20 +163,29 @@ public class NewPlayer extends Image {
         }
     }
 
-    private void updateAngle() {
-        if (rotating) {
-            float desiredAngle = (float) Math.atan2(-vectorX, vectorY);
-            float nextAngle = body.getAngle() + body.getAngularVelocity() / 60f;
-            float totalRotation = desiredAngle - nextAngle;
-            while (totalRotation < -180 * DEG_TO_RAD) totalRotation += 360 * DEG_TO_RAD;
-            while (totalRotation > 180 * DEG_TO_RAD) totalRotation -= 360 * DEG_TO_RAD;
-            float desiredAngularVelocity = totalRotation * 60;
-            float change = 10 * DEG_TO_RAD; //allow 1 degree rotation per time step
-            desiredAngularVelocity = Math.min(change, Math.max(-change, desiredAngularVelocity));
-            float impulse = body.getAngularDamping() * desiredAngularVelocity;
-            body.setTransform(body.getPosition(), body.getAngle() + impulse);
-        }
+    public void setJoystickMove(float knobPercentX, float knobPercentY) {
+        directionX = knobPercentX;
+        directionY = knobPercentY;
     }
+
+    public float convertAngle360(float angle) {
+        return ((angle * 180 / (float) Math.PI) + 90)%360;
+    }
+
+//    private void updateAngle() {
+//        if (rotating) {
+//            float desiredAngle = (float) Math.atan2(-vectorX, vectorY);
+//            float nextAngle = body.getAngle() + body.getAngularVelocity() / 60f;
+//            float totalRotation = desiredAngle - nextAngle;
+//            while (totalRotation < -180 * DEG_TO_RAD) totalRotation += 360 * DEG_TO_RAD;
+//            while (totalRotation > 180 * DEG_TO_RAD) totalRotation -= 360 * DEG_TO_RAD;
+//            float desiredAngularVelocity = totalRotation * 60;
+//            float change = 10 * DEG_TO_RAD; //allow 1 degree rotation per time step
+//            desiredAngularVelocity = Math.min(change, Math.max(-change, desiredAngularVelocity));
+//            float impulse = body.getAngularDamping() * desiredAngularVelocity;
+//            body.setTransform(body.getPosition(), body.getAngle() + impulse);
+//        }
+//    }
 
     public boolean isRotating() {
         return rotating;
@@ -194,42 +193,6 @@ public class NewPlayer extends Image {
 
     public void setRotating(boolean rotating) {
         this.rotating = rotating;
-    }
-
-    public boolean isMoveRight() {
-        return moveRight;
-    }
-
-    public void setMoveRight(boolean moveRight) {
-        if (moveLeft && moveRight) moveLeft = false;
-        this.moveRight = moveRight;
-    }
-
-    public boolean isMoveLeft() {
-        return moveLeft;
-    }
-
-    public void setMoveLeft(boolean moveLeft) {
-        if (moveLeft && moveRight) moveRight = false;
-        this.moveLeft = moveLeft;
-    }
-
-    public boolean isMoveUp() {
-        return moveUp;
-    }
-
-    public void setMoveUp(boolean moveUp) {
-        if (moveUp && moveDown) moveDown = false;
-        this.moveUp = moveUp;
-    }
-
-    public boolean isMoveDown() {
-        return moveDown;
-    }
-
-    public void setMoveDown(boolean moveDown) {
-        if (moveUp && moveDown) moveUp = false;
-        this.moveDown = moveDown;
     }
 
     public boolean isShooting() {
@@ -261,24 +224,12 @@ public class NewPlayer extends Image {
         body.setLinearVelocity(0, 0);
     }
 
-    private void checkNeedRotating() {
-        setRotating(moveDown || moveLeft || moveRight || moveUp);
-    }
-
     public Vector2 getShootingPoint() {
         return shootingPoint;
     }
 
     public void setShootingPoint(Vector2 shootingPoint) {
         this.shootingPoint = shootingPoint;
-    }
-
-    public boolean isThrust() {
-        return isThrust;
-    }
-
-    public void setThrust(boolean isThrust) {
-        this.isThrust = isThrust;
     }
 
     public int getSpeedUp() {

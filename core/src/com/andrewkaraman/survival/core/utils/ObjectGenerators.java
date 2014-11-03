@@ -1,7 +1,5 @@
 package com.andrewkaraman.survival.core.utils;
 
-import com.andrewkaraman.survival.core.WorldProcessor;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.Random;
@@ -16,7 +14,7 @@ public class ObjectGenerators {
     public static Vector2 getRandomPosition(){
 
         Vector2 coordinates = new Vector2();
-        int center = (int) (WorldProcessor.WORLD_WIDTH / 2 + 5);
+        int center = (int) (200 / 2 + 5);
         coordinates.x = randInt(center - 5, center + 5);
         coordinates.y = randInt(center - 5, center + 5);
 

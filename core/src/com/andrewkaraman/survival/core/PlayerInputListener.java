@@ -1,13 +1,11 @@
 package com.andrewkaraman.survival.core;
 
 import com.andrewkaraman.survival.core.actors.NewPlayer;
-import com.andrewkaraman.survival.core.actors.Player;
-import com.andrewkaraman.survival.core.screens.GameScreen;
-import com.andrewkaraman.survival.core.screens.GameScreenBox;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 
 /**
  * Created by KaramanA on 21.10.2014.
@@ -15,65 +13,44 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 public class PlayerInputListener extends InputListener {
 
     private NewPlayer player;
-
     private GameWorld world;
-    private MyGame myGame;
-    private GameScreen screen;
-
+    private Touchpad touchpad;
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
-    public PlayerInputListener(/*World world,*/ Player player, MyGame myGame, GameScreenBox screen) {
-//        this.world = world;
-//        this.screen = screen;
-//        this.player = player;
-        this.myGame = myGame;
-    }
-
     public PlayerInputListener(GameWorld world, NewPlayer player) {
         this.world = world;
-//        this.screen = screen;
         this.player = player;
-
     }
+
+    public PlayerInputListener(GameWorld world, NewPlayer player, Touchpad touchpad) {
+        this.world = world;
+        this.player = player;
+        this.touchpad = touchpad;
+    }
+
 
 
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         Gdx.app.log(LOG_CLASS_NAME, "down " + x + " / " + y);
+        player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
         return true;
     }
 
     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
         Gdx.app.log(LOG_CLASS_NAME, "up");
+        player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
     }
 
     public void touchDragged(InputEvent event, float x, float y, int pointer) {
         Gdx.app.log(LOG_CLASS_NAME, "touchDragged " + x + " / " + y + " actor " + player.getCenterX() + " / " + player.getCenterY());
-        player.setCenterPosition(x, y);
+        player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
     }
 
 
     @Override
     public boolean keyDown(InputEvent event, int keycode) {
-
-        Gdx.app.log(LOG_CLASS_NAME, "keyDown " + Input.Keys.toString(keycode));
-
         switch (keycode) {
-            case Input.Keys.LEFT:
-                player.setMoveLeft(true);
-                break;
-
-            case Input.Keys.RIGHT:
-                player.setMoveRight(true);
-                break;
-
-            case Input.Keys.UP:
-                player.setMoveUp(true);
-                break;
-
-            case Input.Keys.DOWN:
-                player.setMoveDown(true);
-                break;
 
             case Input.Keys.SPACE:
                 player.setShooting(true);
@@ -120,23 +97,7 @@ public class PlayerInputListener extends InputListener {
 
     @Override
     public boolean keyUp(InputEvent event, int keycode) {
-        Gdx.app.log(LOG_CLASS_NAME, "keyup " + Input.Keys.toString(keycode));
         switch (keycode) {
-            case Input.Keys.LEFT:
-                player.setMoveLeft(false);
-                break;
-
-            case Input.Keys.RIGHT:
-                player.setMoveRight(false);
-                break;
-
-            case Input.Keys.UP:
-                player.setMoveUp(false);
-                break;
-
-            case Input.Keys.DOWN:
-                player.setMoveDown(false);
-                break;
 
             case Input.Keys.SPACE:
                 player.setShooting(false);

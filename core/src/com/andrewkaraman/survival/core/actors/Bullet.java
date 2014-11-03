@@ -29,7 +29,7 @@ public class Bullet extends Image implements Pool.Poolable {
     public boolean alive;
     public final Body body;
     private int speed = 10;
-    private final float SHIP_WIDTH = 0.2f;
+    private final float actorWidth = 0.2f;
 
     public Bullet(World world, float posX, float posY, float angle, Vector2 velocity) {
 
@@ -38,22 +38,18 @@ public class Bullet extends Image implements Pool.Poolable {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-//        bodyDef.position.x = x;
-//        bodyDef.position.y = y;
 
         this.body = world.createBody(bodyDef);
 
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
+        loader.attachFixture(body, "Bullet", fd, actorWidth);
 
-        loader.attachFixture(body, "Bullet", fd, SHIP_WIDTH);
-
-
-        setSize(SHIP_WIDTH, SHIP_WIDTH * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
+        setSize(actorWidth, actorWidth * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture
         setAlign(Align.center);
-        setOrigin(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
+        setOrigin(actorWidth / 2, actorWidth * (tex.getHeight() / tex.getWidth()) / 2);
 
         init(posX, posY, angle, velocity);
         alive = false;
@@ -97,7 +93,6 @@ public class Bullet extends Image implements Pool.Poolable {
         body.setActive(false);
         body.setLinearVelocity(0,0);
     }
-
 
     @Override
     public void act(float delta) {
