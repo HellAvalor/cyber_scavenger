@@ -87,7 +87,7 @@ public class GameScreen extends AbstractScreen{
 
         PlayerInputListener listener = new PlayerInputListener(world, world.newPlayer, touchpad);
         stage.addListener(listener);
-
+        //TODO set keyboard listener (multilistener)
         Gdx.input.setInputProcessor(stage);
 
     }
@@ -101,11 +101,15 @@ public class GameScreen extends AbstractScreen{
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
-        labelStatus.setText(world.newPlayer.getX() + " / " + world.newPlayer.getY() + " / " +world.newPlayer.body.getLinearVelocity().x+ " / " +world.newPlayer.body.getLinearVelocity().y+ " angle " +world.newPlayer.body.getAngle() +
+        labelStatus.setText(
+//                world.newPlayer.getX() + " / " + world.newPlayer.getY() + " / " +world.newPlayer.body.getLinearVelocity().x+ " / " +world.newPlayer.body.getLinearVelocity().y+ " angle " +world.newPlayer.body.getAngle() +
 //                "\n Objects "+ world.box2dWorld.getBodyCount()+" / stage actors count " + world.stage.getRoot().getChildren().size +
 //                "\n bullets " +world.bullets.size() +" / pool "+ world.bulletPool.peak+" / pool free "+ world.bulletPool.getFree()+" / pool max "+ world.bulletPool.max +
-                "\n touchPad " +touchpad.getKnobPercentX() +" / "+ touchpad.getKnobPercentY()+
-                "\n enemies " +world.enemies.size() +" / pool "+ world.enemyPool.peak+" / pool free "+ world.enemyPool.getFree()+" / pool max "+ world.enemyPool.max);
+                "\n Player angle " + world.newPlayer.body.getAngle()+ " normalize "  +(world.newPlayer.normalizeAngle(world.newPlayer.body.getAngle()))+
+                "\n touchPad " +touchpad.getKnobPercentX() +" / "+ touchpad.getKnobPercentY()+ " atan  "+ Math.atan2(-touchpad.getKnobPercentX(), touchpad.getKnobPercentY()) +
+                "\n angle " +world.newPlayer.angleDiff
+//                "\n enemies " +world.enemies.size() +" / pool "+ world.enemyPool.peak+" / pool free "+ world.enemyPool.getFree()+" / pool max "+ world.enemyPool.max
+        );
         guiCam.update();
 
         world.update(delta); // update the box2d world

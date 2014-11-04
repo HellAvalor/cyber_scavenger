@@ -31,6 +31,7 @@ public class NewPlayer extends Image {
     public final static int SPEED_UP = 1;
     public final static int STOP = 0;
     public final static int FORCE_STOP = -1;
+    public float angleDiff;
 
     float DEG_TO_RAD = 0.017453292519943295769236907684886f;
     private final float MAX_SPEED = 10;
@@ -102,31 +103,16 @@ public class NewPlayer extends Image {
 
         Vector2 v = new Vector2(directionX, directionY);
 
-        float angle =  body.getAngle()%(float) Math.PI - atan2(directionY, directionX);
-//        angle = angle
+        angleDiff = normalizeAngle(body.getAngle()) - atan2(-directionX, directionY);
 
-//        if (angle > (float) Math.PI/2) angle =-1*((angle)- (float) Math.PI);
-//        if (angle < -(float) Math.PI/2) angle =-1*((angle)+  (float) Math.PI);
+        if (angleDiff>Math.PI) angleDiff = -1*(angleDiff-(float)Math.PI);
+        if (angleDiff<-Math.PI) angleDiff = -1*(angleDiff+(float)Math.PI);
 
-        if (angle < 0){
-            turning = TURN_LEFT;
+        if (angleDiff < -0.1 || angleDiff > 0.1){
+            turning = (int) Math.signum(-1 * angleDiff);
         } else {
-            turning = TURN_RIGHT;
+            turning = STOP;
         }
-//        Gdx.app.log(LOG_CLASS_NAME, "Strength " +v.len() +  knobPercentX+" / "+knobPercentY + " angle " +body.getAngle() + " / touch angle " + v.angle());
-
-
-//        float angleDiffClock = Math.abs((convertAngle360(body.getAngle()) - v.angle()));
-//        float angleDiffOffClock = Math.abs(convertAngle360(body.getAngle()) - (v.angle() + 360));
-//        if (Math.min(angleDiffClock, angleDiffOffClock) < 1) {
-//            turning = STOP;
-//        } else if (angleDiffClock < angleDiffOffClock) {
-//            turning = TURN_RIGHT;
-//        } else {
-//            turning = TURN_LEFT;
-//        }
-
-        Gdx.app.log(LOG_CLASS_NAME, "converted angle " + angle);
 
         if (v.len() > 0.7f) {
             speedUp = SPEED_UP;
@@ -147,9 +133,12 @@ public class NewPlayer extends Image {
         }
     }
 
+    public float normalizeAngle(float angle){
+        return (angle %= (float)Math.PI*2) >= 0 ? (angle < (float)Math.PI) ? angle : angle - (float)Math.PI*2 : (angle >= -(float)Math.PI) ? angle : angle + (float) Math.PI*2;
+    }
 
     private void turnCheck(int rotation) {
-        float impulse = body.getAngularDamping() * rotation / 5;
+        float impulse = body.getAngularDamping() * rotation / 1;
         body.setTransform(body.getPosition(), body.getAngle() + impulse);
     }
 
@@ -167,25 +156,6 @@ public class NewPlayer extends Image {
         directionX = knobPercentX;
         directionY = knobPercentY;
     }
-
-    public float convertAngle360(float angle) {
-        return ((angle * 180 / (float) Math.PI) + 90)%360;
-    }
-
-//    private void updateAngle() {
-//        if (rotating) {
-//            float desiredAngle = (float) Math.atan2(-vectorX, vectorY);
-//            float nextAngle = body.getAngle() + body.getAngularVelocity() / 60f;
-//            float totalRotation = desiredAngle - nextAngle;
-//            while (totalRotation < -180 * DEG_TO_RAD) totalRotation += 360 * DEG_TO_RAD;
-//            while (totalRotation > 180 * DEG_TO_RAD) totalRotation -= 360 * DEG_TO_RAD;
-//            float desiredAngularVelocity = totalRotation * 60;
-//            float change = 10 * DEG_TO_RAD; //allow 1 degree rotation per time step
-//            desiredAngularVelocity = Math.min(change, Math.max(-change, desiredAngularVelocity));
-//            float impulse = body.getAngularDamping() * desiredAngularVelocity;
-//            body.setTransform(body.getPosition(), body.getAngle() + impulse);
-//        }
-//    }
 
     public boolean isRotating() {
         return rotating;
