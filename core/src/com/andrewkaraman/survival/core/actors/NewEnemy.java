@@ -43,13 +43,16 @@ public class NewEnemy extends Image implements Pool.Poolable{
         bodyDef.angularDamping = 0.5f;
 
         this.body = world.createBody(bodyDef);
-
+//        this.body.setUserData(ActorsCategories.ENEMY_SHIP);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
         fd.friction = 0.1f;
         fd.restitution = 0.3f;
         fd.density = 5;
+
+        fd.filter.categoryBits = (short) ActorsCategories.ENEMY_SHIP.getTypeMask();
+        fd.filter.maskBits = (short) (ActorsCategories.USER.getTypeMask() | ActorsCategories.BULLET.getTypeMask());
 
         loader.attachFixture(body, "Enemy", fd, 1);
 

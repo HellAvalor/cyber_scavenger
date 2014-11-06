@@ -70,12 +70,14 @@ public class NewPlayer extends Image {
 
 
         this.body = world.box2dWorld.createBody(bodyDef);
-//            this.body.setUserData(ElementType.BOB);
+//        this.body.setUserData(ActorsCategories.USER);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
         fd.friction = 0.1f;
         fd.restitution = 0.3f;
+        fd.filter.categoryBits = (short) ActorsCategories.USER.getTypeMask();
+        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask() | ActorsCategories.ENEMY_BULLET.getTypeMask());
 
         body.getMassData().center.set(SHIP_WIDTH / 2, SHIP_WIDTH * (tex.getHeight() / tex.getWidth()) / 2);
         loader.attachFixture(body, "player-ship", fd, 1);
