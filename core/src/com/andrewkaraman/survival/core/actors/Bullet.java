@@ -1,5 +1,7 @@
 package com.andrewkaraman.survival.core.actors;
 
+import com.andrewkaraman.survival.core.model.BulletCharacteristic;
+import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -23,7 +25,7 @@ import aurelienribon.bodyeditor.BodyEditorLoader;
 public class Bullet extends Image implements Pool.Poolable {
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
-
+    public BulletCharacteristic characteristic;
     private final float MAX_BULLET_DISTANCE = 5;
     private float startPosX, startPosY;
     public boolean alive;
@@ -40,7 +42,9 @@ public class Bullet extends Image implements Pool.Poolable {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
 
         this.body = world.createBody(bodyDef);
-//        this.body.setUserData(ActorsCategories.BULLET);
+        body.setBullet(true);
+        characteristic = new BulletCharacteristic();
+        this.body.setUserData(characteristic);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
@@ -75,6 +79,7 @@ public class Bullet extends Image implements Pool.Poolable {
 
         setPosition(body.getPosition().x, body.getPosition().y); // set the actor position at the box2d body position
         body.setActive(true);
+        characteristic.setAlive(true);
         alive = true;
         setVisible(alive);
     }
@@ -84,6 +89,7 @@ public class Bullet extends Image implements Pool.Poolable {
         double distance = Math.sqrt(Math.pow(startPosX - body.getPosition().x, 2) + Math.pow(startPosY - body.getPosition().y, 2));
 
         if (distance > MAX_BULLET_DISTANCE) {
+            characteristic.setAlive(false);
             alive = false;
             setVisible(alive);
         }

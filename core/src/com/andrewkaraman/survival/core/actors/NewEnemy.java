@@ -1,5 +1,6 @@
 package com.andrewkaraman.survival.core.actors;
 
+import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -25,6 +26,7 @@ public class NewEnemy extends Image implements Pool.Poolable{
     public final Body body;
     private final int SHIP_WIDTH = 1;
     public boolean alive;
+    public EnemyCharacteristic characteristic;
 
     public NewEnemy(World world){
         this(world, 6, 6);
@@ -43,7 +45,8 @@ public class NewEnemy extends Image implements Pool.Poolable{
         bodyDef.angularDamping = 0.5f;
 
         this.body = world.createBody(bodyDef);
-//        this.body.setUserData(ActorsCategories.ENEMY_SHIP);
+        characteristic = new EnemyCharacteristic();
+        this.body.setUserData(characteristic);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
@@ -52,7 +55,7 @@ public class NewEnemy extends Image implements Pool.Poolable{
         fd.density = 5;
 
         fd.filter.categoryBits = (short) ActorsCategories.ENEMY_SHIP.getTypeMask();
-        fd.filter.maskBits = (short) (ActorsCategories.USER.getTypeMask() | ActorsCategories.BULLET.getTypeMask());
+        fd.filter.maskBits = (short) (/*ActorsCategories.USER.getTypeMask() | */ActorsCategories.BULLET.getTypeMask());
 
         loader.attachFixture(body, "Enemy", fd, 1);
 
@@ -69,6 +72,7 @@ public class NewEnemy extends Image implements Pool.Poolable{
     public void init(float posX, float posY) {
         body.setTransform(posX, posY, 0);
         setPosition(body.getPosition().x, body.getPosition().y); // set the actor position at the box2d body position
+        characteristic.setAlive(true);
         body.setActive(true);
         alive = true;
         setVisible(alive);

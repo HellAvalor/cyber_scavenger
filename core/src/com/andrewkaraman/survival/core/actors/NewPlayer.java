@@ -1,6 +1,8 @@
 package com.andrewkaraman.survival.core.actors;
 
 import com.andrewkaraman.survival.core.GameWorld;
+import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
+import com.andrewkaraman.survival.core.model.PlayerCharacteristic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -25,6 +27,7 @@ public class NewPlayer extends Image {
     private final String LOG_CLASS_NAME = this.getClass().getName();
     public final Body body; // newPlayer's box2d body
     private final int SHIP_WIDTH = 1;
+    public PlayerCharacteristic characteristic;
 
     public final static int TURN_LEFT = 1;
     public final static int TURN_RIGHT = -1;
@@ -70,7 +73,8 @@ public class NewPlayer extends Image {
 
 
         this.body = world.box2dWorld.createBody(bodyDef);
-//        this.body.setUserData(ActorsCategories.USER);
+        characteristic = new PlayerCharacteristic();
+        this.body.setUserData(characteristic);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
@@ -85,9 +89,8 @@ public class NewPlayer extends Image {
         setSize(SHIP_WIDTH, SHIP_WIDTH * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture
 //        setAlign(Align.center);
-//        setOrigin(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
         setOrigin(getWidth() / 2, getHeight() / 2);
-        shootingPoint = new Vector2(getCenterX(), getCenterY());
+        shootingPoint = new Vector2(body.getPosition().x, body.getPosition().y);
     }
 
     @Override
@@ -95,7 +98,7 @@ public class NewPlayer extends Image {
         // here we override Actor's act() method to make the actor follow the box2d body
         super.act(delta);
         updateMotion();
-        shootingPoint.set(getCenterX(), getCenterY());
+        shootingPoint.set(body.getPosition().x, body.getPosition().y);
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
         setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2);
 //        Gdx.app.log(LOG_CLASS_NAME, "Player texture position at " + getX() + " / " + getY() +" body " + body.getPosition().x +" / "+ body.getPosition().y);

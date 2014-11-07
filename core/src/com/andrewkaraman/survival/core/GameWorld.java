@@ -1,5 +1,6 @@
 package com.andrewkaraman.survival.core;
 
+import com.andrewkaraman.survival.core.actors.ActorsCategories;
 import com.andrewkaraman.survival.core.actors.Bullet;
 import com.andrewkaraman.survival.core.actors.NewEnemy;
 import com.andrewkaraman.survival.core.actors.NewPlayer;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
  * Created by Andrew on 26.10.2014.
  */
 public class GameWorld {
+
+
 
     private final String LOG_CLASS_NAME = GameWorld.class.getName();
 
@@ -46,6 +49,7 @@ public class GameWorld {
 
     private void createWorld() {
         box2dWorld = new World(GRAVITY, true);
+        box2dWorld.setContactListener(new CustomizedContactListener());
         Gdx.app.log(LOG_CLASS_NAME, "Unit size " + UNIT_WIDTH + " / " + UNIT_HEIGHT);
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         stage.setDebugAll(true);
@@ -119,7 +123,7 @@ public class GameWorld {
         int len = bullets.size();
         for (int i = len; --i >= 0; ) {
             bullet = bullets.get(i);
-            if (!bullet.alive) {
+            if (!bullet.characteristic.isAlive()) {
                 bullets.remove(i);
                 bulletPool.free(bullet);
             }
@@ -129,7 +133,7 @@ public class GameWorld {
         int lenE = enemies.size();
         for (int i = lenE; --i >= 0; ) {
             enemy = enemies.get(i);
-            if (!enemy.alive) {
+            if (!enemy.characteristic.isAlive()) {
                 enemies.remove(i);
                 enemyPool.free(enemy);
             }
