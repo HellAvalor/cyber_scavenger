@@ -44,9 +44,9 @@ public class NewEnemy extends Image implements Pool.Poolable{
         bodyDef.linearDamping = 0.1f;
         bodyDef.angularDamping = 0.5f;
 
-        this.body = world.createBody(bodyDef);
+        body = world.createBody(bodyDef);
         characteristic = new EnemyCharacteristic();
-        this.body.setUserData(characteristic);
+        body.setUserData(characteristic);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
@@ -55,7 +55,7 @@ public class NewEnemy extends Image implements Pool.Poolable{
         fd.density = 5;
 
         fd.filter.categoryBits = (short) ActorsCategories.ENEMY_SHIP.getTypeMask();
-        fd.filter.maskBits = (short) (/*ActorsCategories.USER.getTypeMask() | */ActorsCategories.BULLET.getTypeMask());
+        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_BULLET.getTypeMask());
 
         loader.attachFixture(body, "Enemy", fd, 1);
 

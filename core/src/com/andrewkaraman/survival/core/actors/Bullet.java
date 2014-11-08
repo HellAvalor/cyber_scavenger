@@ -1,7 +1,6 @@
 package com.andrewkaraman.survival.core.actors;
 
 import com.andrewkaraman.survival.core.model.BulletCharacteristic;
-import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -51,7 +50,7 @@ public class Bullet extends Image implements Pool.Poolable {
         loader.attachFixture(body, "Bullet", fd, actorWidth);
 
         fd.filter.categoryBits =(short) ActorsCategories.BULLET.getTypeMask();
-        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask());
+        fd.filter.maskBits = (short) (ActorsCategories.USER.getTypeMask());
 
         setSize(actorWidth, actorWidth * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture

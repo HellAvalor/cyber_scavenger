@@ -50,6 +50,9 @@ public class PlayerInputListener extends InputListener {
 
     @Override
     public boolean keyDown(InputEvent event, int keycode) {
+
+        Gdx.app.log(LOG_CLASS_NAME, "keyDown " + Input.Keys.toString(keycode));
+
         switch (keycode) {
 
             case Input.Keys.SPACE:
@@ -97,6 +100,9 @@ public class PlayerInputListener extends InputListener {
 
     @Override
     public boolean keyUp(InputEvent event, int keycode) {
+
+        Gdx.app.log(LOG_CLASS_NAME, "keyUp " + Input.Keys.toString(keycode));
+
         switch (keycode) {
 
             case Input.Keys.SPACE:

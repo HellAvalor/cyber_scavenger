@@ -36,6 +36,7 @@ public class CustomizedContactListener implements ContactListener {
 
         switch (bodyAUserData.getCategory().getTypeMask() | bodyBUserData.getCategory().getTypeMask()){
             case ENEMY_BULLET :
+                Gdx.app.log(LOG_CLASS_NAME, " beginContact ENEMY_BULLET collision ");
                 if (bodyAUserData.getCategory()==ActorsCategories.ENEMY_SHIP) {
                     handleEnemyBulletCollision(fixtureA, fixtureB);
                 } else {
@@ -49,27 +50,27 @@ public class CustomizedContactListener implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
-
+        Gdx.app.log(LOG_CLASS_NAME, "endContact ");
     }
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
-
+        Gdx.app.log(LOG_CLASS_NAME, "preSolve ");
     }
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
-
+        Gdx.app.log(LOG_CLASS_NAME, "postSolve ");
     }
 
     private void handleEnemyBulletCollision(Fixture fixtureShip, Fixture fixtureBullet){
 
         Gdx.app.log(LOG_CLASS_NAME, "handleEnemyBulletCollision ");
 
-        EnemyCharacteristic enemyCharacteristic = (EnemyCharacteristic) fixtureShip.getUserData();
+        EnemyCharacteristic enemyCharacteristic = (EnemyCharacteristic) fixtureShip.getBody().getUserData();
         enemyCharacteristic.setHealth(enemyCharacteristic.getHealth()-1);
 
-        BulletCharacteristic bulletCharacteristic= (BulletCharacteristic) fixtureBullet.getUserData();
+        BulletCharacteristic bulletCharacteristic= (BulletCharacteristic) fixtureBullet.getBody().getUserData();
         bulletCharacteristic.setHealth(bulletCharacteristic.getHealth()-1);
 
         if (enemyCharacteristic.getHealth() <=0){

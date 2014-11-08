@@ -1,7 +1,6 @@
 package com.andrewkaraman.survival.core.actors;
 
 import com.andrewkaraman.survival.core.GameWorld;
-import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
 import com.andrewkaraman.survival.core.model.PlayerCharacteristic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -81,7 +80,7 @@ public class NewPlayer extends Image {
         fd.friction = 0.1f;
         fd.restitution = 0.3f;
         fd.filter.categoryBits = (short) ActorsCategories.USER.getTypeMask();
-        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask() | ActorsCategories.ENEMY_BULLET.getTypeMask());
+        fd.filter.maskBits = (short) (ActorsCategories.BULLET.getTypeMask());
 
         body.getMassData().center.set(SHIP_WIDTH / 2, SHIP_WIDTH * (tex.getHeight() / tex.getWidth()) / 2);
         loader.attachFixture(body, "player-ship", fd, 1);
@@ -148,7 +147,6 @@ public class NewPlayer extends Image {
     }
 
     private void speedCheck(int speedUp) {
-
         if (speedUp != 0) {
             Vector2 v = new Vector2(-(float) Math.sin(body.getAngle()), (float) Math.cos(body.getAngle()));
             if (speedUp < 0) speedUp /= 5;
@@ -160,14 +158,6 @@ public class NewPlayer extends Image {
     public void setJoystickMove(float knobPercentX, float knobPercentY) {
         directionX = knobPercentX;
         directionY = knobPercentY;
-    }
-
-    public boolean isRotating() {
-        return rotating;
-    }
-
-    public void setRotating(boolean rotating) {
-        this.rotating = rotating;
     }
 
     public boolean isShooting() {
