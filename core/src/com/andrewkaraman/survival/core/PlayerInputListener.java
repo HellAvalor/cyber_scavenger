@@ -18,11 +18,6 @@ public class PlayerInputListener extends InputListener {
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
-    public PlayerInputListener(GameWorld world, NewPlayer player) {
-        this.world = world;
-        this.player = player;
-    }
-
     public PlayerInputListener(GameWorld world, NewPlayer player, Touchpad touchpad) {
         this.world = world;
         this.player = player;

@@ -55,7 +55,7 @@ public class NewEnemy extends Image implements Pool.Poolable{
         fd.density = 5;
 
         fd.filter.categoryBits = (short) ActorsCategories.ENEMY_SHIP.getTypeMask();
-        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_BULLET.getTypeMask());
+        fd.filter.maskBits = (short) (ActorsCategories.BULLET.getTypeMask());
 
         loader.attachFixture(body, "Enemy", fd, 1);
 

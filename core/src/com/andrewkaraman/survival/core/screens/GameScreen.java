@@ -106,11 +106,13 @@ public class GameScreen extends AbstractScreen{
         if (!world.enemies.isEmpty()){
             str =   "\n enemy life " +  world.enemies.get(0).characteristic.getHealth();
         }
+
         labelStatus.setText(
 //                world.newPlayer.getX() + " / " + world.newPlayer.getY() + " / " +world.newPlayer.body.getLinearVelocity().x+ " / " +world.newPlayer.body.getLinearVelocity().y+ " angle " +world.newPlayer.body.getAngle() +
 //                "\n Objects "+ world.box2dWorld.getBodyCount()+" / stage actors count " + world.stage.getRoot().getChildren().size +
 //                "\n bullets " +world.bullets.size() +" / pool "+ world.bulletPool.peak+" / pool free "+ world.bulletPool.getFree()+" / pool max "+ world.bulletPool.max +
-                "\n Player angle " + world.newPlayer.body.getAngle()+ " normalize "  +(world.newPlayer.normalizeAngle(world.newPlayer.body.getAngle()))+
+//                "\n Player angle " + world.newPlayer.body.getAngle()+ " normalize "  +(world.newPlayer.normalizeAngle(world.newPlayer.body.getAngle()))+
+//                "\n Screen coord " +
                 "\n touchPad " +touchpad.getKnobPercentX() +" / "+ touchpad.getKnobPercentY()+ " atan  "+ Math.atan2(-touchpad.getKnobPercentX(), touchpad.getKnobPercentY()) + str
 
 //                "\n enemies " +world.enemies.size() +" / pool "+ world.enemyPool.peak+" / pool free "+ world.enemyPool.getFree()+" / pool max "+ world.enemyPool.max
@@ -146,6 +148,7 @@ public class GameScreen extends AbstractScreen{
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
+        touchpad.setBounds(stage.getViewport().getLeftGutterWidth(), stage.getViewport().getBottomGutterHeight(), 100, 100);
         stage.getViewport().update(width, height);
         world.stage.getViewport().update(width, height);
         renderer.resize();

@@ -47,10 +47,10 @@ public class Bullet extends Image implements Pool.Poolable {
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
-        loader.attachFixture(body, "Bullet", fd, actorWidth);
-
         fd.filter.categoryBits =(short) ActorsCategories.BULLET.getTypeMask();
-        fd.filter.maskBits = (short) (ActorsCategories.USER.getTypeMask());
+//        fd.filter.maskBits = (short) (ActorsCategories.USER.getTypeMask());
+        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask());
+        loader.attachFixture(body, "Bullet", fd, actorWidth);
 
         setSize(actorWidth, actorWidth * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture
