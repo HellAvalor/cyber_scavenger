@@ -2,6 +2,7 @@ package com.andrewkaraman.survival.core.actors;
 
 import com.andrewkaraman.survival.core.GameWorld;
 import com.andrewkaraman.survival.core.model.PlayerCharacteristic;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -23,6 +24,7 @@ import static com.badlogic.gdx.math.MathUtils.atan2;
  * Created by Andrew on 26.10.2014.
  */
 public class NewPlayer extends Image {
+
     private final String LOG_CLASS_NAME = this.getClass().getName();
     public final Body body; // newPlayer's box2d body
     private final int SHIP_WIDTH = 1;
@@ -51,9 +53,6 @@ public class NewPlayer extends Image {
     int turning;
     int speedUp;
 
-
-    boolean rotating;
-
     public NewPlayer(GameWorld world) {
         lastBulletTime = TimeUtils.nanoTime();
         // newPlayer is an Image, so we load the graphics from the assetmanager
@@ -71,9 +70,9 @@ public class NewPlayer extends Image {
         bodyDef.angle = angle;
 
 
-        this.body = world.box2dWorld.createBody(bodyDef);
+        body = world.box2dWorld.createBody(bodyDef);
         characteristic = new PlayerCharacteristic();
-        this.body.setUserData(characteristic);
+        body.setUserData(characteristic);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
@@ -87,71 +86,72 @@ public class NewPlayer extends Image {
         // generate newPlayer's actor
         setSize(SHIP_WIDTH, SHIP_WIDTH * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture
-//        setAlign(Align.center);
         setOrigin(getWidth() / 2, getHeight() / 2);
         shootingPoint = new Vector2(body.getPosition().x, body.getPosition().y);
     }
 
     @Override
     public void act(float delta) {
-        // here we override Actor's act() method to make the actor follow the box2d body
         super.act(delta);
         updateMotion();
         shootingPoint.set(body.getPosition().x, body.getPosition().y);
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
         setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2);
-//        Gdx.app.log(LOG_CLASS_NAME, "Player texture position at " + getX() + " / " + getY() +" body " + body.getPosition().x +" / "+ body.getPosition().y);
     }
 
     private void updateMotion() {
 
-        Vector2 v = new Vector2(directionX, directionY);
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
 
-        angleDiff = normalizeAngle(body.getAngle()) - atan2(-directionX, directionY);
+            Vector2 v = new Vector2(directionX, directionY);
 
-        if (angleDiff>Math.PI) angleDiff = -1*(angleDiff-(float)Math.PI);
-        if (angleDiff<-Math.PI) angleDiff = -1*(angleDiff+(float)Math.PI);
+            angleDiff = normalizeAngle(body.getAngle()) - atan2(-directionX, directionY);
 
-        if (angleDiff < -0.1 || angleDiff > 0.1){
-            turning = (int) Math.signum(-1 * angleDiff);
-        } else {
-            turning = STOP;
+            if (angleDiff > Math.PI) angleDiff = -1 * (angleDiff - (float) Math.PI);
+            if (angleDiff < -Math.PI) angleDiff = -1 * (angleDiff + (float) Math.PI);
+
+            if (angleDiff < -0.1 || angleDiff > 0.1) {
+                turning = (int) Math.signum(-1 * angleDiff);
+            } else {
+                turning = STOP;
+            }
+
+            if (v.len() > 0.7f) {
+                speedUp = SPEED_UP;
+            } else if (v.len() < 0.1f) {
+                speedUp = STOP;
+                turning = STOP;
+            } else {
+                speedUp = STOP;
+            }
         }
 
-        if (v.len() > 0.7f) {
-            speedUp = SPEED_UP;
-        } else if (v.len() < 0.1f) {
-            speedUp = STOP;
-            turning = STOP;
-        } else {
-            speedUp = STOP;
-        }
-
-        turnCheck(turning);
-        speedCheck(speedUp);
-
-        Vector2 velocity = body.getLinearVelocity();
-        float speed = velocity.len();
-        if (speed > MAX_SPEED) {
-            body.setLinearVelocity(velocity.scl(MAX_SPEED / speed));
-        }
+        turnSet(turning);
+        speedSet(speedUp);
     }
 
     public float normalizeAngle(float angle){
         return (angle %= (float)Math.PI*2) >= 0 ? (angle < (float)Math.PI) ? angle : angle - (float)Math.PI*2 : (angle >= -(float)Math.PI) ? angle : angle + (float) Math.PI*2;
     }
 
-    private void turnCheck(int rotation) {
+    private void turnSet(int rotation) {
         float impulse = body.getAngularDamping() * rotation / 1;
         body.setTransform(body.getPosition(), body.getAngle() + impulse);
     }
 
-    private void speedCheck(int speedUp) {
+    private void speedSet(int speedUp) {
+
         if (speedUp != 0) {
             Vector2 v = new Vector2(-(float) Math.sin(body.getAngle()), (float) Math.cos(body.getAngle()));
             if (speedUp < 0) speedUp /= 5;
             v.nor().scl(THRUST * speedUp);
             body.applyForceToCenter(v, true);
+        }
+
+        Vector2 velocity = body.getLinearVelocity();
+        float speed = velocity.len();
+        if (speed > MAX_SPEED) {
+            body.setLinearVelocity(velocity.scl(MAX_SPEED / speed));
         }
     }
 

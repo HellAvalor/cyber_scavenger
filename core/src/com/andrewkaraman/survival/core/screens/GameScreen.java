@@ -16,6 +16,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+
+import static com.badlogic.gdx.Application.ApplicationType;
+
 /**
  * Created by KaramanA on 15.10.2014.
  */
@@ -63,27 +66,9 @@ public class GameScreen extends AbstractScreen{
         stage.addActor(labelStatus);
         // add other GUI elements here
 
-        //Create a touchpad skin
-        touchpadSkin = new Skin();
-        //Set background image
-        touchpadSkin.add("touchBackground", new Texture("data/touchBackground.png"));
-        //Set knob image
-        touchpadSkin.add("touchKnob", new Texture("data/touchKnob.png"));
-        //Create TouchPad Style
-        touchpadStyle = new Touchpad.TouchpadStyle();
-        //Create Drawable's from TouchPad skin
-        touchBackground = touchpadSkin.getDrawable("touchBackground");
-        touchKnob = touchpadSkin.getDrawable("touchKnob");
-        touchKnob.setMinHeight(20);
-        touchKnob.setMinWidth(20);
-        //Apply the Drawables to the TouchPad Style
-        touchpadStyle.background = touchBackground;
-        touchpadStyle.knob = touchKnob;
-        //Create new TouchPad with the created style
-        touchpad = new Touchpad(10, touchpadStyle);
-        //setBounds(x,y,width,height)
-        touchpad.setBounds(15, 15, 200, 200);
-        stage.addActor(touchpad);
+        if (Gdx.app.getType() == ApplicationType.Android) {
+            setUpTouchPad();
+        }
 
         PlayerInputListener listener = new PlayerInputListener(world, world.newPlayer, touchpad);
         stage.addListener(listener);
@@ -107,13 +92,16 @@ public class GameScreen extends AbstractScreen{
             str =   "\n enemy life " +  world.enemies.get(0).characteristic.getHealth();
         }
 
+//        String str2 =guiCam.projection;
+
         labelStatus.setText(
 //                world.newPlayer.getX() + " / " + world.newPlayer.getY() + " / " +world.newPlayer.body.getLinearVelocity().x+ " / " +world.newPlayer.body.getLinearVelocity().y+ " angle " +world.newPlayer.body.getAngle() +
 //                "\n Objects "+ world.box2dWorld.getBodyCount()+" / stage actors count " + world.stage.getRoot().getChildren().size +
 //                "\n bullets " +world.bullets.size() +" / pool "+ world.bulletPool.peak+" / pool free "+ world.bulletPool.getFree()+" / pool max "+ world.bulletPool.max +
 //                "\n Player angle " + world.newPlayer.body.getAngle()+ " normalize "  +(world.newPlayer.normalizeAngle(world.newPlayer.body.getAngle()))+
 //                "\n Screen coord " +
-                "\n touchPad " +touchpad.getKnobPercentX() +" / "+ touchpad.getKnobPercentY()+ " atan  "+ Math.atan2(-touchpad.getKnobPercentX(), touchpad.getKnobPercentY()) + str
+//                "\n touchPad " +touchpad.getKnobPercentX() +" / "+ touchpad.getKnobPercentY()+ " atan  "+ Math.atan2(-touchpad.getKnobPercentX(), touchpad.getKnobPercentY())+
+                         str
 
 //                "\n enemies " +world.enemies.size() +" / pool "+ world.enemyPool.peak+" / pool free "+ world.enemyPool.getFree()+" / pool max "+ world.enemyPool.max
         );
@@ -148,9 +136,32 @@ public class GameScreen extends AbstractScreen{
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
-        touchpad.setBounds(stage.getViewport().getLeftGutterWidth(), stage.getViewport().getBottomGutterHeight(), 100, 100);
         stage.getViewport().update(width, height);
         world.stage.getViewport().update(width, height);
         renderer.resize();
+    }
+
+    private void setUpTouchPad(){
+        //Create a touchpad skin
+        touchpadSkin = new Skin();
+        //Set background image
+        touchpadSkin.add("touchBackground", new Texture("data/touchBackground.png"));
+        //Set knob image
+        touchpadSkin.add("touchKnob", new Texture("data/touchKnob.png"));
+        //Create TouchPad Style
+        touchpadStyle = new Touchpad.TouchpadStyle();
+        //Create Drawable's from TouchPad skin
+        touchBackground = touchpadSkin.getDrawable("touchBackground");
+        touchKnob = touchpadSkin.getDrawable("touchKnob");
+        touchKnob.setMinHeight(20);
+        touchKnob.setMinWidth(20);
+        //Apply the Drawables to the TouchPad Style
+        touchpadStyle.background = touchBackground;
+        touchpadStyle.knob = touchKnob;
+        //Create new TouchPad with the created style
+        touchpad = new Touchpad(10, touchpadStyle);
+        //setBounds(x,y,width,height)
+        touchpad.setBounds(15, 15, 200, 200);
+        stage.addActor(touchpad);
     }
 }
