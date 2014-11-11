@@ -9,9 +9,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -48,41 +52,30 @@ public class GameScreen extends AbstractScreen{
     @Override
     public void show() {
         super.show();
-        Skin skin = super.getSkin();
 
         stage = new Stage(); // create the GUI stage
         stage.setViewport(new ScreenViewport()); // set the GUI stage viewport to the pixel size
         stage.setDebugAll(true);
 
+        guiCam = (OrthographicCamera) stage.getCamera();
+        guiCam.position.set(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0);
+
         world = new GameWorld();
         renderer = new GameRenderer(world);
-        // add GUI actors to stage, labels, meters, buttons etc.
-        labelStatus = new Label("TOUCH TO START", skin);
-        labelStatus.setPosition(10, 10);
-        labelStatus.setWidth(SCREEN_WIDTH);
-        labelStatus.setAlignment(Align.center);
-        labelStatus.setFontScale(0.5f);
 
-        stage.addActor(labelStatus);
-        // add other GUI elements here
-
-        if (Gdx.app.getType() == ApplicationType.Android) {
-            setUpTouchPad();
-        }
+        initUI();
 
         PlayerInputListener listener = new PlayerInputListener(world, world.newPlayer, touchpad);
         stage.addListener(listener);
         //TODO set keyboard listener (multilistener)
         Gdx.input.setInputProcessor(stage);
 
+
     }
 
     @Override
     public void render(float delta) {
         super.render(delta);
-
-        guiCam = (OrthographicCamera) stage.getCamera();
-        guiCam.position.set(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0);
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
@@ -91,8 +84,6 @@ public class GameScreen extends AbstractScreen{
         if (!world.enemies.isEmpty()){
             str =   "\n enemy life " +  world.enemies.get(0).characteristic.getHealth();
         }
-
-//        String str2 =guiCam.projection;
 
         labelStatus.setText(
 //                world.newPlayer.getX() + " / " + world.newPlayer.getY() + " / " +world.newPlayer.body.getLinearVelocity().x+ " / " +world.newPlayer.body.getLinearVelocity().y+ " angle " +world.newPlayer.body.getAngle() +
@@ -137,6 +128,7 @@ public class GameScreen extends AbstractScreen{
     public void resize(int width, int height) {
         super.resize(width, height);
         stage.getViewport().update(width, height);
+        guiCam.position.set(width / 2, height / 2, 0);
         world.stage.getViewport().update(width, height);
         renderer.resize();
     }
@@ -162,6 +154,60 @@ public class GameScreen extends AbstractScreen{
         touchpad = new Touchpad(10, touchpadStyle);
         //setBounds(x,y,width,height)
         touchpad.setBounds(15, 15, 200, 200);
-        stage.addActor(touchpad);
+    }
+
+    private void initUI(){
+        Skin skin = super.getSkin();
+        // add GUI actors to stage, labels, meters, buttons etc.
+        labelStatus = new Label("TOUCH TO START", skin);
+        labelStatus.setPosition(10, 10);
+        labelStatus.setWidth(SCREEN_WIDTH);
+        labelStatus.setAlignment(Align.center);
+        labelStatus.setFontScale(0.5f);
+
+        stage.addActor(labelStatus);
+        // add other GUI elements here
+        Table controls = new Table();
+        controls.setSkin(skin);
+        
+        if (Gdx.app.getType() == ApplicationType.Android) {
+            setUpTouchPad();
+
+            controls.defaults().fill();
+            controls.add(touchpad).width(400);
+            controls.add().expand();
+            controls.add("firingbuttons").width(400);
+        }
+        skin.getFont("default-font").setScale(0.5f);
+
+
+
+        Table statusBar = new Table();
+        statusBar.setSkin(skin);
+        statusBar.defaults().fill();
+        statusBar.add("left column").width(70);
+        statusBar.add("left info").expand();
+        statusBar.add("level").width(50);
+        statusBar.add("Bars").width(150);
+        statusBar.add("level").width(50);
+        statusBar.add("right info").expand();
+        statusBar.add("right column").width(70);
+
+
+        Table table = new Table();
+        table.setFillParent(true);
+        table.setSkin(skin);
+        table.defaults().fill().pad(5);
+        table.row().minHeight(50);
+        table.add(statusBar).expandX().colspan(3);
+        table.row();
+        table.add("left column").width(50).left();
+        table.add().expand();
+        table.add("right column").width(50).right();
+        table.row().minHeight(400).bottom();
+        table.add(controls).colspan(table.getColumns());
+
+        table.setDebug(true, true);
+        stage.addActor(table);
     }
 }

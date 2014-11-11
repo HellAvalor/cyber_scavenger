@@ -1,6 +1,7 @@
 package com.andrewkaraman.survival.core;
 
 import com.andrewkaraman.survival.core.actors.NewPlayer;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -24,22 +25,26 @@ public class PlayerInputListener extends InputListener {
         this.touchpad = touchpad;
     }
 
-
-
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         Gdx.app.log(LOG_CLASS_NAME, "down " + x + " / " + y);
-        player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
+        }
         return true;
     }
 
     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
         Gdx.app.log(LOG_CLASS_NAME, "up");
-        player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
+        }
     }
 
     public void touchDragged(InputEvent event, float x, float y, int pointer) {
         Gdx.app.log(LOG_CLASS_NAME, "touchDragged " + x + " / " + y + " actor " + player.getCenterX() + " / " + player.getCenterY());
-        player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
+        }
     }
 
 
