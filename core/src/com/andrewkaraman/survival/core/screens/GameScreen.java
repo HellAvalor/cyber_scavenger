@@ -4,11 +4,14 @@ import com.andrewkaraman.survival.core.GameRenderer;
 import com.andrewkaraman.survival.core.GameWorld;
 import com.andrewkaraman.survival.core.MyGame;
 import com.andrewkaraman.survival.core.PlayerInputListener;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -17,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -26,12 +30,15 @@ import static com.badlogic.gdx.Application.ApplicationType;
 /**
  * Created by KaramanA on 15.10.2014.
  */
-public class GameScreen extends AbstractScreen{
+public class GameScreen extends AbstractScreen {
 
     private final String LOG_CLASS_NAME = GameScreen.class.getName();
     // this is actually my tablet resolution in landscape mode. I'm using it for making the GUI pixel-exact.
     public static float SCREEN_WIDTH = Gdx.graphics.getWidth();
     public static float SCREEN_HEIGHT = Gdx.graphics.getHeight();
+
+    public static float SCALE_UNIT = Math.min(Gdx.graphics.getWidth() * 0.01f, 20);
+
     Label labelStatus;
     private GameWorld world; // contains the game world's bodies and actors.
     private GameRenderer renderer; // our custom game renderer.
@@ -46,7 +53,7 @@ public class GameScreen extends AbstractScreen{
 
     public GameScreen(MyGame game) {
         super(game);
-        Gdx.app.log(LOG_CLASS_NAME, "Screen size " +SCREEN_WIDTH +" / "+SCREEN_HEIGHT);
+        Gdx.app.log(LOG_CLASS_NAME, "Screen size " + SCREEN_WIDTH + " / " + SCREEN_HEIGHT);
     }
 
     @Override
@@ -58,7 +65,7 @@ public class GameScreen extends AbstractScreen{
         stage.setDebugAll(true);
 
         guiCam = (OrthographicCamera) stage.getCamera();
-        guiCam.position.set(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0);
+        guiCam.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0);
 
         world = new GameWorld();
         renderer = new GameRenderer(world);
@@ -81,8 +88,8 @@ public class GameScreen extends AbstractScreen{
         Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
 
         String str = "";
-        if (!world.enemies.isEmpty()){
-            str =   "\n enemy life " +  world.enemies.get(0).characteristic.getHealth();
+        if (!world.enemies.isEmpty()) {
+            str = "\n enemy life " + world.enemies.get(0).characteristic.getHealth();
         }
 
         labelStatus.setText(
@@ -92,7 +99,7 @@ public class GameScreen extends AbstractScreen{
 //                "\n Player angle " + world.newPlayer.body.getAngle()+ " normalize "  +(world.newPlayer.normalizeAngle(world.newPlayer.body.getAngle()))+
 //                "\n Screen coord " +
 //                "\n touchPad " +touchpad.getKnobPercentX() +" / "+ touchpad.getKnobPercentY()+ " atan  "+ Math.atan2(-touchpad.getKnobPercentX(), touchpad.getKnobPercentY())+
-                         str
+                str
 
 //                "\n enemies " +world.enemies.size() +" / pool "+ world.enemyPool.peak+" / pool free "+ world.enemyPool.getFree()+" / pool max "+ world.enemyPool.max
         );
@@ -133,7 +140,7 @@ public class GameScreen extends AbstractScreen{
         renderer.resize();
     }
 
-    private void setUpTouchPad(){
+    private void setUpTouchPad() {
         //Create a touchpad skin
         touchpadSkin = new Skin();
         //Set background image
@@ -156,7 +163,7 @@ public class GameScreen extends AbstractScreen{
         touchpad.setBounds(15, 15, 200, 200);
     }
 
-    private void initUI(){
+    private void initUI() {
         Skin skin = super.getSkin();
         // add GUI actors to stage, labels, meters, buttons etc.
         labelStatus = new Label("TOUCH TO START", skin);
@@ -167,44 +174,60 @@ public class GameScreen extends AbstractScreen{
 
         stage.addActor(labelStatus);
         // add other GUI elements here
+
+        Button shootButton = new Button(skin);
+        shootButton.addListener(new ClickListener() {
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                //TODO stop shooting after drag off button
+                world.newPlayer.setShooting(true);
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                world.newPlayer.setShooting(false);
+            }
+        });
+
         Table controls = new Table();
         controls.setSkin(skin);
-        
+
         if (Gdx.app.getType() == ApplicationType.Android) {
             setUpTouchPad();
 
             controls.defaults().fill();
-            controls.add(touchpad).width(400);
+            controls.add(touchpad).width(SCALE_UNIT * 20);
             controls.add().expand();
-            controls.add("firingbuttons").width(400);
+            controls.add(shootButton).width(SCALE_UNIT * 20);
         }
         skin.getFont("default-font").setScale(0.5f);
-
 
 
         Table statusBar = new Table();
         statusBar.setSkin(skin);
         statusBar.defaults().fill();
-        statusBar.add("left column").width(70);
+        statusBar.add("left column").width(SCALE_UNIT * 10);
         statusBar.add("left info").expand();
-        statusBar.add("level").width(50);
-        statusBar.add("Bars").width(150);
-        statusBar.add("level").width(50);
+        statusBar.add("level").width(SCALE_UNIT * 5).height(SCALE_UNIT * 5).top();
+        statusBar.add("Bars").width(SCALE_UNIT * 20).height(SCALE_UNIT * 5).top();
+        statusBar.add("level").width(SCALE_UNIT * 5).height(SCALE_UNIT * 5).top();
         statusBar.add("right info").expand();
-        statusBar.add("right column").width(70);
+        statusBar.add("right column").width(SCALE_UNIT * 10);
 
 
         Table table = new Table();
         table.setFillParent(true);
         table.setSkin(skin);
         table.defaults().fill().pad(5);
-        table.row().minHeight(50);
+        table.row().height(SCALE_UNIT * 10);
         table.add(statusBar).expandX().colspan(3);
         table.row();
-        table.add("left column").width(50).left();
+        table.add("left column").width(SCALE_UNIT * 10).left();
         table.add().expand();
-        table.add("right column").width(50).right();
-        table.row().minHeight(400).bottom();
+        table.add("right column").width(SCALE_UNIT * 10).right();
+        table.row().minHeight(SCALE_UNIT * 20).bottom();
         table.add(controls).colspan(table.getColumns());
 
         table.setDebug(true, true);

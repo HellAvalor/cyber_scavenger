@@ -25,7 +25,7 @@ public class GameWorld {
     private final String LOG_CLASS_NAME = GameWorld.class.getName();
 
     // here we set up the actual viewport size of the game in meters.
-    public static float UNIT_WIDTH = 20;
+    public static float UNIT_WIDTH = 40;
     public static float UNIT_HEIGHT = getUnitHeight(); // 3.75 meters height
 
     public static final Vector2 GRAVITY = new Vector2(0, 0);
@@ -145,7 +145,7 @@ public class GameWorld {
         UNIT_HEIGHT = getUnitHeight();
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         isResized = true;
-        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     public void zoomOut() {
@@ -153,8 +153,7 @@ public class GameWorld {
         UNIT_HEIGHT = getUnitHeight();
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         isResized = true;
-
-        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     private static float getUnitHeight() {
