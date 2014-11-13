@@ -21,18 +21,21 @@ import aurelienribon.bodyeditor.BodyEditorLoader;
 /**
  * Created by KaramanA on 17.10.2014.
  */
-public class Bullet extends Image implements Pool.Poolable {
+public class Bullet extends AbsActor implements Pool.Poolable {
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
+
     public BulletCharacteristic characteristic;
     private final float MAX_BULLET_DISTANCE = 5;
     private float startPosX, startPosY;
     public boolean alive;
-    public final Body body;
     private int speed = 10;
-    private final float actorWidth = 0.2f;
 
-    public Bullet(World world, float posX, float posY, float angle, Vector2 velocity) {
+    public Bullet(World world, float startPosX, float startPosY,  float angle, Vector2 velocity) {
+        this(world, startPosX, startPosY, 0.2f, angle, velocity);
+    }
+
+    public Bullet(World world, float startPosX, float startPosY, float actorWidth, float angle, Vector2 velocity) {
 
         Texture tex = new Texture(Gdx.files.internal("bullet.png"));
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
@@ -48,7 +51,6 @@ public class Bullet extends Image implements Pool.Poolable {
 
         FixtureDef fd = new FixtureDef();
         fd.filter.categoryBits =(short) ActorsCategories.BULLET.getTypeMask();
-//        fd.filter.maskBits = (short) (ActorsCategories.USER.getTypeMask());
         fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask());
         loader.attachFixture(body, "Bullet", fd, actorWidth);
 
@@ -57,7 +59,7 @@ public class Bullet extends Image implements Pool.Poolable {
         setAlign(Align.center);
         setOrigin(actorWidth / 2, actorWidth * (tex.getHeight() / tex.getWidth()) / 2);
 
-        init(posX, posY, angle, velocity);
+        init(startPosX, startPosY, angle, velocity);
         alive = false;
         setVisible(alive);
     }
@@ -84,7 +86,6 @@ public class Bullet extends Image implements Pool.Poolable {
     }
 
     private void checkDistance(){
-
         double distance = Math.sqrt(Math.pow(startPosX - body.getPosition().x, 2) + Math.pow(startPosY - body.getPosition().y, 2));
 
         if (distance > MAX_BULLET_DISTANCE) {
@@ -103,10 +104,7 @@ public class Bullet extends Image implements Pool.Poolable {
     }
 
     @Override
-    public void act(float delta) {
-        super.act(delta);
+    protected void updateMotion() {
         checkDistance();
-        setRotation(MathUtils.radiansToDegrees * body.getAngle());
-        setPosition(body.getPosition().x, body.getPosition().y);
     }
 }

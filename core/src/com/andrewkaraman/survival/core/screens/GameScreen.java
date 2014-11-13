@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -177,19 +178,29 @@ public class GameScreen extends AbstractScreen {
 
         Button shootButton = new Button(skin);
         shootButton.addListener(new ClickListener() {
-
             @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                //TODO stop shooting after drag off button
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                super.enter(event, x, y, pointer, fromActor);
                 world.newPlayer.setShooting(true);
-                return true;
             }
 
             @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                super.exit(event, x, y, pointer, toActor);
                 world.newPlayer.setShooting(false);
             }
         });
+
+        Button missileButton = new Button(skin);
+
+        Table shootGroup = new Table();
+        shootGroup.setSkin(skin);
+        shootGroup.defaults().expand();
+        shootGroup.row();
+        shootGroup.add(missileButton).fillY().right().minWidth(SCALE_UNIT * 10);
+        shootGroup.row();
+        shootGroup.add(shootButton).fillY().left().minWidth(SCALE_UNIT * 10);
+
 
         Table controls = new Table();
         controls.setSkin(skin);
@@ -200,7 +211,7 @@ public class GameScreen extends AbstractScreen {
             controls.defaults().fill();
             controls.add(touchpad).width(SCALE_UNIT * 20);
             controls.add().expand();
-            controls.add(shootButton).width(SCALE_UNIT * 20);
+            controls.add(shootGroup).width(SCALE_UNIT * 20);
         }
         skin.getFont("default-font").setScale(0.5f);
 

@@ -20,27 +20,26 @@ import aurelienribon.bodyeditor.BodyEditorLoader;
 /**
  * Created by Andrew on 26.10.2014.
  */
-public class NewEnemy extends Image implements Pool.Poolable{
+public class NewEnemy extends AbsActor implements Pool.Poolable{
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
-    public final Body body;
-    private final int SHIP_WIDTH = 1;
+
     public boolean alive;
     public EnemyCharacteristic characteristic;
 
-    public NewEnemy(World world){
-        this(world, 6, 6);
+    public NewEnemy(World world) {
+        this(world, 6, 6, 1);
     }
 
-    public NewEnemy(World world, int x, int y) {
+    public NewEnemy(World world, float startPosX, float startPosY, float actorWidth) {
 
         Texture tex = new Texture(Gdx.files.internal("front-gun-proton-launcher.png"));
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.x = x;
-        bodyDef.position.y = y;
+        bodyDef.position.x = startPosX;
+        bodyDef.position.y = startPosY;
         bodyDef.linearDamping = 0.1f;
         bodyDef.angularDamping = 0.5f;
 
@@ -59,12 +58,12 @@ public class NewEnemy extends Image implements Pool.Poolable{
 
         loader.attachFixture(body, "Enemy", fd, 1);
 
-        setSize(SHIP_WIDTH, SHIP_WIDTH * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
+        setSize(actorWidth, actorWidth * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture
         setAlign(Align.center);
-        setOrigin(SHIP_WIDTH/2, SHIP_WIDTH*(tex.getHeight()/tex.getWidth()) /2);
+        setOrigin(actorWidth/2, actorWidth*(tex.getHeight()/tex.getWidth()) /2);
 
-        init(x, y);
+        init(startPosX, startPosY);
         alive = false;
         setVisible(alive);
     }
@@ -83,6 +82,10 @@ public class NewEnemy extends Image implements Pool.Poolable{
         super.act(delta);
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
         setPosition(body.getPosition().x, body.getPosition().y);
+    }
+
+    @Override
+    protected void updateMotion() {
     }
 
     @Override
