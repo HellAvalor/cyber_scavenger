@@ -4,7 +4,6 @@ import com.andrewkaraman.survival.core.GameRenderer;
 import com.andrewkaraman.survival.core.GameWorld;
 import com.andrewkaraman.survival.core.MyGame;
 import com.andrewkaraman.survival.core.PlayerInputListener;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,13 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -73,7 +69,7 @@ public class GameScreen extends AbstractScreen {
 
         initUI();
 
-        PlayerInputListener listener = new PlayerInputListener(world, world.newPlayer, touchpad);
+        PlayerInputListener listener = new PlayerInputListener(world, world.player, touchpad);
         stage.addListener(listener);
         Gdx.input.setInputProcessor(stage);
 
@@ -116,7 +112,7 @@ public class GameScreen extends AbstractScreen {
     public void update(float delta) {
         if (world.isResetGame()) {
             world.resetWorld();
-            PlayerInputListener listener = new PlayerInputListener(world, world.newPlayer, touchpad);
+            PlayerInputListener listener = new PlayerInputListener(world, world.player, touchpad);
             stage.addListener(listener);
             resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
@@ -180,13 +176,13 @@ public class GameScreen extends AbstractScreen {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 super.enter(event, x, y, pointer, fromActor);
-                world.newPlayer.setShooting(true);
+                world.player.setShooting(true);
             }
 
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 super.exit(event, x, y, pointer, toActor);
-                world.newPlayer.setShooting(false);
+                world.player.setShooting(false);
             }
         });
 
@@ -194,7 +190,7 @@ public class GameScreen extends AbstractScreen {
         missileButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                world.setResetGame(true);
+//                world.setResetGame(true);
             }
         });
 

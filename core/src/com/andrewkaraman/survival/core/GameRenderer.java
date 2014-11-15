@@ -3,6 +3,7 @@ package com.andrewkaraman.survival.core;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 
 /**
@@ -22,15 +23,15 @@ public class GameRenderer {
         this.camera = (OrthographicCamera) world.stage.getCamera();
 
         // center the camera on newPlayer (optional)
-        camera.position.x = world.newPlayer.getX();
-        camera.position.y = world.newPlayer.getY();
+        camera.position.x = world.player.getX();
+        camera.position.y = world.player.getY();
     }
 
     public void render()
     {
         // have the camera follow newPlayer
-        camera.position.x = world.newPlayer.getX();
-        camera.position.y = world.newPlayer.getY();
+        camera.position.x = world.player.getX();
+        camera.position.y = world.player.getY();
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -46,7 +47,7 @@ public class GameRenderer {
         this.camera = (OrthographicCamera) world.stage.getCamera();
 
         // center the camera on newPlayer (optional)
-        camera.position.x = world.newPlayer.getX();
-        camera.position.y = world.newPlayer.getY();
+        camera.position.x = world.player.getX();
+        camera.position.y = world.player.getY();
     }
 }

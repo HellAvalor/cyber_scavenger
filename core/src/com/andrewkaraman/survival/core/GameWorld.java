@@ -1,11 +1,14 @@
 package com.andrewkaraman.survival.core;
 
-import com.andrewkaraman.survival.core.actors.ActorsCategories;
 import com.andrewkaraman.survival.core.actors.Bullet;
-import com.andrewkaraman.survival.core.actors.NewEnemy;
-import com.andrewkaraman.survival.core.actors.NewPlayer;
+import com.andrewkaraman.survival.core.actors.Enemy;
+import com.andrewkaraman.survival.core.actors.Player;
+import com.andrewkaraman.survival.core.actors.SmartEnemy;
 import com.andrewkaraman.survival.core.screens.GameScreen;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.Seek;
+import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -20,8 +23,6 @@ import java.util.ArrayList;
  */
 public class GameWorld {
 
-
-
     private final String LOG_CLASS_NAME = GameWorld.class.getName();
 
     // here we set up the actual viewport size of the game in meters.
@@ -32,15 +33,17 @@ public class GameWorld {
 
     public Stage stage; // stage containing game actors (not GUI, but actual game elements)
     public World box2dWorld; // box2d world
-    public NewPlayer newPlayer; // our playing character
+    public Player player; // our playing character
+    public SmartEnemy smartEnemy; // our playing character
+    public SmartEnemy targetEnemy; // our playing character
     public boolean isResized = false;
     private boolean resetGame = false;
 
     // bullet pool.
     public ArrayList<Bullet> bullets;
     public Pool<Bullet> bulletPool;
-    public ArrayList<NewEnemy> enemies;
-    public Pool<NewEnemy> enemyPool;
+    public ArrayList<Enemy> enemies;
+    public Pool<Enemy> enemyPool;
 
     public GameWorld() {
         createWorld();
@@ -55,12 +58,30 @@ public class GameWorld {
         stage.setDebugAll(true);
         initPools();
         // create box2d bodies and the respective actors here.
-        newPlayer = new NewPlayer(this);
-        stage.addActor(newPlayer);
+        player = new Player(this);
+        stage.addActor(player);
         stage.setDebugAll(true);
+        player.boundingRadius = 80;
 
+        smartEnemy = new SmartEnemy(box2dWorld);
+        stage.addActor(smartEnemy);
+
+        targetEnemy = new SmartEnemy(box2dWorld, -2, -2 , 1);
+        stage.addActor(smartEnemy);
+
+        smartEnemy.setMaxLinearSpeed(4);
+        smartEnemy.setMaxLinearAcceleration(200);
+        smartEnemy.setMaxAngularSpeed(20);
+        smartEnemy.setMaxAngularAcceleration(4);
+        smartEnemy.boundingRadius = 80;
+        // Create character's steering behavior
+//        final Seek<Vector2> seekSB = new Seek<Vector2>(smartEnemy, targetEnemy);
+//        smartEnemy.setSteeringBehavior(seekSB);
+
+        final Seek<Vector2> seek = new Seek<Vector2>(smartEnemy, player);
+        smartEnemy.setSteeringBehavior(seek);
         // add more game elements here
-        generateEnemy();
+//        generateEnemy();
     }
 
     private void initPools(){
@@ -70,19 +91,19 @@ public class GameWorld {
 
             @Override
             protected Bullet newObject() {
-                Bullet bullet = new Bullet(box2dWorld, newPlayer.getShootingPoint().x, newPlayer.getShootingPoint().y, newPlayer.getBody().getAngle(), newPlayer.getBody().getLinearVelocity());
+                Bullet bullet = new Bullet(box2dWorld, player.getShootingPoint().x, player.getShootingPoint().y, player.getBody().getAngle(), player.getBody().getLinearVelocity());
                 stage.addActor(bullet);
                 return bullet;
             }
         };
 
-         enemies = new ArrayList<NewEnemy>();
+        enemies = new ArrayList<Enemy>();
 
-        enemyPool = new Pool<NewEnemy>() {
+        enemyPool = new Pool<Enemy>() {
 
             @Override
-            protected NewEnemy newObject() {
-                NewEnemy enemy = new NewEnemy(box2dWorld);
+            protected Enemy newObject() {
+                Enemy enemy = new Enemy(box2dWorld);
                 stage.addActor(enemy);
                 return enemy;
             }
@@ -99,20 +120,20 @@ public class GameWorld {
     }
 
     private void shoot() {
-        if (newPlayer.isShooting()) {
-            if (TimeUtils.nanoTime() - newPlayer.getLastBulletTime() > newPlayer.getShootingSpeed()) {
+        if (player.isShooting()) {
+            if (TimeUtils.nanoTime() - player.getLastBulletTime() > player.getShootingSpeed()) {
                 Gdx.app.log(LOG_CLASS_NAME, "Shooting");
                 Bullet bullet = bulletPool.obtain();
-                bullet.init(newPlayer.getShootingPoint().x, newPlayer.getShootingPoint().y, newPlayer.getBody().getAngle(), newPlayer.getBody().getLinearVelocity());
+                bullet.init(player.getShootingPoint().x, player.getShootingPoint().y, player.getBody().getAngle(), player.getBody().getLinearVelocity());
                 bullets.add(bullet);
-                newPlayer.setLastBulletTime(TimeUtils.nanoTime());
+                player.setLastBulletTime(TimeUtils.nanoTime());
             }
         }
     }
 
     public void generateEnemy() {
         Gdx.app.log(LOG_CLASS_NAME, "Generating enemy");
-        NewEnemy enemy = enemyPool.obtain();
+        Enemy enemy = enemyPool.obtain();
         enemy.init(2, 2);
         enemies.add(enemy);
     }
@@ -129,7 +150,7 @@ public class GameWorld {
             }
         }
 
-        NewEnemy enemy;
+        Enemy enemy;
         int lenE = enemies.size();
         for (int i = lenE; --i >= 0; ) {
             enemy = enemies.get(i);

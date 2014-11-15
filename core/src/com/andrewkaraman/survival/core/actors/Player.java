@@ -24,7 +24,7 @@ import static com.badlogic.gdx.math.MathUtils.atan2;
 /**
  * Created by Andrew on 26.10.2014.
  */
-public class NewPlayer extends AbsActor {
+public class Player extends AbsActorImpl {
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
     private final int SHIP_WIDTH = 1;
@@ -53,7 +53,7 @@ public class NewPlayer extends AbsActor {
     int turning;
     int speedUp;
 
-    public NewPlayer(GameWorld world) {
+    public Player(GameWorld world) {
         lastBulletTime = TimeUtils.nanoTime();
         // newPlayer is an Image, so we load the graphics from the assetmanager
 //            Texture tex = Assets.manager.get("characters.png", Texture.class);
@@ -91,7 +91,7 @@ public class NewPlayer extends AbsActor {
     }
 
     @Override
-    public void updateMotion() {
+    public void updateMotion(float delta) {
 
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
 

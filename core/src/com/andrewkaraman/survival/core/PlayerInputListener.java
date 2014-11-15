@@ -1,6 +1,6 @@
 package com.andrewkaraman.survival.core;
 
-import com.andrewkaraman.survival.core.actors.NewPlayer;
+import com.andrewkaraman.survival.core.actors.Player;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -13,13 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
  */
 public class PlayerInputListener extends InputListener {
 
-    private NewPlayer player;
+    private Player player;
     private GameWorld world;
     private Touchpad touchpad;
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
-    public PlayerInputListener(GameWorld world, NewPlayer player, Touchpad touchpad) {
+    public PlayerInputListener(GameWorld world, Player player, Touchpad touchpad) {
         this.world = world;
         this.player = player;
         this.touchpad = touchpad;
@@ -72,19 +72,19 @@ public class PlayerInputListener extends InputListener {
                 break;
 
             case Input.Keys.W:
-                player.setSpeedUp(NewPlayer.SPEED_UP);
+                player.setSpeedUp(Player.SPEED_UP);
                 break;
 
             case Input.Keys.A:
-                player.setTurning(NewPlayer.TURN_LEFT);
+                player.setTurning(Player.TURN_LEFT);
                 break;
 
             case Input.Keys.D:
-                player.setTurning(NewPlayer.TURN_RIGHT);
+                player.setTurning(Player.TURN_RIGHT);
                 break;
 
             case Input.Keys.S:
-                player.setSpeedUp(NewPlayer.FORCE_STOP);
+                player.setSpeedUp(Player.FORCE_STOP);
                 break;
 
             case Input.Keys.COMMA:
@@ -111,11 +111,11 @@ public class PlayerInputListener extends InputListener {
 
             case Input.Keys.W:
             case Input.Keys.S:
-                player.setSpeedUp(NewPlayer.STOP);
+                player.setSpeedUp(Player.STOP);
                 break;
             case Input.Keys.A:
             case Input.Keys.D:
-                player.setTurning(NewPlayer.STOP);
+                player.setTurning(Player.STOP);
                 break;
 
         }

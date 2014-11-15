@@ -5,33 +5,29 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Pool;
-import com.badlogic.gdx.utils.Scaling;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
 
 /**
  * Created by Andrew on 26.10.2014.
  */
-public class NewEnemy extends AbsActor implements Pool.Poolable{
+public class Enemy extends AbsActor implements Pool.Poolable{
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
     public boolean alive;
     public EnemyCharacteristic characteristic;
 
-    public NewEnemy(World world) {
+    public Enemy(World world) {
         this(world, 2, 2, 1);
     }
 
-    public NewEnemy(World world, float startPosX, float startPosY, float actorWidth) {
+    public Enemy(World world, float startPosX, float startPosY, float actorWidth) {
 
         Texture tex = new Texture(Gdx.files.internal("front-gun-proton-launcher.png"));
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
@@ -89,7 +85,7 @@ public class NewEnemy extends AbsActor implements Pool.Poolable{
 //    }
 
     @Override
-    protected void updateMotion() {
+    protected void updateMotion(float delta) {
     }
 
     @Override

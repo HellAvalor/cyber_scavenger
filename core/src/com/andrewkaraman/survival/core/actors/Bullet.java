@@ -50,6 +50,7 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
+        fd.density = 0.2f;
         fd.filter.categoryBits =(short) ActorsCategories.BULLET.getTypeMask();
         fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask());
         loader.attachFixture(body, "Bullet", fd, actorWidth);
@@ -104,7 +105,7 @@ public class Bullet extends AbsActor implements Pool.Poolable {
     }
 
     @Override
-    protected void updateMotion() {
+    protected void updateMotion(float delta) {
         checkDistance();
     }
 }
