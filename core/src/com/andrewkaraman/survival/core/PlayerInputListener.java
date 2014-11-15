@@ -41,7 +41,7 @@ public class PlayerInputListener extends InputListener {
     }
 
     public void touchDragged(InputEvent event, float x, float y, int pointer) {
-        Gdx.app.log(LOG_CLASS_NAME, "touchDragged " + x + " / " + y + " actor " + player.getCenterX() + " / " + player.getCenterY());
+//        Gdx.app.log(LOG_CLASS_NAME, "touchDragged " + x + " / " + y + " actor " + player.getCenterX() + " / " + player.getCenterY());
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
         }

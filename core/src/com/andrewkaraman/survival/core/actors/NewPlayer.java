@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -23,10 +24,9 @@ import static com.badlogic.gdx.math.MathUtils.atan2;
 /**
  * Created by Andrew on 26.10.2014.
  */
-public class NewPlayer extends Image {
+public class NewPlayer extends AbsActor {
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
-    public final Body body; // newPlayer's box2d body
     private final int SHIP_WIDTH = 1;
     public PlayerCharacteristic characteristic;
 
@@ -59,7 +59,6 @@ public class NewPlayer extends Image {
 //            Texture tex = Assets.manager.get("characters.png", Texture.class);
         Texture tex = new Texture(Gdx.files.internal("ship-model.png"));
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
-
         // generate newPlayer's box2d body
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -79,27 +78,20 @@ public class NewPlayer extends Image {
         fd.friction = 0.1f;
         fd.restitution = 0.3f;
         fd.filter.categoryBits = (short) ActorsCategories.USER.getTypeMask();
-        fd.filter.maskBits = (short) (ActorsCategories.BULLET.getTypeMask());
+        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask());
 
         body.getMassData().center.set(SHIP_WIDTH / 2, SHIP_WIDTH * (tex.getHeight() / tex.getWidth()) / 2);
         loader.attachFixture(body, "player-ship", fd, 1);
         // generate newPlayer's actor
         setSize(SHIP_WIDTH, SHIP_WIDTH * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setScaling(Scaling.stretch); // stretch the texture
-        setOrigin(getWidth() / 2, getHeight() / 2);
+        setOrigin(Align.center);
+//        setOrigin(getWidth() / 2, getHeight() / 2);
         shootingPoint = new Vector2(body.getPosition().x, body.getPosition().y);
     }
 
     @Override
-    public void act(float delta) {
-        super.act(delta);
-        updateMotion();
-        shootingPoint.set(body.getPosition().x, body.getPosition().y);
-        setRotation(MathUtils.radiansToDegrees * body.getAngle());
-        setPosition(body.getPosition().x - getWidth() / 2, body.getPosition().y - getHeight() / 2);
-    }
-
-    private void updateMotion() {
+    public void updateMotion() {
 
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
 
@@ -128,6 +120,8 @@ public class NewPlayer extends Image {
 
         turnSet(turning);
         speedSet(speedUp);
+
+        shootingPoint.set(body.getPosition().x, body.getPosition().y);
     }
 
     public float normalizeAngle(float angle){

@@ -55,9 +55,9 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         loader.attachFixture(body, "Bullet", fd, actorWidth);
 
         setSize(actorWidth, actorWidth * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
-        setScaling(Scaling.stretch); // stretch the texture
-        setAlign(Align.center);
-        setOrigin(actorWidth / 2, actorWidth * (tex.getHeight() / tex.getWidth()) / 2);
+//        setScaling(Scaling.stretch); // stretch the texture
+//        setAlign(Align.center);
+//        setOrigin(actorWidth / 2, actorWidth * (tex.getHeight() / tex.getWidth()) / 2);
 
         init(startPosX, startPosY, angle, velocity);
         alive = false;

@@ -28,7 +28,7 @@ public class NewEnemy extends AbsActor implements Pool.Poolable{
     public EnemyCharacteristic characteristic;
 
     public NewEnemy(World world) {
-        this(world, 6, 6, 1);
+        this(world, 2, 2, 1);
     }
 
     public NewEnemy(World world, float startPosX, float startPosY, float actorWidth) {
@@ -54,14 +54,16 @@ public class NewEnemy extends AbsActor implements Pool.Poolable{
         fd.density = 5;
 
         fd.filter.categoryBits = (short) ActorsCategories.ENEMY_SHIP.getTypeMask();
-        fd.filter.maskBits = (short) (ActorsCategories.BULLET.getTypeMask());
+        fd.filter.maskBits = (short) (ActorsCategories.BULLET.getTypeMask()|ActorsCategories.USER.getTypeMask());
 
+//        body.getMassData().center.set(actorWidth / 2, actorWidth * (tex.getHeight() / tex.getWidth()) / 2);
         loader.attachFixture(body, "Enemy", fd, 1);
 
         setSize(actorWidth, actorWidth * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
-        setScaling(Scaling.stretch); // stretch the texture
-        setAlign(Align.center);
-        setOrigin(actorWidth/2, actorWidth*(tex.getHeight()/tex.getWidth()) /2);
+//        setScaling(Scaling.stretch); // stretch the texture
+//        setAlign(Align.topRight);
+//        setOrigin(actorWidth/2, actorWidth*(tex.getHeight()/tex.getWidth()) /2);
+//        setOrigin(Align.center);
 
         init(startPosX, startPosY);
         alive = false;
@@ -70,19 +72,21 @@ public class NewEnemy extends AbsActor implements Pool.Poolable{
 
     public void init(float posX, float posY) {
         body.setTransform(posX, posY, 0);
-        setPosition(body.getPosition().x, body.getPosition().y); // set the actor position at the box2d body position
+        setRotation(MathUtils.radiansToDegrees * body.getAngle());
+        setPosition(body.getPosition().x-getOriginX(), body.getPosition().y-getOriginY()); // set the actor position at the box2d body position
+
         characteristic.setAlive(true);
         body.setActive(true);
         alive = true;
         setVisible(alive);
     }
 
-    @Override
-    public void act(float delta) {
-        super.act(delta);
-        setRotation(MathUtils.radiansToDegrees * body.getAngle());
-        setPosition(body.getPosition().x, body.getPosition().y);
-    }
+//    @Override
+//    public void act(float delta) {
+//        super.act(delta);
+//        setRotation(MathUtils.radiansToDegrees * body.getAngle());
+//        setPosition(body.getPosition().x, body.getPosition().y);
+//    }
 
     @Override
     protected void updateMotion() {

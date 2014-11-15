@@ -75,7 +75,6 @@ public class GameScreen extends AbstractScreen {
 
         PlayerInputListener listener = new PlayerInputListener(world, world.newPlayer, touchpad);
         stage.addListener(listener);
-        //TODO set keyboard listener (multilistener)
         Gdx.input.setInputProcessor(stage);
 
 
@@ -192,6 +191,12 @@ public class GameScreen extends AbstractScreen {
         });
 
         Button missileButton = new Button(skin);
+        missileButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                world.setResetGame(true);
+            }
+        });
 
         Table shootGroup = new Table();
         shootGroup.setSkin(skin);

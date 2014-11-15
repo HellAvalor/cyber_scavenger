@@ -30,7 +30,7 @@ public class GameWorld {
 
     public static final Vector2 GRAVITY = new Vector2(0, 0);
 
-    public final Stage stage; // stage containing game actors (not GUI, but actual game elements)
+    public Stage stage; // stage containing game actors (not GUI, but actual game elements)
     public World box2dWorld; // box2d world
     public NewPlayer newPlayer; // our playing character
     public boolean isResized = false;
@@ -43,11 +43,11 @@ public class GameWorld {
     public Pool<NewEnemy> enemyPool;
 
     public GameWorld() {
-        stage = new Stage(); // create the game stage
         createWorld();
     }
 
     private void createWorld() {
+        stage = new Stage(); // create the game stage
         box2dWorld = new World(GRAVITY, true);
         box2dWorld.setContactListener(new CustomizedContactListener());
         Gdx.app.log(LOG_CLASS_NAME, "Unit size " + UNIT_WIDTH + " / " + UNIT_HEIGHT);
@@ -70,7 +70,7 @@ public class GameWorld {
 
             @Override
             protected Bullet newObject() {
-                Bullet bullet = new Bullet(box2dWorld, newPlayer.getShootingPoint().x, newPlayer.getShootingPoint().y, newPlayer.body.getAngle(), newPlayer.body.getLinearVelocity());
+                Bullet bullet = new Bullet(box2dWorld, newPlayer.getShootingPoint().x, newPlayer.getShootingPoint().y, newPlayer.getBody().getAngle(), newPlayer.getBody().getLinearVelocity());
                 stage.addActor(bullet);
                 return bullet;
             }
@@ -103,7 +103,7 @@ public class GameWorld {
             if (TimeUtils.nanoTime() - newPlayer.getLastBulletTime() > newPlayer.getShootingSpeed()) {
                 Gdx.app.log(LOG_CLASS_NAME, "Shooting");
                 Bullet bullet = bulletPool.obtain();
-                bullet.init(newPlayer.getShootingPoint().x, newPlayer.getShootingPoint().y, newPlayer.body.getAngle(), newPlayer.body.getLinearVelocity());
+                bullet.init(newPlayer.getShootingPoint().x, newPlayer.getShootingPoint().y, newPlayer.getBody().getAngle(), newPlayer.getBody().getLinearVelocity());
                 bullets.add(bullet);
                 newPlayer.setLastBulletTime(TimeUtils.nanoTime());
             }
@@ -161,9 +161,9 @@ public class GameWorld {
     }
 
     public void resetWorld() {
-        setResetGame(false);
         destroyWorld();
         createWorld();
+        setResetGame(false);
     }
 
     private void destroyWorld(){

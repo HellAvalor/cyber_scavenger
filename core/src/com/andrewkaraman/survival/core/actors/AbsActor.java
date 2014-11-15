@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 public abstract class AbsActor extends Image {
 
     protected final String LOG_CLASS_NAME = this.getClass().getName();
+
     protected Body body;
 
     @Override
@@ -17,8 +18,13 @@ public abstract class AbsActor extends Image {
         super.act(delta);
         updateMotion();
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
-        setPosition(body.getPosition().x, body.getPosition().y);
+        setPosition(body.getPosition().x-getOriginX(), body.getPosition().y-getOriginY()); // set the actor position at the box2d body position
     }
+
+    public Body getBody() {
+        return body;
+    }
+
 
     protected abstract void updateMotion();
 
