@@ -7,8 +7,14 @@ import com.andrewkaraman.survival.core.actors.SmartEnemy;
 import com.andrewkaraman.survival.core.screens.GameScreen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
+import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
+import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
+import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
+import com.badlogic.gdx.ai.steer.limiters.LinearAccelerationLimiter;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -73,15 +79,42 @@ public class GameWorld {
         smartEnemy.setMaxLinearAcceleration(200);
         smartEnemy.setMaxAngularSpeed(20);
         smartEnemy.setMaxAngularAcceleration(4);
-        smartEnemy.boundingRadius = 80;
         // Create character's steering behavior
 //        final Seek<Vector2> seekSB = new Seek<Vector2>(smartEnemy, targetEnemy);
 //        smartEnemy.setSteeringBehavior(seekSB);
 
-        final Seek<Vector2> seek = new Seek<Vector2>(smartEnemy, player);
-        smartEnemy.setSteeringBehavior(seek);
+
+//        Seek<Vector2> seek = new Seek<Vector2>(smartEnemy, player);
+//        smartEnemy.setSteeringBehavior(seek);
+
         // add more game elements here
 //        generateEnemy();
+
+//        Box2dRadiusProximity proximity = new Box2dRadiusProximity(character, world,
+//                character.getBoundingRadius() * 4);
+//        proximities.add(proximity);
+//        if (i == 0) char0Proximity = proximity;
+        CollisionAvoidance<Vector2> collisionAvoidanceSB = new CollisionAvoidance<Vector2>(smartEnemy, player);
+
+
+        Wander<Vector2> wanderSB = new Wander<Vector2>(smartEnemy) //
+                // Don't use Face internally because independent facing is off
+                .setFaceEnabled(false) //
+                        // We don't need a limiter supporting angular components because Face is not used
+                        // No need to call setAlignTolerance, setDecelerationRadius and setTimeToTarget for the same reason
+                .setLimiter(new LinearAccelerationLimiter(30)) //
+                .setWanderOffset(60) //
+                .setWanderOrientation(10) //
+                .setWanderRadius(40) //
+                .setWanderRate(MathUtils.PI / 5);
+
+
+        PrioritySteering<Vector2> prioritySteeringSB = new PrioritySteering<Vector2>(smartEnemy, 0.0001f);
+        prioritySteeringSB.add(collisionAvoidanceSB);
+        prioritySteeringSB.add(wanderSB);
+
+
+        smartEnemy.setSteeringBehavior(prioritySteeringSB);
     }
 
     private void initPools(){

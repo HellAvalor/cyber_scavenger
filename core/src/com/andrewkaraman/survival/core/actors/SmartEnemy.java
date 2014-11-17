@@ -10,7 +10,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Scaling;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
 
@@ -56,15 +58,18 @@ public class SmartEnemy extends AbsActorImpl {
 
         setSize(actorWidth, actorWidth * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
 
+        setOrigin(Align.center);
+        setScaling(Scaling.stretch);
         init(startPosX, startPosY);
         alive = true;
         setVisible(alive);
+        textureSetup();
     }
 
     public void init(float posX, float posY) {
         body.setTransform(posX, posY, 0);
         setRotation(MathUtils.radiansToDegrees * body.getAngle());
-        setPosition(body.getPosition().x-getOriginX(), body.getPosition().y-getOriginY()); // set the actor position at the box2d body position
+        setPosition(body.getPosition().x, body.getPosition().y); // set the actor position at the box2d body position
 
         characteristic.setAlive(true);
         body.setActive(true);

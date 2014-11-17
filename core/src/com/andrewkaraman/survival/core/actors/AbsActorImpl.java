@@ -135,24 +135,4 @@ public abstract class AbsActorImpl extends AbsActor implements Steerable<Vector2
         this.steeringBehavior = steeringBehavior;
     }
 
-//    @Override
-//    public void draw(Batch batch, float parentAlpha) {
-//
-//
-//        batch.end();
-//        shapeDebugger.begin(ShapeRenderer.ShapeType.Line);
-//        shapeDebugger.setColor(0, 1, 1, 1);
-//        shapeDebugger.line(body.getPosition().x, body.getPosition().y, body.getPosition().x + body.getLinearVelocity().x, body.getPosition().y + body.getLinearVelocity().y);
-//        shapeDebugger.end();
-//
-//        batch.begin();
-//        super.draw(batch, parentAlpha);
-//    }
-
-    @Override
-    public void drawDebug(ShapeRenderer shapes) {
-        super.drawDebug(shapes);
-        shapes.setColor(0, 1, 1, 1);
-        shapes.line(body.getPosition().x, body.getPosition().y, body.getPosition().x + body.getLinearVelocity().x, body.getPosition().y + body.getLinearVelocity().y);
-    }
 }

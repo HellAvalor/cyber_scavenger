@@ -4,13 +4,17 @@ import com.andrewkaraman.survival.core.GameWorld;
 import com.andrewkaraman.survival.core.model.PlayerCharacteristic;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.steer.Proximity;
+import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -24,7 +28,7 @@ import static com.badlogic.gdx.math.MathUtils.atan2;
 /**
  * Created by Andrew on 26.10.2014.
  */
-public class Player extends AbsActorImpl {
+public class Player extends AbsActorImpl implements Proximity<Vector2>, QueryCallback {
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
     private final int SHIP_WIDTH = 1;
@@ -45,6 +49,12 @@ public class Player extends AbsActorImpl {
     public float angle;
     float directionX;
     float directionY;
+
+    protected Steerable<Vector2> owner;
+    protected ProximityCallback<Vector2> behaviorCallback;
+    protected float detectionRadius = 50;
+
+    private int neighborCount;
 
     boolean isShooting;
 
@@ -80,7 +90,7 @@ public class Player extends AbsActorImpl {
         fd.filter.categoryBits = (short) ActorsCategories.USER.getTypeMask();
         fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask());
 
-        body.getMassData().center.set(SHIP_WIDTH / 2, SHIP_WIDTH * (tex.getHeight() / tex.getWidth()) / 2);
+//        body.getMassData().center.set(SHIP_WIDTH / 2, SHIP_WIDTH * (tex.getHeight() / tex.getWidth()) / 2);
         loader.attachFixture(body, "player-ship", fd, 1);
         // generate newPlayer's actor
         setSize(SHIP_WIDTH, SHIP_WIDTH * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
@@ -88,6 +98,7 @@ public class Player extends AbsActorImpl {
         setOrigin(Align.center);
 //        setOrigin(getWidth() / 2, getHeight() / 2);
         shootingPoint = new Vector2(body.getPosition().x, body.getPosition().y);
+        textureSetup();
     }
 
     @Override
@@ -205,6 +216,62 @@ public class Player extends AbsActorImpl {
 
     public void setTurning(int turning) {
         this.turning = turning;
+    }
+
+    @Override
+    public Steerable<Vector2> getOwner() {
+        return owner;
+    }
+
+    @Override
+    public void setOwner(Steerable<Vector2> owner) {
+        this.owner = owner;
+    }
+
+    /** Returns the detection radius that is half the side of the square AABB. */
+    public float getDetectionRadius () {
+        return detectionRadius;
+    }
+
+    /** Sets the detection radius that is half the side of the square AABB. */
+    public void setDetectionRadius (float detectionRadius) {
+        this.detectionRadius = detectionRadius;
+    }
+
+    @Override
+    public int findNeighbors (ProximityCallback<Vector2> behaviorCallback) {
+        this.behaviorCallback = behaviorCallback;
+        neighborCount = 1;
+//        prepareAABB(aabb);
+//        world.QueryAABB(this, aabb.lowerX, aabb.lowerY, aabb.upperX, aabb.upperY);
+        this.behaviorCallback = null;
+        return neighborCount;
+    }
+
+     protected boolean accept (Steerable<Vector2> steerable) {
+        // The bounding radius of the current body is taken into account
+        // by adding it to the radius proximity
+        float range = detectionRadius + steerable.getBoundingRadius();
+
+        // Make sure the current body is within the range.
+        // Notice we're working in distance-squared space to avoid square root.
+        float distanceSquare = steerable.getPosition().dst2(owner.getPosition());
+
+        return distanceSquare <= range * range;
+    }
+
+    @Override
+    public boolean reportFixture (Fixture fixture) {
+        Steerable<Vector2> steerable = getSteerable(fixture);
+        if (steerable != owner && accept(steerable)) {
+            if (behaviorCallback.reportNeighbor(steerable)) neighborCount++;
+        }
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Steerable<Vector2> getSteerable (Fixture fixture) {
+        return (Steerable<Vector2>)fixture.getBody().getUserData();
     }
 }
 

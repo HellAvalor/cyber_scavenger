@@ -43,10 +43,10 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
 
-        this.body = world.createBody(bodyDef);
+        body = world.createBody(bodyDef);
         body.setBullet(true);
         characteristic = new BulletCharacteristic();
-        this.body.setUserData(characteristic);
+        body.setUserData(characteristic);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
@@ -56,6 +56,8 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         loader.attachFixture(body, "Bullet", fd, actorWidth);
 
         setSize(actorWidth, actorWidth * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
+        setOrigin(Align.center);
+        setScaling(Scaling.stretch); // stretch the texture
 //        setScaling(Scaling.stretch); // stretch the texture
 //        setAlign(Align.center);
 //        setOrigin(actorWidth / 2, actorWidth * (tex.getHeight() / tex.getWidth()) / 2);
@@ -63,6 +65,11 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         init(startPosX, startPosY, angle, velocity);
         alive = false;
         setVisible(alive);
+        textureSetup();
+    }
+
+    protected void textureSetup(){
+        origin = new Vector2();
     }
 
     public void init(float posX, float posY, float angle, Vector2 velocity) {
@@ -71,25 +78,26 @@ public class Bullet extends AbsActor implements Pool.Poolable {
 
         Vector2 v = new Vector2(- (float) Math.sin(angle), (float) Math.cos(angle));
         v.set(v.nor());
-        startPosX = v.x+posX;
-        startPosY = v.y+posY;
+        startPosX = posX;
+        startPosY = posY;
 
         body.setTransform(startPosX, startPosY, 0);
-
         v.scl(speed);
+
         body.setLinearVelocity(v.add(velocity));
 
-        setPosition(body.getPosition().x, body.getPosition().y); // set the actor position at the box2d body position
         body.setActive(true);
         characteristic.setAlive(true);
         alive = true;
         setVisible(alive);
+        setPosition(body.getPosition()); // set the actor position at the box2d body position
     }
 
     private void checkDistance(){
         double distance = Math.sqrt(Math.pow(startPosX - body.getPosition().x, 2) + Math.pow(startPosY - body.getPosition().y, 2));
 
         if (distance > MAX_BULLET_DISTANCE) {
+            body.setAngularVelocity(0);
             characteristic.setAlive(false);
             alive = false;
             setVisible(alive);
@@ -102,6 +110,7 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         setVisible(alive);
         body.setActive(false);
         body.setLinearVelocity(0,0);
+        body.setAngularVelocity(0);
     }
 
     @Override
