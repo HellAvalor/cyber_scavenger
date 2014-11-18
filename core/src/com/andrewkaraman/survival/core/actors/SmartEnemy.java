@@ -2,13 +2,17 @@ package com.andrewkaraman.survival.core.actors;
 
 import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.steer.Proximity;
+import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -23,7 +27,7 @@ public class SmartEnemy extends AbsActorImpl {
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
     public boolean alive;
-    public EnemyCharacteristic characteristic;
+//    protected EnemyCharacteristic characteristic;
 
     public SmartEnemy(World world) {
         this(world, 2, 4, 1);
@@ -43,7 +47,8 @@ public class SmartEnemy extends AbsActorImpl {
 
         body = world.createBody(bodyDef);
         characteristic = new EnemyCharacteristic();
-        body.setUserData(characteristic);
+//        body.setUserData(characteristic);
+
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
@@ -63,6 +68,9 @@ public class SmartEnemy extends AbsActorImpl {
         init(startPosX, startPosY);
         alive = true;
         setVisible(alive);
+        body.setLinearVelocity(0.2f,0.2f);
+        setIndependentFacing(true);
+        body.setUserData(this);
         textureSetup();
     }
 

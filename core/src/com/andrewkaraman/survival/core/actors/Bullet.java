@@ -25,7 +25,7 @@ public class Bullet extends AbsActor implements Pool.Poolable {
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
-    public BulletCharacteristic characteristic;
+//    public BulletCharacteristic characteristic;
     private final float MAX_BULLET_DISTANCE = 5;
     private float startPosX, startPosY;
     public boolean alive;

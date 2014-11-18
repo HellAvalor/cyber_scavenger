@@ -1,6 +1,8 @@
 package com.andrewkaraman.survival.core;
 
+import com.andrewkaraman.survival.core.actors.AbsActor;
 import com.andrewkaraman.survival.core.actors.ActorsCategories;
+import com.andrewkaraman.survival.core.actors.Player;
 import com.andrewkaraman.survival.core.model.AbsCharacteristics;
 import com.andrewkaraman.survival.core.model.BulletCharacteristic;
 import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
@@ -10,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 /**
  * Created by KaramanA on 07.11.2014.
@@ -22,8 +25,8 @@ public class CustomizedContactListener implements ContactListener {
     private Fixture fixtureA;
     private Fixture fixtureB;
 
-    private AbsCharacteristics bodyAUserData;
-    private AbsCharacteristics bodyBUserData;
+    private AbsActor bodyAUserData;
+    private AbsActor bodyBUserData;
 
     @Override
     public void beginContact(Contact contact) {
@@ -31,13 +34,13 @@ public class CustomizedContactListener implements ContactListener {
         fixtureA = contact.getFixtureA();
         fixtureB = contact.getFixtureB();
 
-        bodyAUserData = (AbsCharacteristics) fixtureA.getBody().getUserData();
-        bodyBUserData = (AbsCharacteristics) fixtureB.getBody().getUserData();
+        bodyAUserData = (AbsActor) fixtureA.getBody().getUserData();
+        bodyBUserData = (AbsActor) fixtureB.getBody().getUserData();
 
-        switch (bodyAUserData.getCategory().getTypeMask() | bodyBUserData.getCategory().getTypeMask()){
+        switch (bodyAUserData.characteristic.getCategory().getTypeMask() | bodyBUserData.characteristic.getCategory().getTypeMask()){
             case ENEMY_BULLET :
                 Gdx.app.log(LOG_CLASS_NAME, " beginContact ENEMY_BULLET collision ");
-                if (bodyAUserData.getCategory()==ActorsCategories.ENEMY_SHIP) {
+                if (bodyAUserData.characteristic.getCategory()==ActorsCategories.ENEMY_SHIP) {
                     handleEnemyBulletCollision(fixtureA, fixtureB);
                 } else {
                     handleEnemyBulletCollision(fixtureB, fixtureA);

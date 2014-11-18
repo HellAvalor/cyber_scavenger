@@ -28,11 +28,11 @@ import static com.badlogic.gdx.math.MathUtils.atan2;
 /**
  * Created by Andrew on 26.10.2014.
  */
-public class Player extends AbsActorImpl implements Proximity<Vector2>, QueryCallback {
+public class Player extends AbsActorImpl{
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
     private final int SHIP_WIDTH = 1;
-    public PlayerCharacteristic characteristic;
+//    protected PlayerCharacteristic characteristic;
 
     public final static int TURN_LEFT = 1;
     public final static int TURN_RIGHT = -1;
@@ -49,12 +49,6 @@ public class Player extends AbsActorImpl implements Proximity<Vector2>, QueryCal
     public float angle;
     float directionX;
     float directionY;
-
-    protected Steerable<Vector2> owner;
-    protected ProximityCallback<Vector2> behaviorCallback;
-    protected float detectionRadius = 50;
-
-    private int neighborCount;
 
     boolean isShooting;
 
@@ -81,7 +75,6 @@ public class Player extends AbsActorImpl implements Proximity<Vector2>, QueryCal
 
         body = world.box2dWorld.createBody(bodyDef);
         characteristic = new PlayerCharacteristic();
-        body.setUserData(characteristic);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();
@@ -98,6 +91,8 @@ public class Player extends AbsActorImpl implements Proximity<Vector2>, QueryCal
         setOrigin(Align.center);
 //        setOrigin(getWidth() / 2, getHeight() / 2);
         shootingPoint = new Vector2(body.getPosition().x, body.getPosition().y);
+        body.setLinearVelocity(0.1f,0.1f);
+        body.setUserData(this);
         textureSetup();
     }
 
@@ -218,61 +213,6 @@ public class Player extends AbsActorImpl implements Proximity<Vector2>, QueryCal
         this.turning = turning;
     }
 
-    @Override
-    public Steerable<Vector2> getOwner() {
-        return owner;
-    }
-
-    @Override
-    public void setOwner(Steerable<Vector2> owner) {
-        this.owner = owner;
-    }
-
-    /** Returns the detection radius that is half the side of the square AABB. */
-    public float getDetectionRadius () {
-        return detectionRadius;
-    }
-
-    /** Sets the detection radius that is half the side of the square AABB. */
-    public void setDetectionRadius (float detectionRadius) {
-        this.detectionRadius = detectionRadius;
-    }
-
-    @Override
-    public int findNeighbors (ProximityCallback<Vector2> behaviorCallback) {
-        this.behaviorCallback = behaviorCallback;
-        neighborCount = 1;
-//        prepareAABB(aabb);
-//        world.QueryAABB(this, aabb.lowerX, aabb.lowerY, aabb.upperX, aabb.upperY);
-        this.behaviorCallback = null;
-        return neighborCount;
-    }
-
-     protected boolean accept (Steerable<Vector2> steerable) {
-        // The bounding radius of the current body is taken into account
-        // by adding it to the radius proximity
-        float range = detectionRadius + steerable.getBoundingRadius();
-
-        // Make sure the current body is within the range.
-        // Notice we're working in distance-squared space to avoid square root.
-        float distanceSquare = steerable.getPosition().dst2(owner.getPosition());
-
-        return distanceSquare <= range * range;
-    }
-
-    @Override
-    public boolean reportFixture (Fixture fixture) {
-        Steerable<Vector2> steerable = getSteerable(fixture);
-        if (steerable != owner && accept(steerable)) {
-            if (behaviorCallback.reportNeighbor(steerable)) neighborCount++;
-        }
-        return true;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Steerable<Vector2> getSteerable (Fixture fixture) {
-        return (Steerable<Vector2>)fixture.getBody().getUserData();
-    }
 }
 
 

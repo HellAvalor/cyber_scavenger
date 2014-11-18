@@ -1,5 +1,7 @@
 package com.andrewkaraman.survival.core.actors;
 
+import com.andrewkaraman.survival.core.model.AbsCharacteristics;
+import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -16,6 +18,7 @@ public abstract class AbsActor extends Image {
 
     protected Vector2 origin;
     protected Body body;
+    public AbsCharacteristics characteristic;
 
     @Override
     public void act(float delta) {
