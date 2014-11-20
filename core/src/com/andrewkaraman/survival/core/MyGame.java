@@ -48,7 +48,7 @@ public class MyGame extends Game {
         super.render();
 
         // output the current FPS
-        fpsLogger.log();
+//        fpsLogger.log();
     }
 
     @Override

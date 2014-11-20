@@ -1,21 +1,23 @@
 package com.andrewkaraman.survival.core.actors;
 
 import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
+import com.andrewkaraman.survival.core.model.SmartEnemyState;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.steer.Proximity;
-import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Scaling;
 
 import aurelienribon.bodyeditor.BodyEditorLoader;
@@ -23,10 +25,14 @@ import aurelienribon.bodyeditor.BodyEditorLoader;
 /**
  * Created by KaramanA on 15.11.2014.
  */
-public class SmartEnemy extends AbsActorImpl {
+public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
+    private StateMachine<SmartEnemy> fsm;
     public boolean alive;
+    private float detectionRadius = 3;
+    private float shootingRadius = 1;
+    private boolean seeTarget = false;
 //    protected EnemyCharacteristic characteristic;
 
     public SmartEnemy(World world) {
@@ -59,7 +65,19 @@ public class SmartEnemy extends AbsActorImpl {
         fd.filter.categoryBits = (short) ActorsCategories.ENEMY_SHIP.getTypeMask();
         fd.filter.maskBits = (short) (ActorsCategories.BULLET.getTypeMask()|ActorsCategories.USER.getTypeMask());
 
+        FixtureDef fd2 = new FixtureDef();
+        //add radar sensor to ship
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(detectionRadius);
+        fd2.shape = circleShape;
+        fd2.isSensor = true;
+        fd2.filter.categoryBits = (short) ActorsCategories.RADAR_SENSOR.getTypeMask();
+        fd2.filter.maskBits = (short) (ActorsCategories.USER.getTypeMask());
+
         loader.attachFixture(body, "Enemy", fd, 1);
+        body.createFixture(fd2);
+
+        circleShape.dispose();
 
         setSize(actorWidth, actorWidth * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
 
@@ -72,6 +90,9 @@ public class SmartEnemy extends AbsActorImpl {
         setIndependentFacing(true);
         body.setUserData(this);
         textureSetup();
+
+        fsm = new DefaultStateMachine<SmartEnemy>(this, SmartEnemyState.IDLE);
+        fsm.setGlobalState(SmartEnemyState.GLOBAL_STATE);
     }
 
     public void init(float posX, float posY) {
@@ -80,6 +101,9 @@ public class SmartEnemy extends AbsActorImpl {
         setPosition(body.getPosition().x, body.getPosition().y); // set the actor position at the box2d body position
 
         characteristic.setAlive(true);
+        characteristic.setHealth(10);
+//        fsm.setGlobalState(SmartEnemyState.GLOBAL_STATE);
+        fsm.changeState(SmartEnemyState.IDLE);
         body.setActive(true);
         alive = true;
         setVisible(alive);
@@ -87,6 +111,7 @@ public class SmartEnemy extends AbsActorImpl {
 
     @Override
     protected void updateMotion(float delta) {
+        fsm.update();
         if (steeringBehavior != null) {
             // Calculate steering acceleration
             steeringBehavior.calculateSteering(steeringOutput);
@@ -161,12 +186,40 @@ public class SmartEnemy extends AbsActorImpl {
         }
     }
 
-//    @Override
-//    public void reset() {
-//        alive = false;
-//        setVisible(alive);
-//        body.setActive(false);
-//        body.setLinearVelocity(0,0);
-//    }
+    public StateMachine<SmartEnemy> getFSM() {
+        return fsm;
+    }
+
+    public void say(String string) {
+        Gdx.app.log(LOG_CLASS_NAME, string);
+    }
+
+    @Override
+    public void drawDebug(ShapeRenderer shapes) {
+        super.drawDebug(shapes);
+        shapes.setColor(0, 0, 1, 1);
+        shapes.circle(body.getPosition().x, body.getPosition().y, detectionRadius+1);
+        shapes.circle(body.getPosition().x, body.getPosition().y, shootingRadius);
+    }
+
+    public boolean isSeeTarget() {
+        return seeTarget;
+    }
+
+    public void setSeeTarget(boolean seeTarget) {
+        this.seeTarget = seeTarget;
+    }
+
+
+    @Override
+    public void reset() {
+        fsm.changeState(SmartEnemyState.NONE);
+        //TODO stop global state
+//        fsm.setGlobalState(SmartEnemyState.NONE);
+        alive = false;
+        setVisible(alive);
+        body.setActive(false);
+        body.setLinearVelocity(0,0);
+    }
 
 }

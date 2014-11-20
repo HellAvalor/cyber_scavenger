@@ -5,6 +5,7 @@ import com.andrewkaraman.survival.core.GameWorld;
 import com.andrewkaraman.survival.core.MyGame;
 import com.andrewkaraman.survival.core.PlayerInputListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 
@@ -37,6 +39,7 @@ public class GameScreen extends AbstractScreen {
     public static float SCALE_UNIT = Math.min(Gdx.graphics.getWidth() * 0.01f, 20);
 
     Label labelStatus;
+    Label labelFPS;
     private GameWorld world; // contains the game world's bodies and actors.
     private GameRenderer renderer; // our custom game renderer.
     private Stage stage; // stage that holds the GUI. Pixel-exact size.
@@ -47,6 +50,9 @@ public class GameScreen extends AbstractScreen {
     private Skin touchpadSkin;
     private Drawable touchBackground;
     private Drawable touchKnob;
+
+    long startTime = TimeUtils.nanoTime();
+    String str2;
 
     public GameScreen(MyGame game) {
         super(game);
@@ -85,7 +91,13 @@ public class GameScreen extends AbstractScreen {
 
         String str = "";
         if (!world.enemies.isEmpty()) {
-            str = "\n enemy life " + world.enemies.get(0).characteristic.getHealth();
+            str = "\n enemy life " + world.enemies.get(0).characteristic.getHealth() +" state  "+ world.enemies.get(0).getFSM().getCurrentState();
+        }
+
+
+        if (TimeUtils.nanoTime() - startTime > 1000000000) /* 1,000,000,000ns == one second */ {
+            str2 = "" + Gdx.graphics.getFramesPerSecond();
+            startTime = TimeUtils.nanoTime();
         }
 
         labelStatus.setText(
@@ -99,6 +111,8 @@ public class GameScreen extends AbstractScreen {
 
 //                "\n enemies " +world.enemies.size() +" / pool "+ world.enemyPool.peak+" / pool free "+ world.enemyPool.getFree()+" / pool max "+ world.enemyPool.max
         );
+
+        labelFPS.setText("FPS: " + str2);
         guiCam.update();
 
         world.update(delta); // update the box2d world
@@ -168,6 +182,9 @@ public class GameScreen extends AbstractScreen {
         labelStatus.setAlignment(Align.center);
         labelStatus.setFontScale(0.5f);
 
+        labelFPS = new Label("FPS 999", skin);
+        labelFPS.setFontScale(0.8f);
+
         stage.addActor(labelStatus);
         // add other GUI elements here
 
@@ -190,7 +207,7 @@ public class GameScreen extends AbstractScreen {
         missileButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-//                world.setResetGame(true);
+                world.generateEnemy();
             }
         });
 
@@ -220,7 +237,7 @@ public class GameScreen extends AbstractScreen {
         Table statusBar = new Table();
         statusBar.setSkin(skin);
         statusBar.defaults().fill();
-        statusBar.add("left column").width(SCALE_UNIT * 10);
+        statusBar.add(labelFPS).width(SCALE_UNIT * 10).align(Align.center);
         statusBar.add("left info").expand();
         statusBar.add("level").width(SCALE_UNIT * 5).height(SCALE_UNIT * 5).top();
         statusBar.add("Bars").width(SCALE_UNIT * 20).height(SCALE_UNIT * 5).top();

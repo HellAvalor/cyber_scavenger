@@ -46,7 +46,7 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         body = world.createBody(bodyDef);
         body.setBullet(true);
         characteristic = new BulletCharacteristic();
-        body.setUserData(characteristic);
+        body.setUserData(this);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
         FixtureDef fd = new FixtureDef();

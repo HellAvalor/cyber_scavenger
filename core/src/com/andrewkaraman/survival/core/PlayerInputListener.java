@@ -26,7 +26,7 @@ public class PlayerInputListener extends InputListener {
     }
 
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        Gdx.app.log(LOG_CLASS_NAME, "down " + x + " / " + y);
+//        Gdx.app.log(LOG_CLASS_NAME, "down " + x + " / " + y);
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
         }
@@ -34,7 +34,7 @@ public class PlayerInputListener extends InputListener {
     }
 
     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-        Gdx.app.log(LOG_CLASS_NAME, "up");
+//        Gdx.app.log(LOG_CLASS_NAME, "up");
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
         }
@@ -51,7 +51,7 @@ public class PlayerInputListener extends InputListener {
     @Override
     public boolean keyDown(InputEvent event, int keycode) {
 
-        Gdx.app.log(LOG_CLASS_NAME, "keyDown " + Input.Keys.toString(keycode));
+//        Gdx.app.log(LOG_CLASS_NAME, "keyDown " + Input.Keys.toString(keycode));
 
         switch (keycode) {
 
@@ -101,7 +101,7 @@ public class PlayerInputListener extends InputListener {
     @Override
     public boolean keyUp(InputEvent event, int keycode) {
 
-        Gdx.app.log(LOG_CLASS_NAME, "keyUp " + Input.Keys.toString(keycode));
+//        Gdx.app.log(LOG_CLASS_NAME, "keyUp " + Input.Keys.toString(keycode));
 
         switch (keycode) {
 

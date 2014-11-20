@@ -23,8 +23,7 @@ public abstract class AbsActorImpl extends AbsActor implements Steerable<Vector2
     boolean independentFacing;
     protected SteeringBehavior<Vector2> steeringBehavior;
 
-    protected static final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
-
+    protected final SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
 
     @Override
     public Vector2 getPosition() {
@@ -63,7 +62,7 @@ public abstract class AbsActorImpl extends AbsActor implements Steerable<Vector2
 
     @Override
     public Vector2 newVector() {
-        return null;
+        return new Vector2();
     }
 
     @Override

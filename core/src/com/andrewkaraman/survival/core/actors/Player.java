@@ -81,7 +81,7 @@ public class Player extends AbsActorImpl{
         fd.friction = 0.1f;
         fd.restitution = 0.3f;
         fd.filter.categoryBits = (short) ActorsCategories.USER.getTypeMask();
-        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask());
+        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask() | ActorsCategories.RADAR_SENSOR.getTypeMask());
 
 //        body.getMassData().center.set(SHIP_WIDTH / 2, SHIP_WIDTH * (tex.getHeight() / tex.getWidth()) / 2);
         loader.attachFixture(body, "player-ship", fd, 1);

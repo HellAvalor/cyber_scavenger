@@ -18,6 +18,8 @@ public abstract class AbsActor extends Image {
 
     protected Vector2 origin;
     protected Body body;
+
+
     public AbsCharacteristics characteristic;
 
     @Override
@@ -57,4 +59,13 @@ public abstract class AbsActor extends Image {
         shapes.setColor(0, 1, 1, 1);
         shapes.line(body.getPosition().x, body.getPosition().y, body.getPosition().x + body.getLinearVelocity().x, body.getPosition().y + body.getLinearVelocity().y);
     }
+
+    public AbsCharacteristics getCharacteristic() {
+        return characteristic;
+    }
+
+    public void setCharacteristic(AbsCharacteristics characteristic) {
+        this.characteristic = characteristic;
+    }
+
 }
