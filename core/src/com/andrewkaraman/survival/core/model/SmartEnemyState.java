@@ -65,6 +65,7 @@ public enum SmartEnemyState implements State<SmartEnemy> {
         @Override
         public void enter(SmartEnemy smartEnemy) {
             smartEnemy.say("Feeling great at home");
+            smartEnemy.idle();
         }
 
         @Override
@@ -90,11 +91,14 @@ public enum SmartEnemyState implements State<SmartEnemy> {
         @Override
         public void enter(SmartEnemy smartEnemy) {
             smartEnemy.say("Begin fighting");
+            smartEnemy.fight();
         }
 
         @Override
         public void update(SmartEnemy smartEnemy) {
-            if (smartEnemy.characteristic.getHealth()<3) smartEnemy.getFSM().changeState(FLEE);
+            if (smartEnemy.characteristic.getHealth()<3){
+                smartEnemy.getFSM().changeState(FLEE);
+            }
             if (!smartEnemy.isSeeTarget()) smartEnemy.getFSM().changeState(IDLE);
         }
 
@@ -116,6 +120,7 @@ public enum SmartEnemyState implements State<SmartEnemy> {
         @Override
         public void enter(SmartEnemy smartEnemy) {
             smartEnemy.say("Begin flee");
+            smartEnemy.flee();
         }
 
         @Override

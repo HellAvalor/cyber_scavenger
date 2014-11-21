@@ -1,11 +1,17 @@
 package com.andrewkaraman.survival.core.actors;
 
+import com.andrewkaraman.survival.core.GameWorld;
 import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
 import com.andrewkaraman.survival.core.model.SmartEnemyState;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.steer.behaviors.Evade;
+import com.badlogic.gdx.ai.steer.behaviors.Face;
+import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
+import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
+import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -17,6 +23,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Scaling;
 
@@ -33,13 +40,16 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
     private float detectionRadius = 3;
     private float shootingRadius = 1;
     private boolean seeTarget = false;
+    private GameWorld gameWorld;
+
 //    protected EnemyCharacteristic characteristic;
 
-    public SmartEnemy(World world) {
-        this(world, 2, 4, 1);
+    public SmartEnemy(GameWorld gameWorld) {
+        this(gameWorld, 2, 4, 1);
     }
 
-    public SmartEnemy(World world, float startPosX, float startPosY, float actorWidth) {
+    public SmartEnemy(GameWorld gameWorld, float startPosX, float startPosY, float actorWidth) {
+        this.gameWorld = gameWorld;
 
         Texture tex = new Texture(Gdx.files.internal("front-gun-proton-launcher.png"));
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
@@ -51,7 +61,7 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
         bodyDef.linearDamping = 0.1f;
         bodyDef.angularDamping = 0.5f;
 
-        body = world.createBody(bodyDef);
+        body = gameWorld.box2dWorld.createBody(bodyDef);
         characteristic = new EnemyCharacteristic();
 //        body.setUserData(characteristic);
 
@@ -83,16 +93,16 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
 
         setOrigin(Align.center);
         setScaling(Scaling.stretch);
-        init(startPosX, startPosY);
         alive = true;
         setVisible(alive);
         body.setLinearVelocity(0.2f,0.2f);
         setIndependentFacing(true);
         body.setUserData(this);
-        textureSetup();
 
         fsm = new DefaultStateMachine<SmartEnemy>(this, SmartEnemyState.IDLE);
         fsm.setGlobalState(SmartEnemyState.GLOBAL_STATE);
+        init(startPosX, startPosY);
+        textureSetup();
     }
 
     public void init(float posX, float posY) {
@@ -222,4 +232,66 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
         body.setLinearVelocity(0,0);
     }
 
+    public void flee(){
+        setMaxLinearSpeed(5);
+        setMaxLinearAcceleration(500);
+        setMaxAngularAcceleration(40);
+        setMaxAngularSpeed(15);
+        boundingRadius = 1;
+
+        LookWhereYouAreGoing<Vector2> lookWhereYouAreGoingSB = new LookWhereYouAreGoing<Vector2>(this) //
+                .setTimeToTarget(0.1f) //
+                .setAlignTolerance(0.001f) //
+                .setDecelerationRadius(MathUtils.PI/2);
+
+        Evade<Vector2> evade  = new Evade<Vector2>(this, gameWorld.player);
+
+        PrioritySteering<Vector2> prioritySteeringSB = new PrioritySteering<Vector2>(this, 0.0001f);
+        prioritySteeringSB.add(evade);
+        prioritySteeringSB.add(lookWhereYouAreGoingSB);
+
+
+        setSteeringBehavior(prioritySteeringSB);
+    }
+
+    public void fight(){
+//        setMaxLinearSpeed(5);
+//        setMaxLinearAcceleration(500);
+//        setMaxAngularAcceleration(40);
+//        setMaxAngularSpeed(15);
+//        boundingRadius = 1;
+//
+//        Seek<Vector2> seek = new Seek<Vector2>(this);
+//
+//        LookWhereYouAreGoing<Vector2> lookWhereYouAreGoingSB = new LookWhereYouAreGoing<Vector2>(this) //
+//                .setTimeToTarget(0.1f) //
+//                .setAlignTolerance(0.001f) //
+//                .setDecelerationRadius(MathUtils.PI);
+//
+//        PrioritySteering<Vector2> prioritySteeringSB = new PrioritySteering<Vector2>(this, 0.0001f);
+//        prioritySteeringSB.add(seek);
+//        prioritySteeringSB.add(lookWhereYouAreGoingSB);
+//
+//        setSteeringBehavior(prioritySteeringSB);
+    }
+
+    public void idle(){
+
+        setMaxLinearSpeed(5);
+        setMaxLinearAcceleration(500);
+        setMaxAngularAcceleration(40);
+        setMaxAngularSpeed(15);
+        boundingRadius = 1;
+
+        Face<Vector2> face  = new Face<Vector2>(this, gameWorld.player)
+                .setTimeToTarget(0.1f) //
+                .setAlignTolerance(0.001f) //
+                .setDecelerationRadius(MathUtils.degreesToRadians * 180);
+
+
+        PrioritySteering<Vector2> prioritySteeringSB = new PrioritySteering<Vector2>(this, 0.0001f);
+        prioritySteeringSB.add(face);
+
+        setSteeringBehavior(prioritySteeringSB);
+    }
 }

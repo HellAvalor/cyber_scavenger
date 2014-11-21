@@ -69,7 +69,7 @@ public class GameWorld {
         Gdx.app.log(LOG_CLASS_NAME, "Unit size " + UNIT_WIDTH + " / " + UNIT_HEIGHT);
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         stage.setDebugAll(true);
-        initPools();
+        initPools(this);
         // create box2d bodies and the respective actors here.
         player = new Player(this);
         stage.addActor(player);
@@ -165,7 +165,7 @@ public class GameWorld {
           generateEnemy();
     }
 
-    private void initPools(){
+    private void initPools(final GameWorld gameWorld){
         bullets = new ArrayList<Bullet>();
 
         bulletPool = new Pool<Bullet>() {
@@ -184,7 +184,7 @@ public class GameWorld {
 
             @Override
             protected SmartEnemy newObject() {
-                SmartEnemy enemy = new SmartEnemy(box2dWorld);
+                SmartEnemy enemy = new SmartEnemy(gameWorld);
                 stage.addActor(enemy);
                 return enemy;
             }
