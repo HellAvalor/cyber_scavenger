@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.MathUtils;
  */
 public enum SmartEnemyState implements State<SmartEnemy> {
 
-    NONE(){
+    NONE() {
         @Override
         public void enter(SmartEnemy entity) {
 
@@ -61,7 +61,6 @@ public enum SmartEnemyState implements State<SmartEnemy> {
     },
 
     IDLE() {
-
         @Override
         public void enter(SmartEnemy smartEnemy) {
             smartEnemy.say("Feeling great at home");
@@ -70,7 +69,13 @@ public enum SmartEnemyState implements State<SmartEnemy> {
 
         @Override
         public void update(SmartEnemy smartEnemy) {
-            if (smartEnemy.isSeeTarget()) smartEnemy.getFSM().changeState(FIGHT);
+
+            if (smartEnemy.isTargetInRadarRange() && smartEnemy.characteristic.getHealth() < 3) {
+                smartEnemy.getFSM().changeState(FLEE);
+                return;
+            }
+
+            if (smartEnemy.isTargetInRadarRange()) smartEnemy.getFSM().changeState(SEEK);
         }
 
         @Override
@@ -86,25 +91,22 @@ public enum SmartEnemyState implements State<SmartEnemy> {
         }
     },
 
-    FIGHT() {
-
+    SEEK() {
         @Override
         public void enter(SmartEnemy smartEnemy) {
-            smartEnemy.say("Begin fighting");
-            smartEnemy.fight();
+            smartEnemy.say("Begin seeking");
+            smartEnemy.seek();
         }
 
         @Override
         public void update(SmartEnemy smartEnemy) {
-            if (smartEnemy.characteristic.getHealth()<3){
-                smartEnemy.getFSM().changeState(FLEE);
-            }
-            if (!smartEnemy.isSeeTarget()) smartEnemy.getFSM().changeState(IDLE);
+            if (smartEnemy.isTargetInShootingRange()) smartEnemy.getFSM().changeState(FIGHT);
+            if (!smartEnemy.isTargetInRadarRange()) smartEnemy.getFSM().changeState(IDLE);
         }
 
         @Override
         public void exit(SmartEnemy smartEnemy) {
-            smartEnemy.say("Stop fighting");
+            smartEnemy.say("Stop seeking");
 
         }
 
@@ -115,17 +117,47 @@ public enum SmartEnemyState implements State<SmartEnemy> {
         }
     },
 
-    FLEE() {
-
+    FIGHT() {
         @Override
         public void enter(SmartEnemy smartEnemy) {
-            smartEnemy.say("Begin flee");
-            smartEnemy.flee();
+            smartEnemy.say("Begin fighting");
+            smartEnemy.fight();
         }
 
         @Override
         public void update(SmartEnemy smartEnemy) {
-            if (!smartEnemy.isSeeTarget()) smartEnemy.getFSM().changeState(IDLE);
+            if (smartEnemy.characteristic.getHealth() < 3) {
+                smartEnemy.getFSM().changeState(FLEE);
+            }
+            if (!smartEnemy.isTargetInShootingRange() && smartEnemy.isTargetInRadarRange())
+                smartEnemy.getFSM().changeState(SEEK);
+        }
+
+        @Override
+        public void exit(SmartEnemy smartEnemy) {
+            smartEnemy.say("Stop fighting");
+            smartEnemy.setShooting(false);
+        }
+
+        @Override
+        public boolean onMessage(SmartEnemy smartEnemy, Telegram telegram) {
+            // TODO Auto-generated method stub
+            return false;
+        }
+    },
+
+    FLEE() {
+        @Override
+        public void enter(SmartEnemy smartEnemy) {
+            smartEnemy.say("Begin flee");
+            smartEnemy.flee();
+
+        }
+
+        @Override
+        public void update(SmartEnemy smartEnemy) {
+            if (!smartEnemy.isTargetInRadarRange()) smartEnemy.getFSM().changeState(IDLE);
+
         }
 
         @Override

@@ -4,13 +4,10 @@ import com.andrewkaraman.survival.core.model.BulletCharacteristic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Pool;
@@ -25,18 +22,20 @@ public class Bullet extends AbsActor implements Pool.Poolable {
 
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
-//    public BulletCharacteristic characteristic;
     private final float MAX_BULLET_DISTANCE = 5;
     private float startPosX, startPosY;
     public boolean alive;
     private int speed = 10;
 
-    public Bullet(World world, float startPosX, float startPosY,  float angle, Vector2 velocity) {
+    public Bullet(World world) {
+        this(world, 0, 0, 0.2f, 0, new Vector2());
+    }
+
+    public Bullet(World world, float startPosX, float startPosY, float angle, Vector2 velocity) {
         this(world, startPosX, startPosY, 0.2f, angle, velocity);
     }
 
     public Bullet(World world, float startPosX, float startPosY, float actorWidth, float angle, Vector2 velocity) {
-
         Texture tex = new Texture(Gdx.files.internal("bullet.png"));
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
 
@@ -49,11 +48,7 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         body.setUserData(this);
         BodyEditorLoader loader = new BodyEditorLoader(Gdx.files.internal("testPhysSettings.json"));
 
-        FixtureDef fd = new FixtureDef();
-        fd.density = 0.2f;
-        fd.filter.categoryBits =(short) ActorsCategories.BULLET.getTypeMask();
-        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask());
-        loader.attachFixture(body, "Bullet", fd, actorWidth);
+        loader.attachFixture(body, "Bullet", getFixture(), actorWidth);
 
         setSize(actorWidth, actorWidth * (tex.getHeight() / tex.getWidth())); // scale actor to body's size
         setOrigin(Align.center);
@@ -68,15 +63,23 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         textureSetup();
     }
 
-    protected void textureSetup(){
+    protected FixtureDef getFixture(){
+        FixtureDef fd = new FixtureDef();
+        fd.density = 0.2f;
+        fd.filter.categoryBits = (short) (ActorsCategories.BULLET.getTypeMask());
+        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask());
+        return  fd;
+    }
+
+    protected void textureSetup() {
         origin = new Vector2();
     }
 
     public void init(float posX, float posY, float angle, Vector2 velocity) {
-        posX -= getWidth()/2;
-        posY -= getHeight()/2;
+        posX -= getWidth() / 2;
+        posY -= getHeight() / 2;
 
-        Vector2 v = new Vector2(- (float) Math.sin(angle), (float) Math.cos(angle));
+        Vector2 v = new Vector2(-(float) Math.sin(angle), (float) Math.cos(angle));
         v.set(v.nor());
         startPosX = posX;
         startPosY = posY;
@@ -93,7 +96,7 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         setPosition(body.getPosition()); // set the actor position at the box2d body position
     }
 
-    private void checkDistance(){
+    private void checkDistance() {
         double distance = Math.sqrt(Math.pow(startPosX - body.getPosition().x, 2) + Math.pow(startPosY - body.getPosition().y, 2));
 
         if (distance > MAX_BULLET_DISTANCE) {
@@ -109,7 +112,7 @@ public class Bullet extends AbsActor implements Pool.Poolable {
         alive = false;
         setVisible(alive);
         body.setActive(false);
-        body.setLinearVelocity(0,0);
+        body.setLinearVelocity(0, 0);
         body.setAngularVelocity(0);
     }
 

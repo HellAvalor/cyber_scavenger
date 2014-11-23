@@ -5,7 +5,6 @@ import com.andrewkaraman.survival.core.GameWorld;
 import com.andrewkaraman.survival.core.MyGame;
 import com.andrewkaraman.survival.core.PlayerInputListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -22,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
 
 import static com.badlogic.gdx.Application.ApplicationType;
 
@@ -50,7 +49,7 @@ public class GameScreen extends AbstractScreen {
     private Skin touchpadSkin;
     private Drawable touchBackground;
     private Drawable touchKnob;
-
+    private ProgressBar lifeBar;
     long startTime = TimeUtils.nanoTime();
     String str2;
 
@@ -113,6 +112,7 @@ public class GameScreen extends AbstractScreen {
         );
 
         labelFPS.setText("FPS: " + str2);
+        lifeBar.setValue(world.player.characteristic.getHealth());
         guiCam.update();
 
         world.update(delta); // update the box2d world
@@ -233,6 +233,7 @@ public class GameScreen extends AbstractScreen {
         }
         skin.getFont("default-font").setScale(0.5f);
 
+        lifeBar = new ProgressBar(0, world.player.characteristic.getHealth(), 1, false, skin);
 
         Table statusBar = new Table();
         statusBar.setSkin(skin);
@@ -240,7 +241,7 @@ public class GameScreen extends AbstractScreen {
         statusBar.add(labelFPS).width(SCALE_UNIT * 10).align(Align.center);
         statusBar.add("left info").expand();
         statusBar.add("level").width(SCALE_UNIT * 5).height(SCALE_UNIT * 5).top();
-        statusBar.add("Bars").width(SCALE_UNIT * 20).height(SCALE_UNIT * 5).top();
+        statusBar.add(lifeBar).width(SCALE_UNIT * 20).height(SCALE_UNIT * 5).top();
         statusBar.add("level").width(SCALE_UNIT * 5).height(SCALE_UNIT * 5).top();
         statusBar.add("right info").expand();
         statusBar.add("right column").width(SCALE_UNIT * 10);

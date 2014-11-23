@@ -1,30 +1,14 @@
 package com.andrewkaraman.survival.core;
 
 import com.andrewkaraman.survival.core.actors.Bullet;
-import com.andrewkaraman.survival.core.actors.Enemy;
+import com.andrewkaraman.survival.core.actors.EnemyBullet;
 import com.andrewkaraman.survival.core.actors.Player;
 import com.andrewkaraman.survival.core.actors.SmartEnemy;
-import com.andrewkaraman.survival.core.model.ProximityEntity;
 import com.andrewkaraman.survival.core.screens.GameScreen;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.steer.behaviors.BlendedSteering;
-import com.badlogic.gdx.ai.steer.behaviors.CollisionAvoidance;
-import com.badlogic.gdx.ai.steer.behaviors.Evade;
-import com.badlogic.gdx.ai.steer.behaviors.Face;
-import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
-import com.badlogic.gdx.ai.steer.behaviors.PrioritySteering;
-import com.badlogic.gdx.ai.steer.behaviors.Pursue;
-import com.badlogic.gdx.ai.steer.behaviors.Seek;
-import com.badlogic.gdx.ai.steer.behaviors.Wander;
-import com.badlogic.gdx.ai.steer.limiters.LinearAccelerationLimiter;
-import com.badlogic.gdx.ai.steer.limiters.NullLimiter;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -55,6 +39,8 @@ public class GameWorld {
     // bullet pool.
     public ArrayList<Bullet> bullets;
     public Pool<Bullet> bulletPool;
+    public ArrayList<EnemyBullet> enemyBullets;
+    public Pool<EnemyBullet> enemyBulletPool;
     public ArrayList<SmartEnemy> enemies;
     public Pool<SmartEnemy> enemyPool;
 
@@ -172,7 +158,7 @@ public class GameWorld {
 
             @Override
             protected Bullet newObject() {
-                Bullet bullet = new Bullet(box2dWorld, player.getShootingPoint().x, player.getShootingPoint().y, player.getBody().getAngle(), player.getBody().getLinearVelocity());
+                Bullet bullet = new Bullet(box2dWorld);
                 stage.addActor(bullet);
                 return bullet;
             }
@@ -189,6 +175,20 @@ public class GameWorld {
                 return enemy;
             }
         };
+
+        enemyBullets = new ArrayList<EnemyBullet>();
+
+        enemyBulletPool = new Pool<EnemyBullet>() {
+
+            @Override
+            protected EnemyBullet newObject() {
+                EnemyBullet enemyBullet = new EnemyBullet(box2dWorld);
+                stage.addActor(enemyBullet);
+                return enemyBullet;
+            }
+
+        };
+
     }
 
     public void update(float delta) {
@@ -208,6 +208,18 @@ public class GameWorld {
                 bullet.init(player.getShootingPoint().x, player.getShootingPoint().y, player.getBody().getAngle(), player.getBody().getLinearVelocity());
                 bullets.add(bullet);
                 player.setLastBulletTime(TimeUtils.nanoTime());
+            }
+        }
+
+        for (SmartEnemy enemy: enemies){
+            if (enemy.isShooting()) {
+                if (TimeUtils.nanoTime() - enemy.getLastBulletTime() > enemy.getShootingSpeed()) {
+                    Gdx.app.log(LOG_CLASS_NAME, "enemy Shooting");
+                    EnemyBullet bullet = enemyBulletPool.obtain();
+                    bullet.init(enemy.getShootingPoint().x, enemy.getShootingPoint().y, enemy.getBody().getAngle(), enemy.getBody().getLinearVelocity());
+                    enemyBullets.add(bullet);
+                    enemy.setLastBulletTime(TimeUtils.nanoTime());
+                }
             }
         }
     }
@@ -231,9 +243,19 @@ public class GameWorld {
             }
         }
 
+        EnemyBullet enemyBullet;
+        len = enemyBullets.size();
+        for (int i = len; --i >= 0; ) {
+            enemyBullet = enemyBullets.get(i);
+            if (!enemyBullet.characteristic.isAlive()) {
+                enemyBullets.remove(i);
+                enemyBulletPool.free(enemyBullet);
+            }
+        }
+
         SmartEnemy enemy;
-        int lenE = enemies.size();
-        for (int i = lenE; --i >= 0; ) {
+        len = enemies.size();
+        for (int i = len; --i >= 0; ) {
             enemy = enemies.get(i);
             if (!enemy.characteristic.isAlive()) {
                 enemies.remove(i);

@@ -4,18 +4,11 @@ import com.andrewkaraman.survival.core.GameWorld;
 import com.andrewkaraman.survival.core.model.PlayerCharacteristic;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.steer.Proximity;
-import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.QueryCallback;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
@@ -44,15 +37,9 @@ public class Player extends AbsActorImpl{
     float DEG_TO_RAD = 0.017453292519943295769236907684886f;
     private final float MAX_SPEED = 10;
     private final float THRUST = 5;
-    private long shootingSpeed = 100000000;
-    private long lastBulletTime;
     public float angle;
     float directionX;
     float directionY;
-
-    boolean isShooting;
-
-    Vector2 shootingPoint;
 
     int turning;
     int speedUp;
@@ -81,7 +68,7 @@ public class Player extends AbsActorImpl{
         fd.friction = 0.1f;
         fd.restitution = 0.3f;
         fd.filter.categoryBits = (short) ActorsCategories.USER.getTypeMask();
-        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask() | ActorsCategories.RADAR_SENSOR.getTypeMask());
+        fd.filter.maskBits = (short) (ActorsCategories.ENEMY_SHIP.getTypeMask() | ActorsCategories.SHOOTING_SENSOR.getTypeMask() | ActorsCategories.RADAR_SENSOR.getTypeMask()|ActorsCategories.ENEMY_BULLET.getTypeMask());
 
 //        body.getMassData().center.set(SHIP_WIDTH / 2, SHIP_WIDTH * (tex.getHeight() / tex.getWidth()) / 2);
         loader.attachFixture(body, "player-ship", fd, 1);
@@ -158,43 +145,6 @@ public class Player extends AbsActorImpl{
     public void setJoystickMove(float knobPercentX, float knobPercentY) {
         directionX = knobPercentX;
         directionY = knobPercentY;
-    }
-
-    public boolean isShooting() {
-        return isShooting;
-    }
-
-    public void setShooting(boolean isShooting) {
-        this.isShooting = isShooting;
-    }
-
-
-    public long getLastBulletTime() {
-        return lastBulletTime;
-    }
-
-    public void setLastBulletTime(long lastBulletTime) {
-        this.lastBulletTime = lastBulletTime;
-    }
-
-    public long getShootingSpeed() {
-        return shootingSpeed;
-    }
-
-    public void setShootingSpeed(long shootingSpeed) {
-        this.shootingSpeed = shootingSpeed;
-    }
-
-    public void stop() {
-        body.setLinearVelocity(0, 0);
-    }
-
-    public Vector2 getShootingPoint() {
-        return shootingPoint;
-    }
-
-    public void setShootingPoint(Vector2 shootingPoint) {
-        this.shootingPoint = shootingPoint;
     }
 
     public int getSpeedUp() {

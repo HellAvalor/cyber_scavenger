@@ -3,7 +3,6 @@ package com.andrewkaraman.survival.core.actors;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
@@ -15,6 +14,10 @@ public abstract class AbsActorImpl extends AbsActor implements Steerable<Vector2
     public float boundingRadius;
     boolean tagged;
 
+    protected long shootingSpeed = 100000000;
+    protected long lastBulletTime;
+    Vector2 shootingPoint;
+    boolean isShooting;
     float maxLinearSpeed;
     float maxLinearAcceleration;
     float maxAngularSpeed;
@@ -133,5 +136,42 @@ public abstract class AbsActorImpl extends AbsActor implements Steerable<Vector2
     public void setSteeringBehavior (SteeringBehavior<Vector2> steeringBehavior) {
         this.steeringBehavior = steeringBehavior;
     }
+
+    public long getLastBulletTime() {
+        return lastBulletTime;
+    }
+
+    public void setLastBulletTime(long lastBulletTime) {
+        this.lastBulletTime = lastBulletTime;
+    }
+
+    public long getShootingSpeed() {
+        return shootingSpeed;
+    }
+
+    public void setShootingSpeed(long shootingSpeed) {
+        this.shootingSpeed = shootingSpeed;
+    }
+
+    public void stop() {
+        body.setLinearVelocity(0, 0);
+    }
+
+    public Vector2 getShootingPoint() {
+        return shootingPoint;
+    }
+
+    public void setShootingPoint(Vector2 shootingPoint) {
+        this.shootingPoint = shootingPoint;
+    }
+
+    public boolean isShooting() {
+        return isShooting;
+    }
+
+    public void setShooting(boolean isShooting) {
+        this.isShooting = isShooting;
+    }
+
 
 }
