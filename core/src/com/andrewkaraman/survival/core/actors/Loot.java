@@ -29,7 +29,7 @@ public class Loot extends AbsActor implements Pool.Poolable {
 
         this.gameWorld = world;
 
-        Texture tex = new Texture(Gdx.files.internal("metal_crate.png"));
+        Texture tex = new Texture(Gdx.files.internal("metal-crate.png"));
         this.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
 
         BodyDef bodyDef = new BodyDef();

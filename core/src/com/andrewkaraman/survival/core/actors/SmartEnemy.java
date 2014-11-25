@@ -320,8 +320,4 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
     public void setShooting(boolean shooting) {
         this.shooting = shooting;
     }
-
-    public void generateLoot(){
-        gameWorld.generateLoot(this);
-    }
 }

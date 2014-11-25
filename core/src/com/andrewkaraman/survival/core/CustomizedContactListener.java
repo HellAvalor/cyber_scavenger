@@ -161,7 +161,6 @@ public class CustomizedContactListener implements ContactListener {
         bulletCharacteristic.setHealth(bulletCharacteristic.getHealth()-1);
 
         if (enemyCharacteristic.getHealth() <=0){
-            ((SmartEnemy)fixtureShip.getBody().getUserData()).generateLoot();
             enemyCharacteristic.setAlive(false);
         }
 

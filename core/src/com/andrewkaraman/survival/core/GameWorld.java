@@ -194,6 +194,7 @@ public class GameWorld {
         for (int i = len; --i >= 0; ) {
             enemy = enemies.get(i);
             if (!enemy.characteristic.isAlive()) {
+                generateLoot(enemy);
                 enemies.remove(i);
                 enemyPool.free(enemy);
             }
