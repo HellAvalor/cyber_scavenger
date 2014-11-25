@@ -188,12 +188,6 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
         }
 
         if (anyAccelerations) {
-
-            // TODO:
-            // Looks like truncating speeds here after applying forces doesn't work as expected.
-            // We should likely cap speeds form inside an InternalTickCallback, see
-            // http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Simulation_Tick_Callbacks
-
             // Cap the linear speed
             Vector2 velocity = body.getLinearVelocity();
             float currentSpeedSquare = velocity.len2();
@@ -325,5 +319,9 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
 
     public void setShooting(boolean shooting) {
         this.shooting = shooting;
+    }
+
+    public void generateLoot(){
+        gameWorld.generateLoot(this);
     }
 }

@@ -1,7 +1,9 @@
 package com.andrewkaraman.survival.core;
 
+import com.andrewkaraman.survival.core.actors.AbsActor;
 import com.andrewkaraman.survival.core.actors.Bullet;
 import com.andrewkaraman.survival.core.actors.EnemyBullet;
+import com.andrewkaraman.survival.core.actors.Loot;
 import com.andrewkaraman.survival.core.actors.Player;
 import com.andrewkaraman.survival.core.actors.SmartEnemy;
 import com.andrewkaraman.survival.core.screens.GameScreen;
@@ -43,6 +45,8 @@ public class GameWorld {
     public Pool<EnemyBullet> enemyBulletPool;
     public ArrayList<SmartEnemy> enemies;
     public Pool<SmartEnemy> enemyPool;
+    public ArrayList<Loot> loots;
+    public Pool<Loot> lootPool;
 
     public GameWorld() {
         createWorld();
@@ -61,94 +65,7 @@ public class GameWorld {
         stage.addActor(player);
         stage.setDebugAll(true);
         player.boundingRadius = 80;
-
-//        smartEnemy = new SmartEnemy(box2dWorld);
-//        stage.addActor(smartEnemy);
-
-//        targetEnemy = new SmartEnemy(box2dWorld, -2, -2 , 1);
-//        stage.addActor(smartEnemy);
-
-//        smartEnemy.setMaxLinearSpeed(5);
-//        smartEnemy.setMaxLinearAcceleration(500);
-//        smartEnemy.setMaxAngularAcceleration(40);
-//        smartEnemy.setMaxAngularSpeed(15);
-//        smartEnemy.boundingRadius = 1;
-
-//        final LookWhereYouAreGoing<Vector2> lookWhereYouAreGoingSB = new LookWhereYouAreGoing<Vector2>(smartEnemy) //
-//                .setTimeToTarget(0.1f) //
-//                .setAlignTolerance(0.001f) //
-//                .setDecelerationRadius(MathUtils.PI);
-//
-//        final Arrive<Vector2> arriveSB = new Arrive<Vector2>(smartEnemy, player) //
-//                .setTimeToTarget(0.01f) //
-//                .setArrivalTolerance(0.0002f) //
-//                .setDecelerationRadius(3);
-////
-//        BlendedSteering<Vector2> blendedSteering = new BlendedSteering<Vector2>(smartEnemy) //
-//                .setLimiter(NullLimiter.NEUTRAL_LIMITER) //
-//                .add(arriveSB, 1f) //
-//                .add(lookWhereYouAreGoingSB, 1f);
-//        smartEnemy.setSteeringBehavior(blendedSteering);
-
-//        ProximityEntity proximity = new ProximityEntity(smartEnemy, box2dWorld,
-//                smartEnemy.getBoundingRadius() * 4);
-//        CollisionAvoidance<Vector2> collisionAvoidanceSB = new CollisionAvoidance<Vector2>(smartEnemy, proximity);
-//
-//        ProximityEntity proximity2 = new ProximityEntity(player, box2dWorld,
-//                player.getBoundingRadius() * 4);
-//        Seek<Vector2> seek = new Seek<Vector2>(smartEnemy, player);
-//
-////        CollisionAvoidance<Vector2> collisionAvoidanceSB = new CollisionAvoidance<Vector2>(smartEnemy, proximity);
-//        Face<Vector2> face  = new Face<Vector2>(smartEnemy, player)
-//                .setTimeToTarget(0.1f) //
-//                .setAlignTolerance(0.001f) //
-//                .setDecelerationRadius(MathUtils.degreesToRadians * 180);
-//
-//        Evade<Vector2> persue  = new Evade<Vector2>(smartEnemy, player);
-//        LookWhereYouAreGoing<Vector2> vector2LookWhereYouAreGoing  = new LookWhereYouAreGoing<Vector2>(smartEnemy);
-////        Wander<Vector2> wanderSB = new Wander<Vector2>(smartEnemy) //
-////                // Don't use Face internally because independent facing is off
-////                .setFaceEnabled(false) //
-////                        // We don't need a limiter supporting angular components because Face is not used
-////                        // No need to call setAlignTolerance, setDecelerationRadius and setTimeToTarget for the same reason
-////                .setLimiter(new LinearAccelerationLimiter(30)) //
-////                .setWanderOffset(60) //
-////                .setWanderOrientation(10) //
-////                .setWanderRadius(40) //
-////                .setWanderRate(MathUtils.PI / 5);
-//
-////
-//        BlendedSteering<Vector2> prioritySteeringSB = new BlendedSteering<Vector2>(smartEnemy)
-//                .add(seek, 0.8f)
-//                .add(collisionAvoidanceSB, 1f)
-//                .add(face, 1f);
-//////
-//////
-//////
-//        smartEnemy.setSteeringBehavior(prioritySteeringSB);
-////        smartEnemy.setSteeringBehavior(persue);
-
-//        CollisionAvoidance<Vector2> collisionAvoidanceSB = new CollisionAvoidance<Vector2>(smartEnemy, proximity);
-//
-//        Wander<Vector2> wanderSB = new Wander<Vector2>(smartEnemy) //
-//                // Don't use Face internally because independent facing is off
-//                .setFaceEnabled(false) //
-//                        // We don't need a limiter supporting angular components because Face is not used
-//                        // No need to call setAlignTolerance, setDecelerationRadius and setTimeToTarget for the same reason
-//                .setLimiter(new LinearAccelerationLimiter(30)) //
-//
-//                .setWanderOffset(60) //
-//                .setWanderOrientation(10) //
-//                .setWanderRadius(10) //
-//                .setWanderRate(MathUtils.PI / 5);
-//
-//        PrioritySteering<Vector2> prioritySteeringSB = new PrioritySteering<Vector2>(smartEnemy, 0.0001f);
-//        prioritySteeringSB.add(collisionAvoidanceSB);
-//        prioritySteeringSB.add(wanderSB);
-//
-//
-//        smartEnemy.setSteeringBehavior(prioritySteeringSB);
-          generateEnemy();
+        generateEnemy();
     }
 
     private void initPools(final GameWorld gameWorld){
@@ -176,6 +93,19 @@ public class GameWorld {
             }
         };
 
+        loots = new ArrayList<Loot>();
+
+        lootPool = new Pool<Loot>() {
+
+            @Override
+            protected Loot newObject() {
+                Loot loot = new Loot(gameWorld);
+                stage.addActor(loot);
+                return loot;
+            }
+        };
+
+
         enemyBullets = new ArrayList<EnemyBullet>();
 
         enemyBulletPool = new Pool<EnemyBullet>() {
@@ -197,7 +127,6 @@ public class GameWorld {
         // perform game logic here
         box2dWorld.step(delta, 3, 3); // update box2d world
         stage.act(delta); // update game stage
-
     }
 
     private void shoot() {
@@ -231,6 +160,13 @@ public class GameWorld {
         enemies.add(enemy);
     }
 
+    public void generateLoot(AbsActor actor) {
+        Gdx.app.log(LOG_CLASS_NAME, "Generating loot");
+        Loot loot = lootPool.obtain();
+        loot.init(actor.getBody().getPosition().x, actor.getBody().getPosition().y);
+        loots.add(loot);
+    }
+
     private void destroyObjects() {
         // if you want to free dead bullets, returning them to the pool:
         Bullet bullet;
@@ -262,14 +198,27 @@ public class GameWorld {
                 enemyPool.free(enemy);
             }
         }
+
+        Loot loot;
+        len = loots.size();
+        for (int i = len; --i >= 0; ) {
+            loot = loots.get(i);
+            if (!loot.characteristic.isAlive()) {
+                loots.remove(i);
+                lootPool.free(loot);
+            }
+        }
     }
+
+//    private void removeDestroedObj(Object object, Array<Object> array, Pool<Object> pool){
+//        //TODO add universal method
+//    }
 
     public void zoomIn() {
         UNIT_WIDTH -= 5;
         UNIT_HEIGHT = getUnitHeight();
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         isResized = true;
-//        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     public void zoomOut() {
@@ -277,7 +226,6 @@ public class GameWorld {
         UNIT_HEIGHT = getUnitHeight();
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         isResized = true;
-//        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     private static float getUnitHeight() {

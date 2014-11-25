@@ -3,10 +3,12 @@ package com.andrewkaraman.survival.core;
 import com.andrewkaraman.survival.core.actors.AbsActor;
 import com.andrewkaraman.survival.core.actors.ActorsCategories;
 import com.andrewkaraman.survival.core.actors.Bullet;
+import com.andrewkaraman.survival.core.actors.Loot;
 import com.andrewkaraman.survival.core.actors.Player;
 import com.andrewkaraman.survival.core.actors.SmartEnemy;
 import com.andrewkaraman.survival.core.model.BulletCharacteristic;
 import com.andrewkaraman.survival.core.model.EnemyCharacteristic;
+import com.andrewkaraman.survival.core.model.LootCharacteristic;
 import com.andrewkaraman.survival.core.model.PlayerCharacteristic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -22,6 +24,7 @@ public class CustomizedContactListener implements ContactListener {
 
     private final String LOG_CLASS_NAME = CustomizedContactListener.class.getName();
 
+    public final static int USER_VS_LOOT = 0x0002 | 0x1000;
     public final static int USER_VS_ENEMY_BULLET = 0x0002 | 0x0020;
     public final static int ENEMY_VS_USER_BULLET = 0x0008 | 0x0010;
 
@@ -57,6 +60,15 @@ public class CustomizedContactListener implements ContactListener {
                         handleEnemyBulletCollision(fixtureA, fixtureB);
                     } else {
                         handleEnemyBulletCollision(fixtureB, fixtureA);
+                    }
+                    break;
+
+                case USER_VS_LOOT:
+                    Gdx.app.log(LOG_CLASS_NAME, " beginContact USER_VS_LOOT collision ");
+                    if (bodyAUserData.characteristic.getCategory() == ActorsCategories.USER) {
+                        handleUserLootCollision(fixtureA, fixtureB);
+                    } else {
+                        handleUserLootCollision(fixtureB, fixtureA);
                     }
                     break;
 
@@ -149,6 +161,7 @@ public class CustomizedContactListener implements ContactListener {
         bulletCharacteristic.setHealth(bulletCharacteristic.getHealth()-1);
 
         if (enemyCharacteristic.getHealth() <=0){
+            ((SmartEnemy)fixtureShip.getBody().getUserData()).generateLoot();
             enemyCharacteristic.setAlive(false);
         }
 
@@ -160,7 +173,7 @@ public class CustomizedContactListener implements ContactListener {
     private void handleUserBulletCollision(Fixture fixtureShip, Fixture fixtureBullet){
 
         PlayerCharacteristic userCharacteristic = (PlayerCharacteristic)((Player)fixtureShip.getBody().getUserData()).getCharacteristic();
-        Gdx.app.log(LOG_CLASS_NAME, "handleEnemyBulletCollision" + userCharacteristic.getHealth());
+        Gdx.app.log(LOG_CLASS_NAME, "handleUserBulletCollision" + userCharacteristic.getHealth());
         userCharacteristic.setHealth(userCharacteristic.getHealth()-1);
 
         BulletCharacteristic bulletCharacteristic = (BulletCharacteristic)((Bullet)fixtureBullet.getBody().getUserData()).getCharacteristic();
@@ -172,6 +185,24 @@ public class CustomizedContactListener implements ContactListener {
 
         if (bulletCharacteristic.getHealth() <=0){
             bulletCharacteristic.setAlive(false);
+        }
+    }
+
+    private void handleUserLootCollision(Fixture fixtureShip, Fixture fixtureBullet){
+
+        PlayerCharacteristic userCharacteristic = (PlayerCharacteristic)((Player)fixtureShip.getBody().getUserData()).getCharacteristic();
+        Gdx.app.log(LOG_CLASS_NAME, "handleUserLootCollision" + userCharacteristic.getHealth());
+        userCharacteristic.setHealth(userCharacteristic.getHealth()-1);
+
+        LootCharacteristic lootCharacteristic = (LootCharacteristic)((Loot)fixtureBullet.getBody().getUserData()).getCharacteristic();
+        lootCharacteristic.setHealth(lootCharacteristic.getHealth()-1);
+
+        if (userCharacteristic.getHealth() <=0){
+            userCharacteristic.setAlive(false);
+        }
+
+        if (lootCharacteristic.getHealth() <=0){
+            lootCharacteristic.setAlive(false);
         }
     }
 

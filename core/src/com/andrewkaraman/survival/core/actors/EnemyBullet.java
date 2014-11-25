@@ -12,6 +12,7 @@ public class EnemyBullet extends Bullet{
     public EnemyBullet(World world) {
         super(world);
     }
+
     public EnemyBullet(World world, float startPosX, float startPosY, float angle, Vector2 velocity) {
         super(world, startPosX, startPosY, angle, velocity);
     }

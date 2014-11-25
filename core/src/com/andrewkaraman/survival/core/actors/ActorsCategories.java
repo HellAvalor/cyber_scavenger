@@ -12,7 +12,8 @@ public enum ActorsCategories {
     BULLET (0x0010),
     ENEMY_BULLET (0x0020),
     RADAR_SENSOR (0x0100),
-    SHOOTING_SENSOR (0x0200);
+    SHOOTING_SENSOR (0x0200),
+    LOOT (0x1000);
 
     public final int typeMask;
 
