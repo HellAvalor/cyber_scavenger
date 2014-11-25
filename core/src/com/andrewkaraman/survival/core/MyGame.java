@@ -1,6 +1,7 @@
 package com.andrewkaraman.survival.core;
 
-import com.andrewkaraman.survival.core.screens.GameScreen;
+import com.andrewkaraman.survival.core.screens.ScreenManager;
+import com.andrewkaraman.survival.core.screens.Screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -22,17 +23,19 @@ public class MyGame extends Game {
 
     // Screen methods
 
-    public GameScreen getGameScreen() {
-        return new GameScreen(this);
-    }
+//    public GameScreen getGameScreen() {
+//        return new GameScreen(this);
+//    }
 
     // Game methods
 
     @Override
     public void create() {
+        ScreenManager.getInstance().initialize(this);
         Gdx.app.log(LOG_CLASS_NAME, "Creating game");
         fpsLogger = new FPSLogger();
-        setScreen(getGameScreen());
+        ScreenManager.getInstance().show(Screens.GAME);
+//        setScreen(getGameScreen());
     }
 
     @Override
@@ -73,6 +76,7 @@ public class MyGame extends Game {
     @Override
     public void dispose() {
         super.dispose();
+        ScreenManager.getInstance().dispose();
         Gdx.app.log(LOG_CLASS_NAME, "Disposing game");
     }
 }

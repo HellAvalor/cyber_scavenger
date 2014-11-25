@@ -53,8 +53,8 @@ public class GameScreen extends AbstractScreen {
     long startTime = TimeUtils.nanoTime();
     String str2;
 
-    public GameScreen(MyGame game) {
-        super(game);
+    public GameScreen() {
+        super();
         Gdx.app.log(LOG_CLASS_NAME, "Screen size " + SCREEN_WIDTH + " / " + SCREEN_HEIGHT);
     }
 
@@ -139,6 +139,16 @@ public class GameScreen extends AbstractScreen {
     @Override
     public void draw(float delta) {
 
+    }
+
+    @Override
+    public String getScreenIdentifier() {
+        return GameScreen.class.getName();
+    }
+
+    @Override
+    public boolean isStickyScreen() {
+        return true;
     }
 
     @Override

@@ -13,15 +13,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 /**
  * Created by KaramanA on 15.10.2014.
  */
-public abstract class AbstractScreen implements Screen {
+abstract class AbstractScreen implements Screen {
 
-    protected final MyGame game;
+//    protected final MyGame game;
     protected final BitmapFont font;
     protected final SpriteBatch batch;
     private Skin skin;
 
-    public AbstractScreen(MyGame game) {
-        this.game = game;
+    public AbstractScreen(/*MyGame game*/) {
+//        this.game = game;
         this.font = new BitmapFont();
         this.batch = new SpriteBatch();
     }
@@ -72,4 +72,8 @@ public abstract class AbstractScreen implements Screen {
     public abstract void update(float delta);
 
     public abstract void draw (float delta);
+
+    public abstract String getScreenIdentifier();
+
+    public abstract boolean isStickyScreen();
 }

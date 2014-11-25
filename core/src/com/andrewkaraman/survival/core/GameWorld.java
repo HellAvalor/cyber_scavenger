@@ -33,8 +33,6 @@ public class GameWorld {
     public Stage stage; // stage containing game actors (not GUI, but actual game elements)
     public World box2dWorld; // box2d world
     public Player player; // our playing character
-    public SmartEnemy smartEnemy; // our playing character
-    public SmartEnemy targetEnemy; // our playing character
     public boolean isResized = false;
     private boolean resetGame = false;
 
@@ -253,6 +251,5 @@ public class GameWorld {
     public void setResetGame(boolean resetGame) {
         this.resetGame = resetGame;
     }
-
 
 }
