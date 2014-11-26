@@ -7,33 +7,33 @@ import com.andrewkaraman.survival.core.MyGame;
  */
 public enum Screens {
 
-//    INTRO {
-//        @Override
-//        protected AbstractScreen getScreenInstance() {
-//            return new IntroScreen();
-//        }
-//    },
-//
-//    MAIN_MENU {
-//        @Override
-//        protected AbstractScreen getScreenInstance() {
-//            return new MainMenuScreen();
-//        }
-//    },
+    PRODUCTION {
+        @Override
+        protected AbstractScreen getScreenInstance() {
+            return new ProductionScreen();
+        }
+    },
+
+    LOADING {
+        @Override
+        protected AbstractScreen getScreenInstance() {
+            return new LoadingScreen();
+        }
+    },
 
     GAME {
         @Override
         protected AbstractScreen getScreenInstance() {
             return new GameScreen();
         }
-    };
+    },
 
-//    INVENTORY {
-//        @Override
-//        protected AbstractScreen getScreenInstance() {
-//            return new CreditsScreen();
-//        }
-//    };
+    INVENTORY {
+        @Override
+        protected AbstractScreen getScreenInstance() {
+            return new InventoryScreen();
+        }
+    };
 
     protected abstract AbstractScreen getScreenInstance();
 

@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -32,8 +33,6 @@ public class GameScreen extends AbstractScreen {
 
     private final String LOG_CLASS_NAME = GameScreen.class.getName();
     // this is actually my tablet resolution in landscape mode. I'm using it for making the GUI pixel-exact.
-    public static float SCREEN_WIDTH = Gdx.graphics.getWidth();
-    public static float SCREEN_HEIGHT = Gdx.graphics.getHeight();
 
     public static float SCALE_UNIT = Math.min(Gdx.graphics.getWidth() * 0.01f, 20);
 
@@ -41,9 +40,6 @@ public class GameScreen extends AbstractScreen {
     Label labelFPS;
     private GameWorld world; // contains the game world's bodies and actors.
     private GameRenderer renderer; // our custom game renderer.
-    private Stage stage; // stage that holds the GUI. Pixel-exact size.
-    private OrthographicCamera guiCam; // camera for the GUI. It's the stage default camera.
-
     private Touchpad touchpad;
     private Touchpad.TouchpadStyle touchpadStyle;
     private Skin touchpadSkin;
@@ -59,38 +55,40 @@ public class GameScreen extends AbstractScreen {
     }
 
     @Override
-    public void show() {
-        super.show();
-
-        stage = new Stage(); // create the GUI stage
-        stage.setViewport(new ScreenViewport()); // set the GUI stage viewport to the pixel size
-        stage.setDebugAll(true);
-
-        guiCam = (OrthographicCamera) stage.getCamera();
-        guiCam.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0);
-
+    protected void init() {
         world = new GameWorld();
         renderer = new GameRenderer(world);
-
-        initUI();
-
-        PlayerInputListener listener = new PlayerInputListener(world, world.player, touchpad);
-        stage.addListener(listener);
-        Gdx.input.setInputProcessor(stage);
-
-
+        super.init();
     }
 
-    @Override
-    public void render(float delta) {
-        super.render(delta);
+//    @Override
+//    public void render(float delta) {
+//
+////        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+////        Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
+//
+//        super.render(delta);
+//
+//    }
 
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
+    @Override
+    public void update(float delta) {
+
+        super.update(delta);
+        if (world.isResetGame()) {
+            world.resetWorld();
+            PlayerInputListener listener = new PlayerInputListener(world, world.player, touchpad);
+            stage.addListener(listener);
+            resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+        if (world.isResized) {
+            resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            world.isResized = false;
+        }
 
         String str = "";
         if (!world.enemies.isEmpty()) {
-            str = "\n enemy life " + world.enemies.get(0).characteristic.getHealth() +" state  "+ world.enemies.get(0).getFSM().getCurrentState();
+            str = "\n enemy life " + world.enemies.get(0).characteristic.getHealth() + " state  " + world.enemies.get(0).getFSM().getCurrentState();
         }
 
 
@@ -113,49 +111,15 @@ public class GameScreen extends AbstractScreen {
 
         labelFPS.setText("FPS: " + str2);
         lifeBar.setValue(world.player.characteristic.getHealth());
-        guiCam.update();
-
         world.update(delta); // update the box2d world
-        stage.act(delta); // update GUI
-
         renderer.render(); // draw the box2d world
-        stage.draw(); // draw the GUI
-    }
-
-    @Override
-    public void update(float delta) {
-        if (world.isResetGame()) {
-            world.resetWorld();
-            PlayerInputListener listener = new PlayerInputListener(world, world.player, touchpad);
-            stage.addListener(listener);
-            resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        }
-        if (world.isResized) {
-            resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            world.isResized = false;
-        }
-    }
-
-    @Override
-    public void draw(float delta) {
 
     }
 
-    @Override
-    public String getScreenIdentifier() {
-        return GameScreen.class.getName();
-    }
-
-    @Override
-    public boolean isStickyScreen() {
-        return true;
-    }
 
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
-        stage.getViewport().update(width, height);
-        guiCam.position.set(width / 2, height / 2, 0);
         world.stage.getViewport().update(width, height);
         renderer.resize();
     }
@@ -183,8 +147,8 @@ public class GameScreen extends AbstractScreen {
         touchpad.setBounds(15, 15, 200, 200);
     }
 
-    private void initUI() {
-        Skin skin = super.getSkin();
+    @Override
+    protected void initUI() {
         // add GUI actors to stage, labels, meters, buttons etc.
         labelStatus = new Label("TOUCH TO START", skin);
         labelStatus.setPosition(10, 10);
@@ -221,6 +185,15 @@ public class GameScreen extends AbstractScreen {
             }
         });
 
+        TextButton menu = new TextButton("Menu", skin);
+        menu.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log(LOG_CLASS_NAME, "Menu pressed");
+                ScreenManager.getInstance().show(Screens.LOADING);
+            }
+        });
+
         Table shootGroup = new Table();
         shootGroup.setSkin(skin);
         shootGroup.defaults().expand();
@@ -248,13 +221,13 @@ public class GameScreen extends AbstractScreen {
         Table statusBar = new Table();
         statusBar.setSkin(skin);
         statusBar.defaults().fill();
-        statusBar.add(labelFPS).width(SCALE_UNIT * 10).align(Align.center);
+        statusBar.add(menu).width(SCALE_UNIT * 10).align(Align.center);
         statusBar.add("left info").expand();
         statusBar.add("level").width(SCALE_UNIT * 5).height(SCALE_UNIT * 5).top();
         statusBar.add(lifeBar).width(SCALE_UNIT * 20).height(SCALE_UNIT * 5).top();
         statusBar.add("level").width(SCALE_UNIT * 5).height(SCALE_UNIT * 5).top();
         statusBar.add("right info").expand();
-        statusBar.add("right column").width(SCALE_UNIT * 10);
+        statusBar.add(labelFPS).width(SCALE_UNIT * 10);
 
 
         Table table = new Table();
@@ -272,5 +245,14 @@ public class GameScreen extends AbstractScreen {
 
         table.setDebug(true, true);
         stage.addActor(table);
+
+        PlayerInputListener listener = new PlayerInputListener(world, world.player, touchpad);
+        stage.addListener(listener);
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    @Override
+    public boolean isNeedToSave() {
+        return true;
     }
 }

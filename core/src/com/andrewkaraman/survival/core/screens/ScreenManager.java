@@ -1,6 +1,7 @@
 package com.andrewkaraman.survival.core.screens;
 
 import com.andrewkaraman.survival.core.MyGame;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.IntMap;
 
 /**
@@ -8,9 +9,11 @@ import com.badlogic.gdx.utils.IntMap;
  */
 public final class ScreenManager {
 
+    private final String LOG_CLASS_NAME = this.getClass().getName();
+
     private static ScreenManager instance;
     private IntMap<AbstractScreen> screens;
-
+    private AbstractScreen currentScreen;
     private MyGame game;
 
     private ScreenManager() {
@@ -29,11 +32,22 @@ public final class ScreenManager {
     }
 
     public void show(Screens screen) {
+
+        AbstractScreen oldScreen = currentScreen;
         if (null == game) return;
+
         if (!screens.containsKey(screen.ordinal())) {
-            screens.put(screen.ordinal(), screen.getScreenInstance());
+            currentScreen = screen.getScreenInstance();
+            screens.put(screen.ordinal(), currentScreen);
+        } else {
+            currentScreen = screens.get(screen.ordinal());
         }
-        game.setScreen(screens.get(screen.ordinal()));
+
+        if (currentScreen != null) {
+            game.setScreen(oldScreen, currentScreen);
+        } else {
+            Gdx.app.error(LOG_CLASS_NAME, "Null screen");
+        }
     }
 
     public void dispose(Screens screen) {
@@ -49,5 +63,4 @@ public final class ScreenManager {
         screens.clear();
         instance = null;
     }
-
 }

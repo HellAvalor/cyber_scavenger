@@ -1,5 +1,7 @@
 package com.andrewkaraman.survival.core;
 
+import com.andrewkaraman.survival.core.actors.AbsActorImpl;
+import com.andrewkaraman.survival.core.screens.AbstractScreen;
 import com.andrewkaraman.survival.core.screens.ScreenManager;
 import com.andrewkaraman.survival.core.screens.Screens;
 import com.badlogic.gdx.Game;
@@ -11,7 +13,6 @@ import com.badlogic.gdx.graphics.FPSLogger;
  * Created by KaramanA on 15.10.2014.
  */
 public class MyGame extends Game {
-
     // constant useful for logging
     private final String LOG_CLASS_NAME = this.getClass().getName();
 
@@ -21,21 +22,12 @@ public class MyGame extends Game {
     public MyGame() {
     }
 
-    // Screen methods
-
-//    public GameScreen getGameScreen() {
-//        return new GameScreen(this);
-//    }
-
-    // Game methods
-
     @Override
     public void create() {
         ScreenManager.getInstance().initialize(this);
         Gdx.app.log(LOG_CLASS_NAME, "Creating game");
         fpsLogger = new FPSLogger();
-        ScreenManager.getInstance().show(Screens.GAME);
-//        setScreen(getGameScreen());
+        ScreenManager.getInstance().show(Screens.LOADING);
     }
 
     @Override
@@ -66,11 +58,24 @@ public class MyGame extends Game {
         Gdx.app.log(LOG_CLASS_NAME, "Resuming game");
     }
 
-    @Override
-    public void setScreen(
-            Screen screen) {
-        super.setScreen(screen);
-        Gdx.app.log(LOG_CLASS_NAME, "Setting screen: " + screen.getClass().getSimpleName());
+    public void setScreen(AbstractScreen oldScreen, AbstractScreen newScreen) {
+
+        if (oldScreen != null) {
+            Gdx.app.log(LOG_CLASS_NAME, "oldScreen " + oldScreen + "/" + oldScreen.isNeedToSave() + "/" + oldScreen.isHidden() + " newScreen " + newScreen + "/" + newScreen.isNeedToSave() + "/" + newScreen.isHidden());
+        }
+
+        if (oldScreen != null && oldScreen.isNeedToSave()){
+            oldScreen.pause();
+            oldScreen.setHideState(true);
+        }
+
+        if (newScreen.isHidden() && newScreen.isNeedToSave()){
+
+            newScreen.resume();
+        } else {
+            super.setScreen(newScreen);
+        }
+        newScreen.setHideState(false);
     }
 
     @Override
