@@ -8,14 +8,15 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Pool;
 
 /**
  * Created by KaramanA on 13.11.2014.
  */
-public abstract class AbsActor extends Image {
+public abstract class AbsActor extends Image implements Pool.Poolable{
 
     protected final String LOG_CLASS_NAME = this.getClass().getName();
-
+    protected boolean alive;
     protected Vector2 origin;
     protected Body body;
 
@@ -68,4 +69,14 @@ public abstract class AbsActor extends Image {
         this.characteristic = characteristic;
     }
 
+    public void onDestroyAction(){}
+
+    @Override
+    public void reset() {
+        alive = false;
+        setVisible(alive);
+        body.setActive(false);
+        body.setLinearVelocity(0, 0);
+        body.setAngularVelocity(0);
+    }
 }

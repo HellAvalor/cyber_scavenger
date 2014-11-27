@@ -39,7 +39,6 @@ public class CustomizedContactListener implements ContactListener {
 
     @Override
     public void beginContact(Contact contact) {
-        Gdx.app.log(LOG_CLASS_NAME, " beginContact ");
         fixtureA = contact.getFixtureA();
         fixtureB = contact.getFixtureB();
 

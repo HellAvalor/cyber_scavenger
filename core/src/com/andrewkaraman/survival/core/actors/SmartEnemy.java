@@ -36,7 +36,6 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
     private final String LOG_CLASS_NAME = this.getClass().getName();
     float DEG_TO_RAD = 0.017453292519943295769236907684886f;
     private StateMachine<SmartEnemy> fsm;
-    public boolean alive;
     private float detectionRadius = 8;
     private float shootingRadius = 3;
     private boolean targetInRadarRange = false;
@@ -236,11 +235,7 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
         //TODO stop global state
         setShooting(false);
         setSteeringBehavior(null);
-        alive = false;
-        setVisible(alive);
-        body.setActive(false);
-        body.setLinearVelocity(0, 0);
-        body.setAngularVelocity(0);
+        super.reset();
     }
 
     public void flee() {
@@ -319,5 +314,10 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
 
     public void setShooting(boolean shooting) {
         this.shooting = shooting;
+    }
+
+    @Override
+    public void onDestroyAction(){
+        gameWorld.generateLoot(this);
     }
 }

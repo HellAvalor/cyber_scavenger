@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.World;
 /**
  * Created by Andrew on 23.11.2014.
  */
-public class EnemyBullet extends Bullet{
+public class EnemyBullet extends Bullet {
 
     public EnemyBullet(World world) {
         super(world);

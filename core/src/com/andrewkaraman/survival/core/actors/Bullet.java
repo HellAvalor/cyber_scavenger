@@ -24,7 +24,7 @@ public class Bullet extends AbsActor implements Pool.Poolable {
 
     private final float MAX_BULLET_DISTANCE = 5;
     private float startPosX, startPosY;
-    public boolean alive;
+
     private int speed = 10;
 
     public Bullet(World world) {
@@ -103,15 +103,6 @@ public class Bullet extends AbsActor implements Pool.Poolable {
             alive = false;
             setVisible(alive);
         }
-    }
-
-    @Override
-    public void reset() {
-        alive = false;
-        setVisible(alive);
-        body.setActive(false);
-        body.setLinearVelocity(0, 0);
-        body.setAngularVelocity(0);
     }
 
     @Override

@@ -163,7 +163,6 @@ public enum SmartEnemyState implements State<SmartEnemy> {
         @Override
         public void exit(SmartEnemy smartEnemy) {
             smartEnemy.say("Stop flee");
-
         }
 
         @Override

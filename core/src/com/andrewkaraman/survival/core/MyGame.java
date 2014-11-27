@@ -22,13 +22,13 @@ public class MyGame extends Game {
     private FPSLogger fpsLogger;
 
     public MyGame() {
-        Gdx.app.setLogLevel(Application.LOG_DEBUG);
     }
 
     @Override
     public void create() {
+        Gdx.app.setLogLevel(Application.LOG_INFO);
         ScreenManager.getInstance().initialize(this);
-        Gdx.app.debug(LOG_CLASS_NAME, "Creating game");
+        Gdx.app.log(LOG_CLASS_NAME, "Creating game");
         fpsLogger = new FPSLogger();
         ScreenManager.getInstance().show(Screens.LOADING);
         world = new GameWorld();

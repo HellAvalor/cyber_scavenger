@@ -163,51 +163,66 @@ public class GameWorld {
 
     private void destroyObjects() {
 
-        Bullet bullet;
-        int len = bullets.size();
-        for (int i = len; --i >= 0; ) {
-            bullet = bullets.get(i);
-            if (!bullet.characteristic.isAlive()) {
-                bullets.remove(i);
-                bulletPool.free(bullet);
-            }
-        }
+        removeDestroyedObj(bullets, bulletPool);
+        removeDestroyedObj(enemyBullets, enemyBulletPool);
+        removeDestroyedObj(enemies, enemyPool);
+        removeDestroyedObj(loots, lootPool);
+//
+//        Bullet bullet;
+//        int len = bullets.size();
+//        for (int i = len; --i >= 0; ) {
+//            bullet = bullets.get(i);
+//            if (!bullet.characteristic.isAlive()) {
+//                bullets.remove(i);
+//                bulletPool.free(bullet);
+//            }
+//        }
+//
+//        EnemyBullet enemyBullet;
+//        len = enemyBullets.size();
+//        for (int i = len; --i >= 0; ) {
+//            enemyBullet = enemyBullets.get(i);
+//            if (!enemyBullet.characteristic.isAlive()) {
+//                enemyBullets.remove(i);
+//                enemyBulletPool.free(enemyBullet);
+//            }
+//        }
+//
+//        SmartEnemy enemy;
+//        len = enemies.size();
+//        for (int i = len; --i >= 0; ) {
+//            enemy = enemies.get(i);
+//            if (!enemy.characteristic.isAlive()) {
+//                generateLoot(enemy);
+//                enemies.remove(i);
+//                enemyPool.free(enemy);
+//            }
+//        }
+//
+//        Loot loot;
+//        len = loots.size();
+//        for (int i = len; --i >= 0; ) {
+//            loot = loots.get(i);
+//            if (!loot.characteristic.isAlive()) {
+//                loots.remove(i);
+//                lootPool.free(loot);
+//            }
+//        }
+    }
 
-        EnemyBullet enemyBullet;
-        len = enemyBullets.size();
-        for (int i = len; --i >= 0; ) {
-            enemyBullet = enemyBullets.get(i);
-            if (!enemyBullet.characteristic.isAlive()) {
-                enemyBullets.remove(i);
-                enemyBulletPool.free(enemyBullet);
-            }
-        }
+    private void removeDestroyedObj(ArrayList<? extends AbsActor> array, Pool<? extends AbsActor> pool){
 
-        SmartEnemy enemy;
-        len = enemies.size();
+        AbsActor actor;
+        int len = array.size();
         for (int i = len; --i >= 0; ) {
-            enemy = enemies.get(i);
-            if (!enemy.characteristic.isAlive()) {
-                generateLoot(enemy);
-                enemies.remove(i);
-                enemyPool.free(enemy);
-            }
-        }
-
-        Loot loot;
-        len = loots.size();
-        for (int i = len; --i >= 0; ) {
-            loot = loots.get(i);
-            if (!loot.characteristic.isAlive()) {
-                loots.remove(i);
-                lootPool.free(loot);
+            actor = array.get(i);
+            if (!actor.characteristic.isAlive()) {
+                actor.onDestroyAction();
+                array.remove(i);
+                pool.free(actor);
             }
         }
     }
-
-//    private void removeDestroedObj(Object object, Array<Object> array, Pool<Object> pool){
-//        //TODO add universal method
-//    }
 
     public void zoomIn() {
         UNIT_WIDTH -= 5;

@@ -23,7 +23,6 @@ import aurelienribon.bodyeditor.BodyEditorLoader;
 public class Loot extends AbsActor implements Pool.Poolable {
 
     private GameWorld gameWorld;
-    public boolean alive;
 
     public Loot(GameWorld world) {
 
@@ -78,14 +77,5 @@ public class Loot extends AbsActor implements Pool.Poolable {
     @Override
     protected void updateMotion(float delta) {
 
-    }
-
-    @Override
-    public void reset() {
-        alive = false;
-        setVisible(alive);
-        body.setActive(false);
-        body.setLinearVelocity(0, 0);
-        body.setAngularVelocity(0);
     }
 }
