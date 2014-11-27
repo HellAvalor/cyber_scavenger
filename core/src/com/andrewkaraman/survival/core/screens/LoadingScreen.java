@@ -14,8 +14,8 @@ public class LoadingScreen extends AbstractScreen {
 
     @Override
     protected void initUI() {
-        TextButton missileButton = new TextButton("Start game", skin);
-        missileButton.addListener(new ClickListener() {
+        TextButton startButton= new TextButton("Start game", skin);
+        startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ScreenManager.getInstance().show(Screens.GAME);
@@ -28,7 +28,7 @@ public class LoadingScreen extends AbstractScreen {
         table.setSkin(skin);
         table.defaults().fill().pad(5);
         table.row();
-        table.add(missileButton).minHeight(60).minWidth(120);
+        table.add(startButton).minHeight(60).minWidth(120);
 
         table.setDebug(true, true);
         stage.addActor(table);

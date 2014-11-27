@@ -54,7 +54,7 @@ public class GameWorld {
         stage = new Stage(); // create the game stage
         box2dWorld = new World(GRAVITY, true);
         box2dWorld.setContactListener(new CustomizedContactListener());
-        Gdx.app.log(LOG_CLASS_NAME, "Unit size " + UNIT_WIDTH + " / " + UNIT_HEIGHT);
+        Gdx.app.debug(LOG_CLASS_NAME, "Unit size " + UNIT_WIDTH + " / " + UNIT_HEIGHT);
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         stage.setDebugAll(true);
         initPools(this);
@@ -130,7 +130,6 @@ public class GameWorld {
     private void shoot() {
         if (player.isShooting()) {
             if (TimeUtils.nanoTime() - player.getLastBulletTime() > player.getShootingSpeed()) {
-                Gdx.app.log(LOG_CLASS_NAME, "Shooting");
                 Bullet bullet = bulletPool.obtain();
                 bullet.init(player.getShootingPoint().x, player.getShootingPoint().y, player.getBody().getAngle(), player.getBody().getLinearVelocity());
                 bullets.add(bullet);
@@ -141,7 +140,6 @@ public class GameWorld {
         for (SmartEnemy enemy: enemies){
             if (enemy.isShooting()) {
                 if (TimeUtils.nanoTime() - enemy.getLastBulletTime() > enemy.getShootingSpeed()) {
-                    Gdx.app.log(LOG_CLASS_NAME, "enemy Shooting");
                     EnemyBullet bullet = enemyBulletPool.obtain();
                     bullet.init(enemy.getShootingPoint().x, enemy.getShootingPoint().y, enemy.getBody().getAngle(), enemy.getBody().getLinearVelocity());
                     enemyBullets.add(bullet);
@@ -152,21 +150,19 @@ public class GameWorld {
     }
 
     public void generateEnemy() {
-        Gdx.app.log(LOG_CLASS_NAME, "Generating enemy");
         SmartEnemy enemy = enemyPool.obtain();
         enemy.init(2, 2);
         enemies.add(enemy);
     }
 
     public void generateLoot(AbsActor actor) {
-        Gdx.app.log(LOG_CLASS_NAME, "Generating loot");
         Loot loot = lootPool.obtain();
         loot.init(actor.getBody().getPosition().x, actor.getBody().getPosition().y);
         loots.add(loot);
     }
 
     private void destroyObjects() {
-        // if you want to free dead bullets, returning them to the pool:
+
         Bullet bullet;
         int len = bullets.size();
         for (int i = len; --i >= 0; ) {

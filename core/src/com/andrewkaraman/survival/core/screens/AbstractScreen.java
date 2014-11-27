@@ -85,9 +85,13 @@ public abstract class AbstractScreen implements Screen {
 
     @Override
     public void dispose() {
+
+        Gdx.app.debug("AbstractScreen", "dispose screens" );
+
         if (font != null) font.dispose();
         if (batch != null) batch.dispose();
         if (skin != null) skin.dispose();
+        if (stage != null) stage.dispose();
     }
 
     public void update(float delta){

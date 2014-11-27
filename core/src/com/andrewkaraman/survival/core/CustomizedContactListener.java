@@ -55,7 +55,6 @@ public class CustomizedContactListener implements ContactListener {
             switch (fixtureA.getFilterData().categoryBits | fixtureB.getFilterData().categoryBits) {
 
                 case ENEMY_VS_USER_BULLET:
-                    Gdx.app.log(LOG_CLASS_NAME, " beginContact ENEMY_VS_USER_BULLET collision ");
                     if (bodyAUserData.characteristic.getCategory() == ActorsCategories.ENEMY_SHIP) {
                         handleEnemyBulletCollision(fixtureA, fixtureB);
                     } else {
@@ -64,7 +63,6 @@ public class CustomizedContactListener implements ContactListener {
                     break;
 
                 case USER_VS_LOOT:
-                    Gdx.app.log(LOG_CLASS_NAME, " beginContact USER_VS_LOOT collision ");
                     if (bodyAUserData.characteristic.getCategory() == ActorsCategories.USER) {
                         handleUserLootCollision(fixtureA, fixtureB);
                     } else {
@@ -73,7 +71,6 @@ public class CustomizedContactListener implements ContactListener {
                     break;
 
                 case USER_VS_ENEMY_BULLET:
-                    Gdx.app.log(LOG_CLASS_NAME, " beginContact USER_VS_ENEMY_BULLET collision ");
                     if (bodyAUserData.characteristic.getCategory() == ActorsCategories.USER) {
                         handleUserBulletCollision(fixtureA, fixtureB);
                     } else {
@@ -82,7 +79,6 @@ public class CustomizedContactListener implements ContactListener {
                     break;
 
                 case USER_VS_ENEMY_RADAR:
-                    Gdx.app.log(LOG_CLASS_NAME, " beginContact USER_VS_ENEMY_RADAR collision ");
                     if (bodyAUserData.characteristic.getCategory().getTypeMask() == (ActorsCategories.RADAR_SENSOR.getTypeMask() | ActorsCategories.ENEMY_SHIP.getTypeMask())) {
                         handleEnemyRadarUserCollision(fixtureA, fixtureB, true);
                     } else {
@@ -91,7 +87,6 @@ public class CustomizedContactListener implements ContactListener {
                     break;
 
                 case USER_VS_ENEMY_SHOOTING_RADAR:
-                    Gdx.app.log(LOG_CLASS_NAME, " beginContact USER_VS_ENEMY_SHOOTING_RADAR collision ");
                     if (bodyAUserData.characteristic.getCategory().getTypeMask() == (ActorsCategories.SHOOTING_SENSOR.getTypeMask() | ActorsCategories.ENEMY_SHIP.getTypeMask())) {
                         handleEnemySootingRadarUserCollision(fixtureA, fixtureB, true);
                     } else {
@@ -104,7 +99,6 @@ public class CustomizedContactListener implements ContactListener {
 
     @Override
     public void endContact(Contact contact) {
-        Gdx.app.log(LOG_CLASS_NAME, "endContact ");
 
         fixtureA = contact.getFixtureA();
         fixtureB = contact.getFixtureB();
@@ -121,7 +115,6 @@ public class CustomizedContactListener implements ContactListener {
             switch (fixtureA.getFilterData().categoryBits | fixtureB.getFilterData().categoryBits) {
 
                 case USER_VS_ENEMY_RADAR:
-                    Gdx.app.log(LOG_CLASS_NAME, " endContact USER_VS_ENEMY_RADAR collision ");
                     if (bodyAUserData.characteristic.getCategory() == ActorsCategories.RADAR_SENSOR) {
                         handleEnemyRadarUserCollision(fixtureA, fixtureB, false);
                     } else {
@@ -130,7 +123,6 @@ public class CustomizedContactListener implements ContactListener {
                     break;
 
                 case USER_VS_ENEMY_SHOOTING_RADAR:
-                    Gdx.app.log(LOG_CLASS_NAME, " endContact USER_VS_ENEMY_SHOOTING_RADAR collision ");
                     if (bodyAUserData.characteristic.getCategory().getTypeMask() == (ActorsCategories.SHOOTING_SENSOR.getTypeMask() | ActorsCategories.ENEMY_SHIP.getTypeMask())) {
                         handleEnemySootingRadarUserCollision(fixtureA, fixtureB, false);
                     } else {
@@ -143,18 +135,15 @@ public class CustomizedContactListener implements ContactListener {
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {
-//        Gdx.app.log(LOG_CLASS_NAME, "preSolve ");
     }
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
-//        Gdx.app.log(LOG_CLASS_NAME, "postSolve ");
     }
 
     private void handleEnemyBulletCollision(Fixture fixtureShip, Fixture fixtureBullet){
 
         EnemyCharacteristic enemyCharacteristic = (EnemyCharacteristic)((SmartEnemy)fixtureShip.getBody().getUserData()).getCharacteristic();
-        Gdx.app.log(LOG_CLASS_NAME, "handleEnemyBulletCollision" + enemyCharacteristic.getHealth());
         enemyCharacteristic.setHealth(enemyCharacteristic.getHealth()-1);
 
         BulletCharacteristic bulletCharacteristic = (BulletCharacteristic)((Bullet)fixtureBullet.getBody().getUserData()).getCharacteristic();
@@ -172,7 +161,6 @@ public class CustomizedContactListener implements ContactListener {
     private void handleUserBulletCollision(Fixture fixtureShip, Fixture fixtureBullet){
 
         PlayerCharacteristic userCharacteristic = (PlayerCharacteristic)((Player)fixtureShip.getBody().getUserData()).getCharacteristic();
-        Gdx.app.log(LOG_CLASS_NAME, "handleUserBulletCollision" + userCharacteristic.getHealth());
         userCharacteristic.setHealth(userCharacteristic.getHealth()-1);
 
         BulletCharacteristic bulletCharacteristic = (BulletCharacteristic)((Bullet)fixtureBullet.getBody().getUserData()).getCharacteristic();
@@ -190,7 +178,6 @@ public class CustomizedContactListener implements ContactListener {
     private void handleUserLootCollision(Fixture fixtureShip, Fixture fixtureBullet){
 
         PlayerCharacteristic userCharacteristic = (PlayerCharacteristic)((Player)fixtureShip.getBody().getUserData()).getCharacteristic();
-        Gdx.app.log(LOG_CLASS_NAME, "handleUserLootCollision" + userCharacteristic.getHealth());
         userCharacteristic.setHealth(userCharacteristic.getHealth()-1);
 
         LootCharacteristic lootCharacteristic = (LootCharacteristic)((Loot)fixtureBullet.getBody().getUserData()).getCharacteristic();
@@ -205,16 +192,13 @@ public class CustomizedContactListener implements ContactListener {
         }
     }
 
-    private void handleEnemyRadarUserCollision(Fixture fixtureShip, Fixture fixtureBullet, boolean isSeeUser){
+    private void handleEnemyRadarUserCollision(Fixture fixtureShip, Fixture fixtureUser, boolean isSeeUser){
 
-        Gdx.app.log(LOG_CLASS_NAME, "handleEnemyRadarUserCollision " + isSeeUser);
         SmartEnemy enemy = (SmartEnemy) fixtureShip.getBody().getUserData();
         enemy.setTargetInRadarRange(isSeeUser);
     }
 
-    private void handleEnemySootingRadarUserCollision(Fixture fixtureShip, Fixture fixtureBullet, boolean isInShootingRange){
-
-        Gdx.app.log(LOG_CLASS_NAME, "handleEnemyRadarUserCollision " + isInShootingRange);
+    private void handleEnemySootingRadarUserCollision(Fixture fixtureShip, Fixture fixtureUser, boolean isInShootingRange){
 
         SmartEnemy enemy = (SmartEnemy) fixtureShip.getBody().getUserData();
         enemy.setTargetInShootingRange(isInShootingRange);

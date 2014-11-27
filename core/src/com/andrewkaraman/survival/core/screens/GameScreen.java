@@ -4,6 +4,7 @@ import com.andrewkaraman.survival.core.GameRenderer;
 import com.andrewkaraman.survival.core.GameWorld;
 import com.andrewkaraman.survival.core.MyGame;
 import com.andrewkaraman.survival.core.PlayerInputListener;
+import com.andrewkaraman.survival.core.model.PlayerCharacteristic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -51,25 +52,16 @@ public class GameScreen extends AbstractScreen {
 
     public GameScreen() {
         super();
-        Gdx.app.log(LOG_CLASS_NAME, "Screen size " + SCREEN_WIDTH + " / " + SCREEN_HEIGHT);
+        Gdx.app.debug(LOG_CLASS_NAME, "Screen size " + SCREEN_WIDTH + " / " + SCREEN_HEIGHT);
     }
 
     @Override
     protected void init() {
-        world = new GameWorld();
+        world = MyGame.world;
         renderer = new GameRenderer(world);
         super.init();
     }
 
-//    @Override
-//    public void render(float delta) {
-//
-////        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-////        Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
-//
-//        super.render(delta);
-//
-//    }
 
     @Override
     public void update(float delta) {
@@ -189,7 +181,7 @@ public class GameScreen extends AbstractScreen {
         menu.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log(LOG_CLASS_NAME, "Menu pressed");
+                Gdx.app.debug(LOG_CLASS_NAME, "Menu pressed");
                 ScreenManager.getInstance().show(Screens.LOADING);
             }
         });
@@ -216,7 +208,8 @@ public class GameScreen extends AbstractScreen {
         }
         skin.getFont("default-font").setScale(0.5f);
 
-        lifeBar = new ProgressBar(0, world.player.characteristic.getHealth(), 1, false, skin);
+        lifeBar = new ProgressBar(0, 10, 1, false, skin);
+        lifeBar.setValue(world.player.characteristic.getHealth());
 
         Table statusBar = new Table();
         statusBar.setSkin(skin);

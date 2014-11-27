@@ -26,7 +26,6 @@ public class PlayerInputListener extends InputListener {
     }
 
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-//        Gdx.app.log(LOG_CLASS_NAME, "down " + x + " / " + y);
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
         }
@@ -34,27 +33,21 @@ public class PlayerInputListener extends InputListener {
     }
 
     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-//        Gdx.app.log(LOG_CLASS_NAME, "up");
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
         }
     }
 
     public void touchDragged(InputEvent event, float x, float y, int pointer) {
-//        Gdx.app.log(LOG_CLASS_NAME, "touchDragged " + x + " / " + y + " actor " + player.getCenterX() + " / " + player.getCenterY());
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             player.setJoystickMove(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
         }
     }
 
-
     @Override
     public boolean keyDown(InputEvent event, int keycode) {
 
-//        Gdx.app.log(LOG_CLASS_NAME, "keyDown " + Input.Keys.toString(keycode));
-
         switch (keycode) {
-
             case Input.Keys.SPACE:
                 player.setShooting(true);
                 break;
@@ -101,10 +94,7 @@ public class PlayerInputListener extends InputListener {
     @Override
     public boolean keyUp(InputEvent event, int keycode) {
 
-//        Gdx.app.log(LOG_CLASS_NAME, "keyUp " + Input.Keys.toString(keycode));
-
         switch (keycode) {
-
             case Input.Keys.SPACE:
                 player.setShooting(false);
                 break;
@@ -117,7 +107,6 @@ public class PlayerInputListener extends InputListener {
             case Input.Keys.D:
                 player.setTurning(Player.STOP);
                 break;
-
         }
         return true;
     }

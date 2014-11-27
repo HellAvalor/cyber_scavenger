@@ -33,21 +33,15 @@ public final class ScreenManager {
 
     public void show(Screens screen) {
 
-        AbstractScreen oldScreen = currentScreen;
+        Gdx.app.debug(LOG_CLASS_NAME, "screens.size " + screens.size);
+
         if (null == game) return;
 
         if (!screens.containsKey(screen.ordinal())) {
-            currentScreen = screen.getScreenInstance();
-            screens.put(screen.ordinal(), currentScreen);
-        } else {
-            currentScreen = screens.get(screen.ordinal());
+            screens.put(screen.ordinal(), screen.getScreenInstance());
         }
 
-        if (currentScreen != null) {
-            game.setScreen(oldScreen, currentScreen);
-        } else {
-            Gdx.app.error(LOG_CLASS_NAME, "Null screen");
-        }
+        game.setScreen(screens.get(screen.ordinal()));
     }
 
     public void dispose(Screens screen) {
@@ -57,6 +51,7 @@ public final class ScreenManager {
     }
 
     public void dispose() {
+        Gdx.app.debug(LOG_CLASS_NAME, "dispose screens" );
         for (AbstractScreen screen : screens.values()) {
             screen.dispose();
         }
