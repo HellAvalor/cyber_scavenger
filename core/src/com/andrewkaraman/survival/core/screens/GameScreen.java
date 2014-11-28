@@ -52,7 +52,7 @@ public class GameScreen extends AbstractScreen {
 
     public GameScreen() {
         super();
-        Gdx.app.debug(LOG_CLASS_NAME, "Screen size " + SCREEN_WIDTH + " / " + SCREEN_HEIGHT);
+        Gdx.app.log(LOG_CLASS_NAME, "Screen size " + SCREEN_WIDTH + " / " + SCREEN_HEIGHT);
     }
 
     @Override

@@ -38,13 +38,13 @@ public class GameWorld {
 
     // bullet pool.
     public ArrayList<Bullet> bullets;
-    public Pool<Bullet> bulletPool;
+    public Pool<AbsActor> bulletPool;
     public ArrayList<EnemyBullet> enemyBullets;
-    public Pool<EnemyBullet> enemyBulletPool;
+    public Pool<AbsActor> enemyBulletPool;
     public ArrayList<SmartEnemy> enemies;
-    public Pool<SmartEnemy> enemyPool;
+    public Pool<AbsActor> enemyPool;
     public ArrayList<Loot> loots;
-    public Pool<Loot> lootPool;
+    public Pool<AbsActor> lootPool;
 
     public GameWorld() {
         createWorld();
@@ -54,7 +54,7 @@ public class GameWorld {
         stage = new Stage(); // create the game stage
         box2dWorld = new World(GRAVITY, true);
         box2dWorld.setContactListener(new CustomizedContactListener());
-        Gdx.app.debug(LOG_CLASS_NAME, "Unit size " + UNIT_WIDTH + " / " + UNIT_HEIGHT);
+        Gdx.app.log(LOG_CLASS_NAME, "Unit size " + UNIT_WIDTH + " / " + UNIT_HEIGHT);
         stage.setViewport(new ExtendViewport(UNIT_WIDTH, UNIT_HEIGHT, 0, 0)); // set the game stage viewport to the meters size
         stage.setDebugAll(true);
         initPools(this);
@@ -69,7 +69,7 @@ public class GameWorld {
     private void initPools(final GameWorld gameWorld){
         bullets = new ArrayList<Bullet>();
 
-        bulletPool = new Pool<Bullet>() {
+        bulletPool = new Pool<AbsActor>() {
 
             @Override
             protected Bullet newObject() {
@@ -81,7 +81,7 @@ public class GameWorld {
 
         enemies = new ArrayList<SmartEnemy>();
 
-        enemyPool = new Pool<SmartEnemy>() {
+        enemyPool = new Pool<AbsActor>() {
 
             @Override
             protected SmartEnemy newObject() {
@@ -93,7 +93,7 @@ public class GameWorld {
 
         loots = new ArrayList<Loot>();
 
-        lootPool = new Pool<Loot>() {
+        lootPool = new Pool<AbsActor>() {
 
             @Override
             protected Loot newObject() {
@@ -106,7 +106,7 @@ public class GameWorld {
 
         enemyBullets = new ArrayList<EnemyBullet>();
 
-        enemyBulletPool = new Pool<EnemyBullet>() {
+        enemyBulletPool = new Pool<AbsActor>() {
 
             @Override
             protected EnemyBullet newObject() {
@@ -130,7 +130,7 @@ public class GameWorld {
     private void shoot() {
         if (player.isShooting()) {
             if (TimeUtils.nanoTime() - player.getLastBulletTime() > player.getShootingSpeed()) {
-                Bullet bullet = bulletPool.obtain();
+                Bullet bullet = (Bullet) bulletPool.obtain();
                 bullet.init(player.getShootingPoint().x, player.getShootingPoint().y, player.getBody().getAngle(), player.getBody().getLinearVelocity());
                 bullets.add(bullet);
                 player.setLastBulletTime(TimeUtils.nanoTime());
@@ -140,7 +140,7 @@ public class GameWorld {
         for (SmartEnemy enemy: enemies){
             if (enemy.isShooting()) {
                 if (TimeUtils.nanoTime() - enemy.getLastBulletTime() > enemy.getShootingSpeed()) {
-                    EnemyBullet bullet = enemyBulletPool.obtain();
+                    EnemyBullet bullet = (EnemyBullet)enemyBulletPool.obtain();
                     bullet.init(enemy.getShootingPoint().x, enemy.getShootingPoint().y, enemy.getBody().getAngle(), enemy.getBody().getLinearVelocity());
                     enemyBullets.add(bullet);
                     enemy.setLastBulletTime(TimeUtils.nanoTime());
@@ -150,67 +150,25 @@ public class GameWorld {
     }
 
     public void generateEnemy() {
-        SmartEnemy enemy = enemyPool.obtain();
+        SmartEnemy enemy = (SmartEnemy) enemyPool.obtain();
         enemy.init(2, 2);
         enemies.add(enemy);
     }
 
     public void generateLoot(AbsActor actor) {
-        Loot loot = lootPool.obtain();
+        Loot loot = (Loot)lootPool.obtain();
         loot.init(actor.getBody().getPosition().x, actor.getBody().getPosition().y);
         loots.add(loot);
     }
 
     private void destroyObjects() {
-
         removeDestroyedObj(bullets, bulletPool);
         removeDestroyedObj(enemyBullets, enemyBulletPool);
         removeDestroyedObj(enemies, enemyPool);
         removeDestroyedObj(loots, lootPool);
-//
-//        Bullet bullet;
-//        int len = bullets.size();
-//        for (int i = len; --i >= 0; ) {
-//            bullet = bullets.get(i);
-//            if (!bullet.characteristic.isAlive()) {
-//                bullets.remove(i);
-//                bulletPool.free(bullet);
-//            }
-//        }
-//
-//        EnemyBullet enemyBullet;
-//        len = enemyBullets.size();
-//        for (int i = len; --i >= 0; ) {
-//            enemyBullet = enemyBullets.get(i);
-//            if (!enemyBullet.characteristic.isAlive()) {
-//                enemyBullets.remove(i);
-//                enemyBulletPool.free(enemyBullet);
-//            }
-//        }
-//
-//        SmartEnemy enemy;
-//        len = enemies.size();
-//        for (int i = len; --i >= 0; ) {
-//            enemy = enemies.get(i);
-//            if (!enemy.characteristic.isAlive()) {
-//                generateLoot(enemy);
-//                enemies.remove(i);
-//                enemyPool.free(enemy);
-//            }
-//        }
-//
-//        Loot loot;
-//        len = loots.size();
-//        for (int i = len; --i >= 0; ) {
-//            loot = loots.get(i);
-//            if (!loot.characteristic.isAlive()) {
-//                loots.remove(i);
-//                lootPool.free(loot);
-//            }
-//        }
     }
 
-    private void removeDestroyedObj(ArrayList<? extends AbsActor> array, Pool<? extends AbsActor> pool){
+    private void removeDestroyedObj(ArrayList<? extends AbsActor> array, Pool<AbsActor> pool){
 
         AbsActor actor;
         int len = array.size();
