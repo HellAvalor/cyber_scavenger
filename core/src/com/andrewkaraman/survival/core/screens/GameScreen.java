@@ -181,8 +181,17 @@ public class GameScreen extends AbstractScreen {
         menu.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.debug(LOG_CLASS_NAME, "Menu pressed");
+                Gdx.app.log(LOG_CLASS_NAME, "Menu pressed");
                 ScreenManager.getInstance().show(Screens.LOADING);
+            }
+        });
+
+        TextButton inventory = new TextButton("Inventory", skin);
+        inventory.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log(LOG_CLASS_NAME, "inventory pressed");
+                ScreenManager.getInstance().show(Screens.INVENTORY);
             }
         });
 
@@ -220,7 +229,7 @@ public class GameScreen extends AbstractScreen {
         statusBar.add(lifeBar).width(SCALE_UNIT * 20).height(SCALE_UNIT * 5).top();
         statusBar.add("level").width(SCALE_UNIT * 5).height(SCALE_UNIT * 5).top();
         statusBar.add("right info").expand();
-        statusBar.add(labelFPS).width(SCALE_UNIT * 10);
+        statusBar.add(inventory).width(SCALE_UNIT * 10).align(Align.center);
 
 
         Table table = new Table();

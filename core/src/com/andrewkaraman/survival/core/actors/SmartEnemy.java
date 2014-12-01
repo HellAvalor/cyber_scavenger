@@ -208,7 +208,7 @@ public class SmartEnemy extends AbsActorImpl implements Pool.Poolable {
     }
 
     public void say(String string) {
-        Gdx.app.log(LOG_CLASS_NAME, string);
+        Gdx.app.debug(LOG_CLASS_NAME, string);
     }
 
     @Override
