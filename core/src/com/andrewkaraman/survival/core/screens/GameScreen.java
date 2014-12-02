@@ -4,14 +4,11 @@ import com.andrewkaraman.survival.core.GameRenderer;
 import com.andrewkaraman.survival.core.GameWorld;
 import com.andrewkaraman.survival.core.MyGame;
 import com.andrewkaraman.survival.core.PlayerInputListener;
-import com.andrewkaraman.survival.core.model.PlayerCharacteristic;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
@@ -23,9 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Align;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import static com.badlogic.gdx.Application.ApplicationType;
 
 /**
  * Created by KaramanA on 15.10.2014.
@@ -47,6 +41,7 @@ public class GameScreen extends AbstractScreen {
     private Drawable touchBackground;
     private Drawable touchKnob;
     private ProgressBar lifeBar;
+    Table shootGroup;
     long startTime = TimeUtils.nanoTime();
     String str2;
 
@@ -154,29 +149,6 @@ public class GameScreen extends AbstractScreen {
         stage.addActor(labelStatus);
         // add other GUI elements here
 
-        Button shootButton = new Button(skin);
-        shootButton.addListener(new ClickListener() {
-            @Override
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                super.enter(event, x, y, pointer, fromActor);
-                world.player.setShooting(true);
-            }
-
-            @Override
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                super.exit(event, x, y, pointer, toActor);
-                world.player.setShooting(false);
-            }
-        });
-
-        Button missileButton = new Button(skin);
-        missileButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                world.generateEnemy();
-            }
-        });
-
         TextButton menu = new TextButton("Menu", skin);
         menu.addListener(new ClickListener() {
             @Override
@@ -186,6 +158,8 @@ public class GameScreen extends AbstractScreen {
             }
         });
 
+        shootGroup = null;
+        touchpad = null;
         TextButton inventory = new TextButton("Inventory", skin);
         inventory.addListener(new ClickListener() {
             @Override
@@ -195,26 +169,49 @@ public class GameScreen extends AbstractScreen {
             }
         });
 
-        Table shootGroup = new Table();
-        shootGroup.setSkin(skin);
-        shootGroup.defaults().expand();
-        shootGroup.row();
-        shootGroup.add(missileButton).fillY().right().minWidth(SCALE_UNIT * 10);
-        shootGroup.row();
-        shootGroup.add(shootButton).fillY().left().minWidth(SCALE_UNIT * 10);
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            Button shootButton = new Button(skin);
+            shootButton.addListener(new ClickListener() {
+                @Override
+                public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                    super.enter(event, x, y, pointer, fromActor);
+                    world.player.setShooting(true);
+                }
 
+                @Override
+                public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                    super.exit(event, x, y, pointer, toActor);
+                    world.player.setShooting(false);
+                }
+            });
 
-        Table controls = new Table();
-        controls.setSkin(skin);
+            Button missileButton = new Button(skin);
+            missileButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    world.generateEnemy();
+                }
+            });
 
-        if (Gdx.app.getType() == ApplicationType.Android) {
+            shootGroup = new Table();
+            shootGroup.setSkin(skin);
+            shootGroup.defaults().expand();
+            shootGroup.row();
+            shootGroup.add(missileButton).fillY().right().minWidth(SCALE_UNIT * 10);
+            shootGroup.row();
+            shootGroup.add(shootButton).fillY().left().minWidth(SCALE_UNIT * 10);
+
             setUpTouchPad();
+        }
+
+            Table controls = new Table();
+            controls.setSkin(skin);
 
             controls.defaults().fill();
             controls.add(touchpad).width(SCALE_UNIT * 20);
             controls.add().expand();
             controls.add(shootGroup).width(SCALE_UNIT * 20);
-        }
+
         skin.getFont("default-font").setScale(0.5f);
 
         lifeBar = new ProgressBar(0, 10, 1, false, skin);
@@ -223,7 +220,7 @@ public class GameScreen extends AbstractScreen {
         Table statusBar = new Table();
         statusBar.setSkin(skin);
         statusBar.defaults().fill();
-        statusBar.add(menu).width(SCALE_UNIT * 10).align(Align.center);
+        statusBar.add(menu).width(SCALE_UNIT * 10);
         statusBar.add("left info").expand();
         statusBar.add("level").width(SCALE_UNIT * 5).height(SCALE_UNIT * 5).top();
         statusBar.add(lifeBar).width(SCALE_UNIT * 20).height(SCALE_UNIT * 5).top();
